@@ -26,8 +26,8 @@ LUIComponent('layer-message-status', {
         }
         if (value) {
           this.properties.oldMessage = value;
-          value.on('messages:change', this.rerender, this);
-          this.rerender();
+          value.on('messages:change', this._rerender, this);
+          this._rerender();
         }
       },
     },
@@ -52,13 +52,13 @@ LUIComponent('layer-message-status', {
     /**
      * Constructor.
      *
-     * @method created
+     * @method _created
      * @private
      */
-    created() {
+    _created() {
     },
 
-    rerender(evt) {
+    _rerender(evt) {
       if (!evt || evt.hasProperty('recipientStatus')) {
         const message = this.message;
         if (this.messageStatusRenderer) {

@@ -20,41 +20,43 @@ import ListItem from '../../../mixins/list-item';
 LUIComponent('layer-message-item', {
   mixins: [ListItem],
   properties: {
-    /**
-     * The layer.Message that this widget is rendering.
-     *
-     * @property {layer.Message}
-     */
+
+    // Every List Item has an item property, here it represents the Conversation to render
     item: {
-      set(value) {
-        // Disconnect from any previous Message we were rendering
-        if (this.properties.priorMessage) {
-          this.properties.priorMessage.off(null, null, this);
-          if (this.properties.priorMessage.sender.sessionOwner) {
+      set(newMessage, oldMessage) {
+        // Disconnect from any previous Message we were rendering; not currently used.
+        if (oldMessage) {
+          oldMessage.off(null, null, this);
+          if (oldMessage.sender.sessionOwner) {
             this.removeClass('layer-message-item-sent');
           } else {
             this.removeClass('layer-message-item-received');
           }
         }
-        this.properties.priorMessage = value;
 
-        if (value) {
+        if (newMessage) {
           // Any changes to the Message should trigger a rerender
-          value.on('messages:change', this.rerender, this);
+          newMessage.on('messages:change', this._rerender, this);
 
           // Setup the proper sent/received class
-          if (value.sender.sessionOwner) {
+          if (newMessage.sender.sessionOwner) {
             this.addClass('layer-message-item-sent');
           } else {
             this.addClass('layer-message-item-received');
           }
-          this.render();
+          this._render();
         }
       },
     },
 
     /**
      * Deletion of this Message is enabled.
+     *
+     * ```
+     * widget.getDeleteEnabled = function(message) {
+     *    return message.sender.sessionOwner;
+     * }
+     * ```
      *
      * @property {Function}
      */
@@ -68,16 +70,10 @@ LUIComponent('layer-message-item', {
      * @private
      * @property {String}
      */
-    contentTag: {
-      set(value) {
-        if (this.properties.oldContentTag) {
-          this.removeClass(this.contentTag);
-          this.properties.oldContentTag = '';
-        }
-        if (value) {
-          this.addClass(value);
-          this.properties.oldContentTag = value;
-        }
+    _contentTag: {
+      set(newTag, oldTag) {
+        if (oldTag) this.removeClass(this._contentTag);
+        if (newTag) this.addClass(newTag);
       },
     },
 
@@ -115,10 +111,10 @@ LUIComponent('layer-message-item', {
     /**
      * Constructor.
      *
-     * @method created
+     * @method _created
      * @private
      */
-    created() {
+    _created() {
 
     },
 
@@ -130,7 +126,7 @@ LUIComponent('layer-message-item', {
      * @method
      * @private
      */
-    render() {
+    _render() {
       if (!this.properties.item) return;
       this.innerHTML = '';
       try {
@@ -174,10 +170,10 @@ LUIComponent('layer-message-item', {
         }
 
         // Generate the renderer for this Message's MessageParts.
-        this.applyContentTag();
+        this._applyContentTag();
 
         // Render all mutable data
-        this.rerender();
+        this._rerender();
       } catch (err) {
         console.error('layer-message-item.render(): ', err);
       }
@@ -189,7 +185,7 @@ LUIComponent('layer-message-item', {
      * @method
      * @private
      */
-    rerender() {
+    _rerender() {
       const readStatus = this.properties.item.readStatus;
       const deliveryStatus = this.properties.item.deliveryStatus;
       const statusPrefix = 'layer-message-status';
@@ -206,14 +202,16 @@ LUIComponent('layer-message-item', {
     },
 
     /**
-     * The MessageList passes a tagName to use for the content of the Message.
+     * The parent component sets the _contentTag property, and now its time to use it.
      *
      * Use that tagName to create a DOM Node to render the MessageParts.
+     *
+     * @method
+     * @private
      */
-    applyContentTag() {
-      const messageHandler = document.createElement(this.contentTag);
-      messageHandler.listHeight = this.listHeight;
-      messageHandler.listWidth = this.listWidth;
+    _applyContentTag() {
+      const messageHandler = document.createElement(this._contentTag);
+      messageHandler.parentContainer = this;
       messageHandler.message = this.item;
 
       this.nodes.content.appendChild(messageHandler);

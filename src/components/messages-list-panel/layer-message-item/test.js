@@ -34,7 +34,7 @@ describe('layer-message-item', function() {
     testRoot = document.createElement('div');
     document.body.appendChild(testRoot);
     el = document.createElement('layer-message-item');
-    el.contentTag = 'layer-message-text-plain';
+    el._contentTag = 'layer-message-text-plain';
     testRoot.appendChild(el);
     conversation = client.createConversation({
       participants: ['layer:///identities/FrodoTheDodo', 'layer:///identities/SaurumanTheMildlyAged']
@@ -50,29 +50,29 @@ describe('layer-message-item', function() {
 
   describe("The item property", function() {
     it("Should wire up rerender and call render if there is a value", function() {
-      spyOn(el, "render");
-      spyOn(el, "rerender");
+      spyOn(el, "_render");
+      spyOn(el, "_rerender");
 
       el.item = undefined;
-      expect(el.render).not.toHaveBeenCalled();
+      expect(el._render).not.toHaveBeenCalled();
 
       el.item = message;
-      expect(el.render).toHaveBeenCalledWith();
-      expect(el.rerender).not.toHaveBeenCalled();
+      expect(el._render).toHaveBeenCalledWith();
+      expect(el._rerender).not.toHaveBeenCalled();
 
       message.trigger("messages:change", {});
-      expect(el.rerender).toHaveBeenCalledWith(jasmine.any(layer.LayerEvent));
+      expect(el._rerender).toHaveBeenCalledWith(jasmine.any(layer.LayerEvent));
     });
 
     it("Should unwire any prior Message", function() {
-      spyOn(el, "rerender");
+      spyOn(el, "_rerender");
 
       var m2 = conversation.createMessage("m2").send();
       el.item = m2;
       el.item = message;
 
       m2.trigger("messages:change", {});
-      expect(el.rerender).not.toHaveBeenCalledWith(jasmine.any(layer.LayerEvent));
+      expect(el._rerender).not.toHaveBeenCalledWith(jasmine.any(layer.LayerEvent));
     });
 
     it("Should add/remove sent/received classes", function() {
@@ -106,7 +106,7 @@ describe('layer-message-item', function() {
       var f = function() {};
       el.messageStatusRenderer = f;
       el.item = message;
-      el.render();
+      el._render();
       expect(el.nodes.status.messageStatusRenderer).toBe(f);
     });
   });
@@ -144,16 +144,16 @@ describe('layer-message-item', function() {
       expect(el.querySelector('layer-delete').item).toEqual(message);
     });
 
-    it("Should call applyContentTag", function() {
-      spyOn(el, "applyContentTag");
+    it("Should call _applyContentTag", function() {
+      spyOn(el, "_applyContentTag");
       el.item = message;
-      expect(el.applyContentTag).toHaveBeenCalledWith();
+      expect(el._applyContentTag).toHaveBeenCalledWith();
     });
 
     it("Should call rerender", function() {
-      spyOn(el, "rerender");
+      spyOn(el, "_rerender");
       el.item = message;
-      expect(el.rerender).toHaveBeenCalledWith();
+      expect(el._rerender).toHaveBeenCalledWith();
     });
   });
 
@@ -161,19 +161,19 @@ describe('layer-message-item', function() {
     it("Should setup read css", function() {
       el.item = message;
       message.readStatus = layer.Constants.RECIPIENT_STATE.ALL;
-      el.rerender();
+      el._rerender();
       expect(el.classList.contains('layer-message-status-read-by-all')).toBe(true);
       expect(el.classList.contains('layer-message-status-read-by-some')).toBe(false);
       expect(el.classList.contains('layer-message-status-read-by-none')).toBe(false);
 
       message.readStatus = layer.Constants.RECIPIENT_STATE.SOME;
-      el.rerender();
+      el._rerender();
       expect(el.classList.contains('layer-message-status-read-by-all')).toBe(false);
       expect(el.classList.contains('layer-message-status-read-by-some')).toBe(true);
       expect(el.classList.contains('layer-message-status-read-by-none')).toBe(false);
 
       message.readStatus = layer.Constants.RECIPIENT_STATE.NONE;
-      el.rerender();
+      el._rerender();
       expect(el.classList.contains('layer-message-status-read-by-all')).toBe(false);
       expect(el.classList.contains('layer-message-status-read-by-some')).toBe(false);
       expect(el.classList.contains('layer-message-status-read-by-none')).toBe(true);
@@ -182,19 +182,19 @@ describe('layer-message-item', function() {
     it("Should setup delivery css", function() {
       el.item = message;
       message.deliveryStatus = layer.Constants.RECIPIENT_STATE.ALL;
-      el.rerender();
+      el._rerender();
       expect(el.classList.contains('layer-message-status-delivered-to-all')).toBe(true);
       expect(el.classList.contains('layer-message-status-delivered-to-some')).toBe(false);
       expect(el.classList.contains('layer-message-status-delivered-to-none')).toBe(false);
 
       message.deliveryStatus = layer.Constants.RECIPIENT_STATE.SOME;
-      el.rerender();
+      el._rerender();
       expect(el.classList.contains('layer-message-status-delivered-to-all')).toBe(false);
       expect(el.classList.contains('layer-message-status-delivered-to-some')).toBe(true);
       expect(el.classList.contains('layer-message-status-delivered-to-none')).toBe(false);
 
       message.deliveryStatus = layer.Constants.RECIPIENT_STATE.NONE;
-      el.rerender();
+      el._rerender();
       expect(el.classList.contains('layer-message-status-delivered-to-all')).toBe(false);
       expect(el.classList.contains('layer-message-status-delivered-to-some')).toBe(false);
       expect(el.classList.contains('layer-message-status-delivered-to-none')).toBe(true);
@@ -203,49 +203,45 @@ describe('layer-message-item', function() {
     it("Should setup pending css", function() {
       el.item = message;
       message.syncState = layer.Constants.SYNC_STATE.SAVING;
-      el.rerender();
+      el._rerender();
       expect(el.classList.contains('layer-message-status-pending')).toBe(true);
 
       message.syncState = layer.Constants.SYNC_STATE.SYNCED;
-      el.rerender();
+      el._rerender();
       expect(el.classList.contains('layer-message-status-pending')).toBe(false);
     });
 
     it("Should setup unread css", function() {
       el.item = message;
       message.isRead = false;
-      el.rerender();
+      el._rerender();
       expect(el.classList.contains('layer-unread-message')).toBe(true);
 
       message.isRead = true;
-      el.rerender();
+      el._rerender();
       expect(el.classList.contains('layer-unread-message')).toBe(false);
     });
   });
 
-  describe("The applyContentTag() method", function() {
-    it("Should create the element specified in contentTag", function() {
-      el.contentTag = "img";
+  describe("The _applyContentTag() method", function() {
+    it("Should create the element specified in _contentTag", function() {
+      el._contentTag = "img";
       el.nodes.content = document.createElement('div');
       el.appendChild(el.nodes.content);
       expect(el.querySelector('img')).toBe(null);
-      el.applyContentTag();
+      el._applyContentTag();
       expect(el.querySelector('img')).not.toBe(null);
     });
 
-    it("Should setup listHeight/listWidth/message properties", function() {
-      el.contentTag = 'layer-message-text-plain';
+    it("Should setup message properties", function() {
+      el._contentTag = 'layer-message-text-plain';
       el.nodes.content = document.createElement('div');
       el.appendChild(el.nodes.content);
-      el.listHeight = 200;
-      el.listWidth = 500;
       el.properties.item = message;
 
-      el.applyContentTag();
+      el._applyContentTag();
       var handler = el.querySelector('layer-message-text-plain');
 
-      expect(handler.listHeight).toEqual(el.listHeight);
-      expect(handler.listWidth).toEqual(el.listWidth);
       expect(handler.message).toEqual(message);
     });
 

@@ -15,15 +15,20 @@ import ListItem from '../../../mixins/list-item';
 LUIComponent('layer-identity-item', {
   mixins: [ListItem],
   properties: {
+
+    // Every List Item has an item property, here it represents the Conversation to render
     item: {
       set(value) {
-        this.render();
-        value.on('identities:change', this.render, this);
+        this._render();
+        value.on('identities:change', this._render, this);
       },
     },
 
     /**
-     * Is this user item selected using the checkbox?
+     * Is this user item currently selected?
+     *
+     * Setting this to true will set the checkbox to checked, and add a
+     * `layer-identity-item-selected` css class.
      *
      * @property {Boolean} [selected=false]
      */
@@ -42,12 +47,12 @@ LUIComponent('layer-identity-item', {
     /**
      * Constructor.
      *
-     * @method created
+     * @method _created
      * @private
      */
-    created() {
+    _created() {
       if (!this.id) this.id = LayerAPI.Util.generateUUID();
-      this.nodes.checkbox.addEventListener('change', this.onChange.bind(this));
+      this.nodes.checkbox.addEventListener('change', this._onChange.bind(this));
       this.nodes.checkbox.id = `${this.id}-checkbox`;
       this.nodes.title.setAttribute('for', this.nodes.checkbox.id);
     },
@@ -57,11 +62,11 @@ LUIComponent('layer-identity-item', {
      *
      * If the custom event is canceled, roll back the change.
      *
-     * @method onChange
+     * @method _onChange
      * @param {Event} evt
      * @private
      */
-    onChange(evt) {
+    _onChange(evt) {
       evt.stopPropagation();
       const checked = this.selected;
       const identity = this.item;
@@ -79,10 +84,10 @@ LUIComponent('layer-identity-item', {
     /**
      * Render/rerender the user, showing the avatar and user's name.
      *
-     * @method render
+     * @method _render
      * @private
      */
-    render() {
+    _render() {
       this.nodes.avatar.users = [this.item];
       this.nodes.title.innerHTML = this.item.displayName;
       this.toggleClass('layer-identity-item-empty', !this.item.displayName);
@@ -91,10 +96,10 @@ LUIComponent('layer-identity-item', {
     /**
      * Run a filter on this item, and hide it if it doesn't match the filter.
      *
-     * @method runFilter
+     * @method _runFilter
      * @param {String|Regex|Function} filter
      */
-    runFilter(filter) {
+    _runFilter(filter) {
       const identity = this.properties.item;
       let match = false;
       if (!filter) {

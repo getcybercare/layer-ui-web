@@ -46,10 +46,10 @@ LUIComponent('layer-avatar', {
     /**
      * Constructor.
      *
-     * @method created
+     * @method _created
      * @private
      */
-    created() {
+    _created() {
       this.properties.users = [];
     },
 

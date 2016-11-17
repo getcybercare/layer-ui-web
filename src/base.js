@@ -80,7 +80,7 @@ const layerUI = {};
  * @property {Object} [settings.defaultHandler]    The default message renderer for messages not matching any other handler
  * @property {String[]} [settings.textHandlers=['autolinker', 'emoji', 'images', 'newline', 'youtube']] Specify which text handlers you want
  *    Note that any custom handlers you add do not need to be in the settings, they can be called after calling `init()` using layerUI.registerTextHandler.
- * @property {Object} [settings.listNodeDimensions]  The list width/height to use for calculating optimal images/message-part sizes
+ * @property {Object} [settings.maxSizes]  The maximum width/height for image and video previews
  */
 layerUI.settings = {
   appId: '',
@@ -92,6 +92,7 @@ layerUI.settings = {
     tagName: 'layer-message-unknown',
   },
   textHandlers: ['autolinker', 'emoji', 'images', 'newline', 'youtube'],
+  maxSizes: { width: 512, height: 512 },
 };
 
 /**

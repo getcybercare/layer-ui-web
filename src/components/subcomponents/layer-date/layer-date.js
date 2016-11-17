@@ -64,10 +64,10 @@ LUIComponent('layer-date', {
     /**
      * Constructor.
      *
-     * @method created
+     * @method _created
      * @private
      */
-    created() {
+    _created() {
     },
   },
 });

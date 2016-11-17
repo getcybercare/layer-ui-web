@@ -162,7 +162,7 @@ LUIComponent('layer-identities-list', {
           if (!(identity instanceof LayerAPI.Identity)) return this.properties.client.getIdentity(identity.id);
           return identity;
         });
-        this.renderSelection();
+        this._renderSelection();
       },
     },
 
@@ -176,7 +176,7 @@ LUIComponent('layer-identities-list', {
      */
     filter: {
       set(value) {
-        this.runFilter();
+        this._runFilter();
       },
     },
 
@@ -185,9 +185,9 @@ LUIComponent('layer-identities-list', {
      *
      * @readonly
      * @private
-     * @property {String} [queryModel=layer.Query.Identity]
+     * @property {String} [_queryModel=layer.Query.Identity]
      */
-    queryModel: {
+    _queryModel: {
       value: LayerAPI.Query.Identity,
     },
   },
@@ -200,35 +200,35 @@ LUIComponent('layer-identities-list', {
      * @private
      * @param {String} id
      */
-    getItemId(identity) {
+    _getItemId(identity) {
       return `identities-list-item-${this.id}-${identity.internalId}`;
     },
 
     /**
      * Constructor.
      *
-     * @method created
+     * @method _created
      * @private
      */
-    created() {
+    _created() {
       if (!this.id) this.id = LayerAPI.Util.generateUUID();
       this.properties.selectedIdentities = [];
 
-      this.render();
-      this.addEventListener('layer-identity-item-selected', this.handleIdentitySelect.bind(this));
-      this.addEventListener('layer-identity-item-deselected', this.handleIdentityDeselect.bind(this));
+      this._render();
+      this.addEventListener('layer-identity-item-selected', this._handleIdentitySelect.bind(this));
+      this.addEventListener('layer-identity-item-deselected', this._handleIdentityDeselect.bind(this));
     },
 
     /**
-     * Handle a user Selection event triggered by a layerUI.components.IdentitiesList.IdentityItem.
+     * Handle a user Selection event triggered by a layerUI.components.IdentitiesListPanel.Item.
      *
      * Adds the Identity to the selectedIdentities array.
      *
-     * @method handleIdentitySelect
+     * @method _handleIdentitySelect
      * @private
      * @param {Event} evt
      */
-    handleIdentitySelect(evt) {
+    _handleIdentitySelect(evt) {
       evt.stopPropagation();
       const identity = evt.detail.identity;
       const index = this.selectedIdentities.indexOf(identity);
@@ -245,15 +245,15 @@ LUIComponent('layer-identities-list', {
     },
 
     /**
-     * Handle a user Deselection event triggered by a layerUI.components.IdentitiesList.IdentityItem
+     * Handle a user Deselection event triggered by a layerUI.components.IdentitiesListPanel.Item
      *
      * Removes the identity from the selectedIdentities array.
      *
-     * @method handleIdentityDeselect
+     * @method _handleIdentityDeselect
      * @private
      * @param {Event} evt
      */
-    handleIdentityDeselect(evt) {
+    _handleIdentityDeselect(evt) {
       evt.stopPropagation();
       const identity = evt.detail.identity;
       const index = this.selectedIdentities.indexOf(identity);
@@ -270,30 +270,32 @@ LUIComponent('layer-identities-list', {
     },
 
     /**
-     * Append a layerUI.components.IdentitiesList.IdentityItem to the Document Fragment
+     * Append a layerUI.components.IdentitiesListPanel.Item to the Document Fragment
      *
-     * @method generateItem
+     * @method _generateItem
      * @param {layer.Identity} identity
      * @private
      */
-    generateItem(identity) {
+    _generateItem(identity) {
       const identityWidget = document.createElement('layer-identity-item');
       identityWidget.item = identity;
-      identityWidget.id = this.getItemId(identity);
+      identityWidget.id = this._getItemId(identity);
       identityWidget.selected = this.selectedIdentities.indexOf(identity) !== -1;
-      identityWidget.runFilter(this.filter);
+      identityWidget._runFilter(this.filter);
       return identityWidget;
     },
 
     /**
      * Call this on any Query change events.
      *
-     * @method rerender
+     * This updates the selectedIdentities after doing standard query update
+     *
+     * @method _rerender
      * @private
      * @param {Event} evt
      */
-    rerender(evt) {
-      this._rerender(evt);
+    _rerender(evt) {
+      this._processQueryEvt(evt);
       switch (evt.type) {
         // If its a remove event, find the user and remove its widget.
         case 'remove': {
@@ -312,12 +314,12 @@ LUIComponent('layer-identities-list', {
     /**
      * Update the selected property of all Identity Items based on the selectedIdentities property.
      *
-     * @method renderSelection
+     * @method _renderSelection
      * @private
      */
-    renderSelection() {
+    _renderSelection() {
       const selectedNodes = this.querySelectorAllArray('.layer-identity-item-selected').map(node => node.parentNode);
-      const selectedIds = this.selectedIdentities.map(identity => '#' + this.getItemId(identity));
+      const selectedIds = this.selectedIdentities.map(identity => '#' + this._getItemId(identity));
       const nodesToSelect = this.selectedIdentities.length ? this.querySelectorAllArray(selectedIds.join(', ')) : [];
       selectedNodes.forEach((node) => {
         if (nodesToSelect.indexOf(node) === -1) node.selected = false;
@@ -330,17 +332,17 @@ LUIComponent('layer-identities-list', {
     /**
      * Run the filter on all Identity Items.
      *
-     * @method runFilter
+     * @method _runFilter
      * @private
      */
-    runFilter() {
+    _runFilter() {
       if (!this.filter) {
         this.querySelectorAllArray('.layer-item-filtered').forEach(item => item.removeClass('layer-item-filtered'));
       } else {
         for (let i = 0; i < this.childNodes.length; i++) {
           const listItem = this.childNodes[i];
           if (listItem.item instanceof LayerAPI.Root) {
-            listItem.runFilter(this.filter);
+            listItem._runFilter(this.filter);
           }
         }
       }

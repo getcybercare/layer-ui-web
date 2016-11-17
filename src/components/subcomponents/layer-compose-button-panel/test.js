@@ -38,9 +38,9 @@ describe('layer-compose-button-panel', function() {
 
   describe('The buttons property', function() {
     it("Should call rerender", function() {
-      spyOn(el, "rerender");
+      spyOn(el, "_rerender");
       el.buttons = [];
-      expect(el.rerender).toHaveBeenCalledWith();
+      expect(el._rerender).toHaveBeenCalledWith();
     });
   });
 

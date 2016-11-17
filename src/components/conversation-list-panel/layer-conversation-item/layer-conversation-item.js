@@ -1,13 +1,13 @@
 /**
- * The Layer Conversation Item widget renders a single Conversation synopsis.
+ * The Layer Conversation Item widget renders a single Conversation, typically for use representing a
+ * conversation within a list of conversations.
  *
- * This is designed to go inside of the layerUI.ConversationList widget, and be a concise enough summary that it can be scrolled through along
+ * This is designed to go inside of the layerUI.components.ConversationsListPanel.List widget, and be a
+ * concise enough summary that it can be scrolled through along
  * with hundreds of other Conversations Item widgets.
  *
- * Note that this widget is not designed to be used outside of the ConversationList; to simplify such use cases, we'd want to accept
- * `appId` and `conversationId` instead of `conversation`.
- *
  * Future Work:
+ *
  * * Badges for unread messages (currently just adds a css class so styling can change if there are any unread messages)
  *
  * @class layerUI.components.ConversationsListPanel.Item
@@ -19,24 +19,21 @@ import ListItem from '../../../mixins/list-item';
 LUIComponent('layer-conversation-item', {
   mixins: [ListItem],
   properties: {
+
+    // Every List Item has an item property, here it represents the Conversation to render
     item: {
-      set(value) {
-        this.render();
-        // This component is not currently being used in a way where items change, so this block isn't
-        // currently used, but is here as "best practice"
-        if (this.properties.oldConversation) {
-          this.properties.oldConversation.off(null, null, this);
-          this.properties.oldConversation = null;
+      set(newConversation, oldConversation) {
+        this._render();
+        if (oldConversation) oldConversation.off(null, null, this);
+
+        if (newConversation) {
+          newConversation.on('conversations:change', this._rerender, this);
         }
-        if (value) {
-          this.properties.oldConversation = value;
-          value.on('conversations:change', this.rerender, this);
-        }
-        if (this.nodes.delete) this.nodes.delete.item = value;
-        if (this.nodes.title) this.nodes.title.item = value;
+        if (this.nodes.delete) this.nodes.delete.item = newConversation;
+        if (this.nodes.title) this.nodes.title.item = newConversation;
         if (this.nodes.lastMessage) {
-          this.nodes.lastMessage.canRenderLastMessage = this.canRenderLastMessage;
-          this.nodes.lastMessage.item = value;
+          this.nodes.lastMessage.canFullyRenderLastMessage = this.canFullyRenderLastMessage;
+          this.nodes.lastMessage.item = newConversation;
         }
       },
     },
@@ -46,6 +43,8 @@ LUIComponent('layer-conversation-item', {
      *
      * This property is currently assumed to be settable at creation time only,
      * and does not rerender if changed.
+     *
+     * This property does nothing if you remove the `delete` node from the template.
      *
      * @property {Boolean} [deleteConversationEnabled=false]
      */
@@ -59,78 +58,63 @@ LUIComponent('layer-conversation-item', {
     /**
      * Provide a function to determine if the last message is rendered in the Conversation List.
      *
-     * By default, only text/plain last-messages are rendered in the Conversation List.
+     * By default, only text/plain last-messages are fully rendered in the Conversation List.
+     *
+     * All other messages are rendered using the `label` passed in with their layerUI.registerMessageHandler call.
      *
      * ```javascript
-     * listItem.canRenderLastMessage = function(message) {
-     *     return true; // Render all Last Messages
+     * listItem.canFullyRenderLastMessage = function(message) {
+     *     return true; // Render the current Messages
      * }
      * ```
      *
-     * @property {Function} [canRenderLastMessage=null]
+     * @property {Function} [canFullyRenderLastMessage=null]
      */
-    canRenderLastMessage: {},
+    canFullyRenderLastMessage: {},
   },
   methods: {
 
     /**
      * Constructor.
      *
-     * @method created
+     * @method _created
      * @private
      */
-    created() {
+    _created() {
 
-    },
-
-    /**
-     * Generate a DOM ID for each user ID
-     *
-     * @method getItemId
-     * @private
-     * @param {String} id
-     */
-    getItemId(conversation) {
-      const uuid = conversation.id.replace(/layer:\/\/\/conversations\//, '');
-      return `conversation-list-item-${this.id}-${uuid}`;
     },
 
     /**
      * Render this Conversation Item.
      *
-     * @method render
+     * @method _render
      * @private
      */
-    render() {
-      this.rerender();
+    _render() {
+      this._rerender();
     },
 
     /**
      * Update the rendering with new properties.
      *
-     * @method rerender
+     * @method _rerender
      * @private
      */
-    rerender() {
+    _rerender() {
       const users = this.item.participants.filter(user => !user.sessionOwner);
       const isRead = !this.item.lastMessage || this.item.lastMessage.isRead;
-      const lastMessageWidget = this.nodes.lastMessage;
-      if (lastMessageWidget) {
-        lastMessageWidget.listHeight = this.listHeight;
-        lastMessageWidget.listWidth = this.listWidth;
-      }
 
       this.nodes.avatar.users = users;
       this.classList[isRead ? 'remove' : 'add']('layer-conversation-unread-messages');
     },
 
     /**
-     * Run a filter on this item, and hide it if it doesn't match the filter.
+     * Run a filter on this item; not match => hidden; match => shown.
      *
-     * @method runFilter
+     * @method _runFilter
      * @param {String|Regex|Function} filter
      */
-    runFilter(filter) {
+    _runFilter(filter) {
       const conversation = this.properties.item;
       let match;
       if (!filter) {

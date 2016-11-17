@@ -33,7 +33,7 @@ LUIComponent('layer-compose-button-panel', {
      */
     buttons: {
       set(value) {
-        this.rerender();
+        this._rerender();
       },
     },
   },
@@ -42,10 +42,10 @@ LUIComponent('layer-compose-button-panel', {
     /**
      * Constructor.
      *
-     * @method created
+     * @method _created
      * @private
      */
-    created() {
+    _created() {
       this.properties.buttons = [];
     },
 
@@ -55,7 +55,7 @@ LUIComponent('layer-compose-button-panel', {
      * @method
      * @private
      */
-    rerender() {
+    _rerender() {
       this.innerHTML = '';
       const fragment = document.createDocumentFragment();
       this.buttons.forEach(button => fragment.appendChild(button));

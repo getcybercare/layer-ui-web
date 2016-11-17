@@ -16,7 +16,7 @@ import 'blueimp-load-image/js/load-image-orientation';
 import 'blueimp-load-image/js/load-image-meta';
 import 'blueimp-load-image/js/load-image-exif';
 
-import layerUI from '../../base';
+import layerUI, { settings as UISettings } from '../../base';
 import LUIComponent from '../../components/component';
 import normalizeSize from '../../utils/sizing';
 
@@ -62,36 +62,18 @@ LUIComponent('layer-message-image', {
       },
     },
 
-    /**
-     * Knowing the height of the list will help us determine a suitable size for the Image.
-     *
-     * @property {Number}
-     */
-    listHeight: {},
+    parentContainer: {},
 
-    /**
-     * Knowing the width of the list will help us determine a suitable size for the Image.
-     *
-     * @property {Number}
-     */
-    listWidth: {},
-
-    /**
-     * Optional parameter to use for rendering images.
-     *
-     * @property {Boolean}
-     */
-    noPadding: {},
   },
   methods: {
 
     /**
      * Constructor.
      *
-     * @method created
+     * @method _created
      * @private
      */
-    created() {
+    _created() {
       this.addEventListener('click', this.handleClick.bind(this));
     },
 
@@ -114,12 +96,16 @@ LUIComponent('layer-message-image', {
      *
      * Primarily, this method determines whether to call renderCanvas on the preview or the image.
      *
+     * TODO: update this to only call after its been added to body via the attachedCallback...
+     *
      * @method
      * @private
      */
     render() {
-      // TODO: Need something better than hardcoded in sizes.
-      this.properties.sizes = normalizeSize(this.properties.meta, { width: 256, height: 256, noPadding: this.noPadding });
+      let maxSizes = UISettings.maxSizes;
+      // TODO: Need to be able to customize this height, as well as the conditions under which different sizes are applied.
+      if (this.parentContainer.tagName === 'LAYER-NOTIFIER') maxSizes = { height: 140, width: maxSizes.width };
+      this.properties.sizes = normalizeSize(this.properties.meta, { width: maxSizes.width, height: maxSizes.height });
       this.style.width = this.properties.sizes.width + 'px';
       this.style.height = this.properties.sizes.height + 'px';
       if (this.properties.preview && this.properties.preview.body) {

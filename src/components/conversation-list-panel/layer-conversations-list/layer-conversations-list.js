@@ -160,7 +160,7 @@ LUIComponent('layer-conversations-list', {
      */
     selectedConversationId: {
       set(value) {
-        this.renderSelection();
+        this._renderSelection();
       },
     },
 
@@ -205,7 +205,7 @@ LUIComponent('layer-conversations-list', {
      */
     filter: {
       set(value) {
-        this.runFilter();
+        this._runFilter();
       },
     },
 
@@ -214,9 +214,9 @@ LUIComponent('layer-conversations-list', {
      *
      * @readonly
      * @private
-     * @property {String} [queryModel=layer.Query.Conversation]
+     * @property {String} [_queryModel=layer.Query.Conversation]
      */
-    queryModel: {
+    _queryModel: {
       value: LayerAPI.Query.Conversation,
     },
 
@@ -226,7 +226,7 @@ LUIComponent('layer-conversations-list', {
      * By default, only text/plain last-messages are rendered in the Conversation List.
      *
      * ```javascript
-     * list.canRenderLastMessage = function(message) {
+     * list.canFullyRenderLastMessage = function(message) {
      *     return message.parts[0].mimeType === 'text/mountain' ||
      *            message.parts[0].mimeType === 'text/plain';
      * }
@@ -238,9 +238,9 @@ LUIComponent('layer-conversations-list', {
      * If you prevent rendering of a Message, it will instead render the `label` attribute for that message handler;
      * see layerUI.registerMessageHandler for more info on the `label`.
      *
-     * @property {Function} canRenderLastMessage
+     * @property {Function} canFullyRenderLastMessage
      */
-    canRenderLastMessage: {
+    canFullyRenderLastMessage: {
       type: Function,
       value(message) {
         return (message.parts.length === 1 && message.parts[0].mimeType === 'text/plain');
@@ -249,34 +249,34 @@ LUIComponent('layer-conversations-list', {
   },
   methods: {
     /**
-     * Generate a unique but consistent DOM ID for each layerUI.ConversationItem.
+     * Generate a unique but consistent DOM ID for each layerUI.components.ConversationsListPanel.Item.
      *
-     * @method getItemId
+     * @method _getItemId
      * @param {layer.Conversation} conversation
      * @private
      */
-    getItemId(conversation) {
-      const uuid = conversation.id.replace(/layer:\/\/\/conversations\//, '');
+    _getItemId(conversation) {
+      const uuid = LayerAPI.Util.uuid(conversation.id);
       return `conversation-list-item-${this.id}-${uuid}`;
     },
 
     /**
      * Constructor.
      *
-     * @method created
+     * @method _created
      * @private
      */
-    created() {
+    _created() {
       if (!this.id) this.id = LayerAPI.Util.generateUUID();
-      this.render();
-      this.addEventListener('click', this.onClick.bind(this));
+      this._render();
+      this.addEventListener('click', this._onClick.bind(this));
     },
 
     /**
      * User has selected something in the Conversation List that didn't handle that click event.
      *
      * Find the Conversation Item selected and generate a `layer-conversation-selected` event.
-     * Click events do NOT bubble up; they must either be handled by the layerUI.ConversationItem or
+     * Click events do NOT bubble up; they must either be handled by the layerUI.components.ConversationsListPanel.Item or
      * they are treated as a selection event.
      *
      * Listening to `layer-conversation-selected` you will still receive the original click event
@@ -284,11 +284,11 @@ LUIComponent('layer-conversations-list', {
      *
      * Calling `evt.preventDefault()` will prevent selection from occuring.
      *
-     * @method onClick
+     * @method _onClick
      * @private
      * @param {Event} evt
      */
-    onClick(evt) {
+    _onClick(evt) {
       let target = evt.target;
       while (target && target !== this && !target.item) {
         target = target.parentNode;
@@ -306,18 +306,18 @@ LUIComponent('layer-conversations-list', {
     /**
      * Generate a `layer-conversation-item` widget.
      *
-     * @method generateItem
+     * @method _generateItem
      * @private
      * @param {layer.Conversation} conversation
      */
-    generateItem(conversation) {
+    _generateItem(conversation) {
       const conversationWidget = document.createElement('layer-conversation-item');
-      conversationWidget.id = this.getItemId(conversation);
+      conversationWidget.id = this._getItemId(conversation);
       conversationWidget.deleteConversationEnabled = typeof this.deleteConversationEnabled === 'function' ?
         this.deleteConversationEnabled(conversation) : true;
-      conversationWidget.canRenderLastMessage = this.canRenderLastMessage;
+      conversationWidget.canFullyRenderLastMessage = this.canFullyRenderLastMessage;
       conversationWidget.item = conversation;
-      if (this.filter) conversationWidget.runFilter(this.filter);
+      if (this.filter) conversationWidget._runFilter(this.filter);
       return conversationWidget;
     },
 
@@ -326,23 +326,23 @@ LUIComponent('layer-conversations-list', {
      *
      * Updates rendering of the list, and then updates rendering of the list selection.
      *
-     * @method rerender
+     * @method _rerender
      * @private
      */
-    rerender(evt) {
-      this._rerender(evt);
-      this.renderSelection();
+    _rerender(evt) {
+      this._processQueryEvt(evt);
+      this._renderSelection();
     },
 
     /**
      * Render the currently selected Conversation; remove any selection rendering from formerly selected Conversations.
      *
-     * @method renderSelection
+     * @method _renderSelection
      * @private
      */
-    renderSelection() {
+    _renderSelection() {
       const selectedNodes = this.querySelectorAllArray('.layer-conversation-item-selected');
-      const itemId = this.selectedConversationId ? this.getItemId({ id: this.selectedConversationId }) : null;
+      const itemId = this.selectedConversationId ? this._getItemId({ id: this.selectedConversationId }) : null;
       const nodeToSelect = this.selectedConversationId ? this.querySelector('#' + itemId) : null;
 
       // Deselect everything if the selected nodes are not the node to select...
@@ -360,10 +360,10 @@ LUIComponent('layer-conversations-list', {
     /**
      * Run the filter on all Conversation Items.
      *
-     * @method runFilter
+     * @method _runFilter
      * @private
      */
-    runFilter() {
+    _runFilter() {
       // If the filter has been reset, remove all filtering
       if (!this.filter) {
         this.querySelectorAllArray('.layer-item-filtered').forEach(item => item.removeClass('layer-item-filtered'));
@@ -374,7 +374,7 @@ LUIComponent('layer-conversations-list', {
         for (let i = 0; i < this.childNodes.length; i++) {
           const listItem = this.childNodes[i];
           if (listItem.item instanceof LayerAPI.Root) {
-            listItem.runFilter(this.filter);
+            listItem._runFilter(this.filter);
           }
         }
       }

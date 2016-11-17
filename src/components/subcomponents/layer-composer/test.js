@@ -202,11 +202,11 @@ describe('layer-composer', function() {
     });
   });
 
-  describe("The onKeyDown() method", function() {
+  describe("The _onKeyDown() method", function() {
     it("Should preventDefault on ENTER and call send", function() {
       spyOn(el, 'send');
       var preventSpy = jasmine.createSpy('preventDefault');
-      el.onKeyDown({
+      el._onKeyDown({
         preventDefault: preventSpy,
         keyCode: 13,
         shiftKey: false,
@@ -219,7 +219,7 @@ describe('layer-composer', function() {
     it("Should allow ENTER if shifted", function() {
       spyOn(el, 'send');
       var preventSpy = jasmine.createSpy('preventDefault');
-      el.onKeyDown({
+      el._onKeyDown({
         preventDefault: preventSpy,
         keyCode: 13,
         shiftKey: true,
@@ -233,7 +233,7 @@ describe('layer-composer', function() {
     it("Should preventDefault and insert a tab if tabs are enabled", function() {
       spyOn(el, 'send');
       var preventSpy = jasmine.createSpy('preventDefault');
-      el.onKeyDown({
+      el._onKeyDown({
         preventDefault: preventSpy,
         keyCode: 9,
         shiftKey: false,
@@ -248,7 +248,7 @@ describe('layer-composer', function() {
     it("Should not preventDefault nor insert a tab if tabs are not enabled", function() {
       layerUI.settings.disableTabAsWhiteSpace = true;
       var preventSpy = jasmine.createSpy('preventDefault');
-      el.onKeyDown({
+      el._onKeyDown({
         preventDefault: preventSpy,
         keyCode: 9,
         shiftKey: false,
@@ -262,7 +262,7 @@ describe('layer-composer', function() {
     it("Should call resizeNode() whether its an ENTER or a letter", function() {
       spyOn(el, "resizeNode");
       var preventSpy = jasmine.createSpy('preventDefault');
-      el.onKeyDown({
+      el._onKeyDown({
         preventDefault: preventSpy,
         keyCode: 9,
         shiftKey: false,

@@ -13,7 +13,7 @@
  */
 import LUIComponent from '../../components/component';
 import normalizeSize from '../../utils/sizing';
-import layerUI from '../../base';
+import layerUI, { settings as UISettings } from '../../base';
 
 LUIComponent('layer-message-video', {
   properties: {
@@ -34,9 +34,8 @@ LUIComponent('layer-message-video', {
 
         // TODO: Investigate better defaults or better way to get defaults
         this.properties.sizes = normalizeSize(this.properties.meta, {
-          width: Number(this.listWidth),
-          height: Number(this.listHeight),
-          noPadding: this.noPadding,
+          width: UISettings.maxSizes.width,
+          height: UISettings.maxSizes.height,
         });
 
         if (!this.properties.video.url) this.properties.video.fetchStream();
@@ -50,19 +49,7 @@ LUIComponent('layer-message-video', {
       },
     },
 
-    /**
-     * Knowing the height of the list will help us determine a suitable size for the Image.
-     *
-     * @property {Number}
-     */
-    listHeight: {},
-
-    /**
-     * Knowing the width of the list will help us determine a suitable size for the Image.
-     *
-     * @property {Number}
-     */
-    listWidth: {},
+    parentContainer: {},
   },
   methods: {
 

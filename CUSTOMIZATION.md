@@ -246,7 +246,7 @@ layerUI.registerComponent('layer-avatar', {
     // This method is called by the constructor
     created: function() {
       // the nodes object is setup using the layer-id attribute
-      this.nodes.mybutton.addEventListener('click', this.onClick.bind(this));
+      this.nodes.mybutton.addEventListener('click', this._onClick.bind(this));
     },
 
     // Called when the user clicks the button

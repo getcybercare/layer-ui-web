@@ -66,8 +66,8 @@ function initAngular(angular) {
         if (elem.properties) {
           elem[prop.propertyName] = value;
         } else {
-          if (!elem.tmpdata) elem.tmpdata = {};
-          elem.tmpdata[prop.propertyName] = value;
+          if (!elem._tmpdata) elem._tmpdata = {};
+          elem._tmpdata[prop.propertyName] = value;
         }
       });
 
@@ -78,8 +78,8 @@ function initAngular(angular) {
           if (elem.properties) {
             elem[prop.propertyName] = value;
           } else {
-            if (!elem.tmpdata) elem.tmpdata = {};
-            elem.tmpdata[prop.propertyName] = value;
+            if (!elem._tmpdata) elem._tmpdata = {};
+            elem._tmpdata[prop.propertyName] = value;
           }
         });
       });
@@ -90,7 +90,7 @@ function initAngular(angular) {
   // embedded in Angular's Templates to correctly handle values.
   Object.keys(layerUI.components).filter((componentName) => {
     const component = layerUI.components[componentName];
-    return component.properties.filter(prop => prop.propertyName === 'isMainComponent').length;
+    return component.properties.filter(prop => prop.propertyName === '_isMainComponent').length;
   })
   .forEach((componentName) => {
     const component = layerUI.components[componentName];

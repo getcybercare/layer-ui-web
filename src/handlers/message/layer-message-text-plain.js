@@ -28,10 +28,10 @@ LUIComponent('layer-message-text-plain', {
     /**
      * Constructor.
      *
-     * @method created
+     * @method _created
      * @private
      */
-    created() {
+    _created() {
     },
 
     /**

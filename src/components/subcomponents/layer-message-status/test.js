@@ -29,22 +29,22 @@ describe('layer-message-status', function() {
   });
 
   it('Should call rerender on any message change events', function() {
-    spyOn(el, "rerender");
+    spyOn(el, "_rerender");
     el.message = message;
-    el.rerender.calls.reset();
+    el._rerender.calls.reset();
 
     message.trigger('messages:change', {});
-    expect(el.rerender).toHaveBeenCalledWith(jasmine.any(layer.LayerEvent));
+    expect(el._rerender).toHaveBeenCalledWith(jasmine.any(layer.LayerEvent));
   });
 
   it('Should not call rerender on any message change events once its no longer the right message', function() {
-    spyOn(el, "rerender");
+    spyOn(el, "_rerender");
     el.message = message;
-    el.rerender.calls.reset();
+    el._rerender.calls.reset();
     el.message = null;
 
     message.trigger('messages:change', {});
-    expect(el.rerender).not.toHaveBeenCalled();
+    expect(el._rerender).not.toHaveBeenCalled();
   });
 
   it('Should show pending', function() {

@@ -275,7 +275,15 @@ LUIComponent('layer-conversation-panel', {
     conversationId: {
       set(value) {
         if (value && value.indexOf('layer:///conversations') !== 0) this.properties.conversationId = '';
-        if (this.client && this.conversationId) this.conversation = this.client.getConversation(this.conversationId, true);
+        if (this.client && this.conversationId) {
+          if (this.client.isReady) {
+            this.conversation = this.client.getConversation(this.conversationId, true);
+          } else {
+            this.client.once('ready', () => {
+              if (this.conversationId) this.conversation = this.client.getConversation(this.conversationId, true);
+            });
+          }
+        }
       },
     },
 
@@ -301,14 +309,14 @@ LUIComponent('layer-conversation-panel', {
     conversation: {
       set(value) {
         if (value && !(value instanceof LayerAPI.Conversation)) this.properties.conversation = '';
-        if (this.client && this.conversation) this.setupConversation();
+        if (this.client && this.conversation) this._setupConversation();
       },
     },
 
-    // Docs in mixins/main-component
+    // Docs in mixins/main-component.js
     hasGeneratedQuery: {
       set(value) {
-        if (value && this.conversationId && this.client) this.setupConversation();
+        if (value && this.conversationId && this.client) this._setupConversation();
       },
       type: Boolean,
     },
@@ -326,16 +334,16 @@ LUIComponent('layer-conversation-panel', {
       type: Boolean,
     },
 
-    // Docs in mixins/main-component
+    // Docs in mixins/main-component.js
     client: {
       set(value) {
         if (value) {
           if (!this.conversation && this.conversationId) this.conversation = value.getConversation(this.conversationId, true);
-          if (this.conversation) this.setupConversation();
+          if (this.conversation) this._setupConversation();
           if (this.queryId) {
             this.query = value.getQuery(this.queryId);
           } else {
-            this.scheduleGeneratedQuery();
+            this._scheduleGeneratedQuery();
           }
         }
       },
@@ -459,9 +467,9 @@ LUIComponent('layer-conversation-panel', {
      *
      * @readonly
      * @private
-     * @property {String} [queryModel=layer.Query.Message]
+     * @property {String} [_queryModel=layer.Query.Message]
      */
-    queryModel: {
+    _queryModel: {
       value: LayerAPI.Query.Message,
     },
   },
@@ -469,11 +477,11 @@ LUIComponent('layer-conversation-panel', {
     /**
      * Constructor.
      *
-     * @method created
+     * @method _created
      * @private
      */
-    created() {
-      this.addEventListener('keydown', this.onKeyDown.bind(this));
+    _created() {
+      this.addEventListener('keydown', this._onKeyDown.bind(this));
 
       // Typically the defaultIndex is -1, but IE11 uses 0.
       const defaultIndex = document.head ? document.head.tabIndex : null;
@@ -485,11 +493,11 @@ LUIComponent('layer-conversation-panel', {
      *
      * Unless the focus is on an input or textarea, in which case, let the user type.
      *
-     * @method onKeyDown
+     * @method _onKeyDown
      * @param {Event} evt
      * @private
      */
-    onKeyDown(evt) {
+    _onKeyDown(evt) {
       const keyCode = evt.keyCode;
       const metaKey = evt.metaKey;
       const ctrlKey = evt.ctrlKey;
@@ -509,6 +517,10 @@ LUIComponent('layer-conversation-panel', {
     /**
      * Place focus on the text editor in the Compose bar.
      *
+     * ```
+     * widget.focusText();
+     * ```
+     *
      * @method focusText
      */
     focusText() {
@@ -518,11 +530,20 @@ LUIComponent('layer-conversation-panel', {
     /**
      * Given a Conversation ID and a Client, setup the Composer and Typing Indicator
      *
-     * @method setupConversation
+     * @method _setupConversation
      * @private
      */
-    setupConversation() {
+    _setupConversation() {
       const conversation = this.properties.conversation;
+
+      // No Conversation? Not much to do... except if not yet authenticated,
+      // in which case retry once authenticated.
+      if (!conversation) {
+        if (this.client && !this.client.isReady) {
+          this.client.once('ready', this._setupConversation.bind(this));
+        }
+        return;
+      }
       this.nodes.composer.conversation = conversation;
       this.nodes.typingIndicators.conversation = conversation;
       if (this.hasGeneratedQuery) {

@@ -42,14 +42,11 @@ LUIComponent('layer-conversation-last-message', {
         }
         if (value) {
           this.properties.oldConversation = value;
-          value.on('conversations:change', this.rerender, this);
+          value.on('conversations:change', this._rerender, this);
         }
-        this.rerender();
+        this._rerender();
       },
     },
-
-    listHeight: {},
-    listWidth: {},
 
     /**
      * Provide a function to determine if the last message is rendered in the Conversation List.
@@ -57,27 +54,27 @@ LUIComponent('layer-conversation-last-message', {
      * By default, only text/plain last-messages are rendered in the Conversation List.
      *
      * ```javascript
-     * listItem.canRenderLastMessage = function(message) {
+     * listItem.canFullyRenderLastMessage = function(message) {
      *     return true; // Render all Last Messages
      * }
      * ```
      *
      * @property {Function}
      */
-    canRenderLastMessage: {},
+    canFullyRenderLastMessage: {},
   },
   methods: {
 
     /**
      * Constructor.
      *
-     * @method created
+     * @method _created
      * @private
      */
-    created() {
+    _created() {
     },
 
-    rerender(evt) {
+    _rerender(evt) {
       if (!evt || evt.hasProperty('lastMessage')) {
         const conversation = this.item;
         const message = conversation ? conversation.lastMessage : null;
@@ -93,13 +90,10 @@ LUIComponent('layer-conversation-last-message', {
 
           if (handler) {
             this.classList.add(handler.tagName);
-            if (!this.canRenderLastMessage || this.canRenderLastMessage(message)) {
+            if (!this.canFullyRenderLastMessage || this.canFullyRenderLastMessage(message)) {
               const messageHandler = document.createElement(handler.tagName);
 
-              // TODO: Need better calculations for height to allocate for rendering images
-              messageHandler.listHeight = this.listHeight;
-              messageHandler.listWidth = this.listWidth / 2;
-              messageHandler.noPadding = true;
+              messageHandler.parentContainer = this;
               messageHandler.message = message;
               this.appendChild(messageHandler);
             } else if (handler.label) {

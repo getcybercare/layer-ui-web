@@ -1,7 +1,7 @@
 {
   "framework": "jasmine2",
   "src_files": [
-    "http://static.layer.com/sdk/layer-dev-3.0.js",
+    "node_modules/layer-websdk/build/client.debug.js",
     "build/layer-ui-web.js",
     "src/**/test.js"
   ],

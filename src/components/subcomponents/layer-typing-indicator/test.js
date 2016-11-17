@@ -54,11 +54,11 @@ describe('layer-typing-indicator', function() {
 
   describe("The client property", function() {
     it("Should wire up typing-indicator-change event to rerender", function() {
-      spyOn(el, "rerender");
+      spyOn(el, "_rerender");
       el.client = client;
-      expect(el.rerender).not.toHaveBeenCalled();
+      expect(el._rerender).not.toHaveBeenCalled();
       client.trigger('typing-indicator-change');
-      expect(el.rerender).toHaveBeenCalled();
+      expect(el._rerender).toHaveBeenCalled();
     });
   });
 
@@ -90,7 +90,7 @@ describe('layer-typing-indicator', function() {
     });
 
     it("Should render a typing user if typing into same conversation", function() {
-      el.rerender({
+      el._rerender({
         conversationId: conversation.id,
         typing: [user1]
       });
@@ -98,7 +98,7 @@ describe('layer-typing-indicator', function() {
     });
 
     it("Should render multiple typing users if typing into same conversation", function() {
-      el.rerender({
+      el._rerender({
         conversationId: conversation.id,
         typing: [user1, client.user]
       });
@@ -111,7 +111,7 @@ describe('layer-typing-indicator', function() {
         called = true;
         evt.preventDefault();
       });
-      el.rerender({
+      el._rerender({
         conversationId: conversation.id,
         typing: [user1]
       });
@@ -121,7 +121,7 @@ describe('layer-typing-indicator', function() {
     });
 
     it("Should ignore typing users if typing into anohter conversation", function() {
-      el.rerender({
+      el._rerender({
         conversationId: conversation.id + "a",
         typing: [user1]
       });

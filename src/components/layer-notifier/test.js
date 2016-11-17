@@ -59,7 +59,7 @@ if (window.Notification) {
         window.layerUI.isInBackground = restoreFunc;
       });
 
-      it("Should wire up the click handler to clickToast", function() {
+      it("Should wire up the click handler to _clickToast", function() {
         spyOn(el, 'onNotificationClick');
         el.properties.toastMessage = message;
         el.click();
@@ -67,10 +67,10 @@ if (window.Notification) {
       });
     });
 
-    describe("The onPermissionGranted() method", function() {
+    describe("The _onPermissionGranted() method", function() {
       it("Should flag desktop notifications are enabled", function() {
         expect(el.properties.userEnabledDesktopNotifications).toBe(false);
-        el.onPermissionGranted();
+        el._onPermissionGranted();
         expect(el.properties.userEnabledDesktopNotifications).toBe(true);
       });
     });
@@ -89,7 +89,7 @@ if (window.Notification) {
           // Part 1
           el.notifyInBackground = 'desktop';
           el.notifyInForeground = 'toast';
-          el.notify({message: message});
+          el._notify({message: message});
           expect(el.desktopNotify).toHaveBeenCalledWith(message);
           expect(el.toastNotify).not.toHaveBeenCalledWith(message);
           el.desktopNotify.calls.reset();
@@ -97,7 +97,7 @@ if (window.Notification) {
           // Part 2
           el.notifyInBackground = 'toast';
           el.notifyInForeground = 'desktop';
-          el.notify({message: message});
+          el._notify({message: message});
           expect(el.desktopNotify).not.toHaveBeenCalledWith(message);
           expect(el.toastNotify).toHaveBeenCalledWith(message);
 
@@ -114,7 +114,7 @@ if (window.Notification) {
           // Part 1
           el.notifyInBackground = 'desktop';
           el.notifyInForeground = 'toast';
-          el.notify({message: message});
+          el._notify({message: message});
           expect(el.desktopNotify).not.toHaveBeenCalledWith(message);
           expect(el.toastNotify).toHaveBeenCalledWith(message);
           el.toastNotify.calls.reset();
@@ -122,7 +122,7 @@ if (window.Notification) {
           // Part 2
           el.notifyInBackground = 'toast';
           el.notifyInForeground = 'desktop';
-          el.notify({message: message});
+          el._notify({message: message});
           expect(el.desktopNotify).toHaveBeenCalledWith(message);
           expect(el.toastNotify).not.toHaveBeenCalledWith(message);
 
@@ -140,16 +140,16 @@ if (window.Notification) {
           spyOn(window.layerUI, 'isInBackground').and.returnValue(true);
 
           // Run
-          el.notify({message: message});
+          el._notify({message: message});
 
           // Posttest
-          expect(spy).toHaveBeenCalledWith(jasmine.objectContaining({
-            detail: {
-              type: 'toast',
-              isBackground: true,
-              message: message
-            }
-          }));
+          var args = spy.calls.allArgs()[0];
+          expect(args.length).toEqual(1);
+          expect(args[0].detail).toEqual({
+            type: 'toast',
+            isBackground: true,
+            message: message
+          });
 
           // Cleanup
           window.layerUI.isInBackground = restoreFunc;
@@ -167,7 +167,7 @@ if (window.Notification) {
           });
 
           // Run
-          el.notify({message: message});
+          el._notify({message: message});
 
           // Posttest
           expect(el.desktopNotify).not.toHaveBeenCalledWith(message);
@@ -187,7 +187,7 @@ if (window.Notification) {
           el.properties.userEnabledDesktopNotifications = false;
 
           // Run
-          el.notify({message: message});
+          el._notify({message: message});
 
           // Posttest
           expect(el.desktopNotify).not.toHaveBeenCalledWith(message);
@@ -333,13 +333,13 @@ if (window.Notification) {
         });
 
         it("Should clear timeouts", function() {
-          el.properties.toastTimeout = 5;
+          el.properties._toastTimeout = 5;
           el.closeToast();
-          expect(el.properties.toastTimeout).toEqual(0);
+          expect(el.properties._toastTimeout).toEqual(0);
         });
       });
 
-      describe("The clickToast() method", function() {
+      describe("The _clickToast() method", function() {
         beforeEach(function() {
           el.properties.toastMessage = message;
         });
@@ -348,7 +348,7 @@ if (window.Notification) {
           var stopPropagationSpy = jasmine.createSpy('stopPropagation');
 
           // Run
-          el.clickToast({
+          el._clickToast({
             preventDefault: preventDefaultSpy,
             stopPropagation: stopPropagationSpy
           });
@@ -366,11 +366,11 @@ if (window.Notification) {
           el.click();
 
           // Posttest
-          expect(spy1).toHaveBeenCalledWith(jasmine.objectContaining({
-            detail: {
-              message: message
-            }
-          }));
+          var args = spy1.calls.allArgs()[0];
+          expect(args.length).toEqual(1);
+          expect(args[0].detail).toEqual({
+            message: message
+          });
         });
       });
     });

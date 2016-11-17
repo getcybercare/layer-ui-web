@@ -79,7 +79,7 @@ describe('layer-identity-item', function() {
       expect(testRoot.firstChild.nodes.checkbox.checked).toBe(false);
     });
 
-    it("Should wire up the onChange event handler", function() {
+    it("Should wire up the _onChange event handler", function() {
       var called = false;
       el.addEventListener('layer-identity-item-selected', function(evt) {
         called = true;
@@ -98,7 +98,7 @@ describe('layer-identity-item', function() {
     });
   });
 
-  describe("The onChange() method", function() {
+  describe("The _onChange() method", function() {
     it("Should trigger layer-identity-item-selected", function() {
       var selectedCalled = false,
         deselectedCalled = false;
@@ -168,16 +168,16 @@ describe('layer-identity-item', function() {
     });
   });
 
-  describe("The render() method", function() {
+  describe("The _render() method", function() {
     it("Should setup the layer-avatar users", function() {
       el.nodes.avatar.users = [];
-      el.render();
+      el._render();
       expect(el.nodes.avatar.users).toEqual([client.user]);
     });
 
-    it("Should render the displayName", function() {
+    it("Should _render the displayName", function() {
       el.nodes.title.innerHTML = '';
-      el.render();
+      el._render();
       expect(el.nodes.title.innerHTML).toEqual(client.user.displayName);
     });
 
@@ -188,66 +188,66 @@ describe('layer-identity-item', function() {
     });
   });
 
-  describe("The runFilter() method", function() {
+  describe("The _runFilter() method", function() {
     it("Should add layer-item-filtered if not a match", function() {
       expect(el.classList.contains('layer-item-filtered')).toBe(false);
-      el.runFilter('Samwise');
+      el._runFilter('Samwise');
       expect(el.classList.contains('layer-item-filtered')).toBe(true);
     });
 
     it("Should remove layer-item-filtered if it is a match", function() {
       el.classList.add('layer-item-filtered');
-      el.runFilter('Frodo');
+      el._runFilter('Frodo');
       expect(el.classList.contains('layer-item-filtered')).toBe(false);
     });
 
     it("Should match on substring against displayName, firstName, lastName and emailAddress", function() {
       var user = client.user;
-      el.runFilter('froDo');
+      el._runFilter('froDo');
       expect(el.classList.contains('layer-item-filtered')).toBe(false);
-      el.runFilter('MoJo');
+      el._runFilter('MoJo');
       expect(el.classList.contains('layer-item-filtered')).toBe(true);
 
       user.firstName = 'Mojo';
-      el.runFilter('MoJo');
+      el._runFilter('MoJo');
       expect(el.classList.contains('layer-item-filtered')).toBe(false);
-      el.runFilter('POJO');
+      el._runFilter('POJO');
       expect(el.classList.contains('layer-item-filtered')).toBe(true);
 
       user.lastName = 'pojO';
-      el.runFilter('POJO');
+      el._runFilter('POJO');
       expect(el.classList.contains('layer-item-filtered')).toBe(false);
-      el.runFilter('pojo@layer');
+      el._runFilter('pojo@layer');
       expect(el.classList.contains('layer-item-filtered')).toBe(true);
 
       user.emailAddress = 'pojo@layer.com';
-      el.runFilter('pojo@layer');
+      el._runFilter('pojo@layer');
       expect(el.classList.contains('layer-item-filtered')).toBe(false);
     });
 
     it("Should match on RegEx against displayName, firstName, lastName and emailAddress", function() {
       var user = client.user;
-      el.runFilter(/froDo/);
+      el._runFilter(/froDo/);
       expect(el.classList.contains('layer-item-filtered')).toBe(true);
-      el.runFilter(/froDo/i);
+      el._runFilter(/froDo/i);
       expect(el.classList.contains('layer-item-filtered')).toBe(false);
-      el.runFilter(/moJo/i);
+      el._runFilter(/moJo/i);
       expect(el.classList.contains('layer-item-filtered')).toBe(true);
 
       user.firstName = 'Mojo';
-      el.runFilter(/moJo/i);
+      el._runFilter(/moJo/i);
       expect(el.classList.contains('layer-item-filtered')).toBe(false);
-      el.runFilter(/POJO/i);
+      el._runFilter(/POJO/i);
       expect(el.classList.contains('layer-item-filtered')).toBe(true);
 
       user.lastName = 'pojO';
-      el.runFilter(/POJO/i);
+      el._runFilter(/POJO/i);
       expect(el.classList.contains('layer-item-filtered')).toBe(false);
-      el.runFilter(/pojo@layer/);
+      el._runFilter(/pojo@layer/);
       expect(el.classList.contains('layer-item-filtered')).toBe(true);
 
       user.emailAddress = 'pojo@layer.com';
-      el.runFilter(/pojo@layer/);
+      el._runFilter(/pojo@layer/);
       expect(el.classList.contains('layer-item-filtered')).toBe(false);
     });
 
@@ -255,16 +255,16 @@ describe('layer-identity-item', function() {
       function test(user) {
         return user.firstName == 'Frodo';
       }
-      el.runFilter(test);
+      el._runFilter(test);
       expect(el.classList.contains('layer-item-filtered')).toBe(true);
 
       client.user.firstName = 'Frodo';
-      el.runFilter(test);
+      el._runFilter(test);
       expect(el.classList.contains('layer-item-filtered')).toBe(false);
     });
 
     it("Should match if no filter", function() {
-      el.runFilter(null);
+      el._runFilter(null);
       expect(el.classList.contains('layer-item-filtered')).toBe(false);
     });
   });

@@ -62,7 +62,7 @@ function initReact(React, ReactDom) {
   // Gather all UI Components flagged as Main Components; other components don't require special React Components for direct use.
   Object.keys(layerUI.components).filter((componentName) => {
     const component = layerUI.components[componentName];
-    return component.properties.filter(prop => prop.propertyName === 'isMainComponent').length;
+    return component.properties.filter(prop => prop.propertyName === '_isMainComponent').length;
   })
   .forEach((componentName) => {
     const component = layerUI.components[componentName];

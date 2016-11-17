@@ -37,10 +37,10 @@ LUIComponent('layer-delete', {
     /**
      * Constructor.
      *
-     * @method created
+     * @method _created
      * @private
      */
-    created() {
+    _created() {
       this.addEventListener('click', this.onDeleteClick, this);
     },
 

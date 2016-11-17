@@ -19,10 +19,10 @@ LUIComponent('layer-file-upload-button', {
     /**
      * Constructor.
      *
-     * @method created
+     * @method _created
      * @private
      */
-    created() {
+    _created() {
       this.nodes.input.id = LayerAPI.Util.generateUUID();
       this.nodes.label.setAttribute('for', this.nodes.input.id);
       this.nodes.input.addEventListener('change', this.onChange.bind(this));
@@ -37,7 +37,7 @@ LUIComponent('layer-file-upload-button', {
       const inputParts = Array.prototype.map.call(files, file => new LayerAPI.MessagePart(file));
 
       // TODO: where do these dimensions come from?  How to customize? What are best practices?
-      layerUI.files.processAttachments(inputParts, { width: 300, height: 300 }, (parts) => {
+      layerUI.files.processAttachments(inputParts, (parts) => {
         this.trigger('layer-file-selected', { parts });
       });
     },

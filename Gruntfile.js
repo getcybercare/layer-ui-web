@@ -52,6 +52,14 @@ module.exports = function (grunt) {
         ]
       }
     },
+    cssmin: {
+      build: {
+        files: [
+          {src: ['themes/build/bubbles-basic.css'], dest: 'themes/build/bubbles-basic.min.css'},
+          {src: ['themes/build/groups-basic.css'], dest: 'themes/build/groups-basic.min.css'}
+        ]
+      }
+    },
     /* TODO: This is a crap copy routine as multiple themes using the same template name will overwrite eachother. */
     copy: {
       themes: {
@@ -111,6 +119,24 @@ module.exports = function (grunt) {
         }
       }
     }
+  });
+
+  grunt.registerTask('wait', 'Waiting for files to appear', function() {
+    console.log('Waiting...');
+    var done = this.async();
+
+    // There is an inexplicable delay between when grunt writes a file (and confirms it as written) and when it shows up in the file system.
+    // This has no affect on subsequent grunt tasks but can severely impact npm publish
+    // Note that we can't test if a file exists because grunt reports that it exists even if it hasn't yet been flushed to the file system.
+    setTimeout(function() {
+      console.log("Waiting...");
+      setTimeout(function() {
+        console.log("Waiting...");
+        setTimeout(function() {
+          done();
+        }, 1500);
+      }, 1500);
+    }, 1500);
   });
 
   grunt.registerMultiTask('webcomponents', 'Building Web Components', function() {
@@ -181,6 +207,7 @@ module.exports = function (grunt) {
         grunt.file.mkdir(outputFolder);
       }
       grunt.file.write(outputPath, output);
+      // console.log("Wrote " + outputPath + "; success: " + grunt.file.exists(outputPath));
     }
 
     this.files.forEach(function(fileGroup) {
@@ -226,11 +253,12 @@ module.exports = function (grunt) {
   grunt.loadNpmTasks('grunt-jsduck');
   grunt.loadNpmTasks('grunt-contrib-copy');
   grunt.loadNpmTasks('grunt-notify');
+  grunt.loadNpmTasks('grunt-contrib-cssmin');
 
   grunt.registerTask('theme', ['less', 'copy']),
   grunt.registerTask('docs', ['jsduck']);
   grunt.registerTask('debug', ['webcomponents', 'browserify']);
-  grunt.registerTask('build', ['debug', 'uglify', 'theme']);
+  grunt.registerTask('build', ['debug', 'uglify', 'theme', 'cssmin']);
   grunt.registerTask('default', ['build', 'docs']);
-  grunt.registerTask('prepublish', ['build']);
+  grunt.registerTask('prepublish', ['build', 'wait']);
 };

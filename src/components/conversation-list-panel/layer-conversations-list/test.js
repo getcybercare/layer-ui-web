@@ -67,10 +67,10 @@ describe('layer-conversations-list', function() {
   });
 
   describe("The selectedConversationId property", function() {
-    it("Should call renderSelection on change", function() {
-      spyOn(el, 'renderSelection');
+    it("Should call _renderSelection on change", function() {
+      spyOn(el, '_renderSelection');
       el.selectedConversationId = query.data[5].id;
-      expect(el.renderSelection).toHaveBeenCalledWith();
+      expect(el._renderSelection).toHaveBeenCalledWith();
     });
   });
 
@@ -91,24 +91,24 @@ describe('layer-conversations-list', function() {
   });
 
   describe("The filter property", function() {
-    it("Should call runFilter when set", function() {
-      spyOn(el, "runFilter");
+    it("Should call _runFilter when set", function() {
+      spyOn(el, "_runFilter");
       el.filter = "User";
-      expect(el.runFilter).toHaveBeenCalledWith();
+      expect(el._runFilter).toHaveBeenCalledWith();
     });
   });
 
   describe("The created() method", function() {
-    it("Should call updateQuery if there is a queryId passed into the innerHTML", function() {
+    it("Should call _updateQuery if there is a queryId passed into the innerHTML", function() {
       testRoot.innerHTML = '<layer-conversations-list query-id="' + query.id + '" app-id="' + client.appId + '"></layer-conversations-list>';
       CustomElements.takeRecords();
       var el = testRoot.firstChild;
       expect(el.query).toBe(query);
 
-      // updateQuery sets up the query listener to call rerender
-      spyOn(el, "_rerender");
+      // _updateQuery sets up the query listener to call _processQueryEvt
+      spyOn(el, "_processQueryEvt");
       query.trigger('change');
-      expect(el._rerender).toHaveBeenCalled();
+      expect(el._processQueryEvt).toHaveBeenCalled();
     });
 
     it("Should call render", function() {
@@ -130,7 +130,7 @@ describe('layer-conversations-list', function() {
     it("Should call evt.preventDefault and evt.stopPropagation ", function() {
       var preventDefaultSpy = jasmine.createSpy('preventDefault');
       var stopPropSpy = jasmine.createSpy('stopPropagation');
-      el.onClick({
+      el._onClick({
         target: el.childNodes[10],
         detail: {
           conversation: query.data[1]
@@ -152,7 +152,7 @@ describe('layer-conversations-list', function() {
 
       var preventDefaultSpy = jasmine.createSpy('preventDefault');
       var stopPropSpy = jasmine.createSpy('stopPropagation');
-      el.onClick({
+      el._onClick({
         target: el.childNodes[10],
         detail: {
           conversation: query.data[10]
@@ -176,7 +176,7 @@ describe('layer-conversations-list', function() {
       var preventDefaultSpy = jasmine.createSpy('preventDefault');
       var stopPropSpy = jasmine.createSpy('stopPropagation');
 
-      el.onClick({
+      el._onClick({
         target: el.childNodes[10],
         detail: {
           conversation: query.data[10]
@@ -191,51 +191,51 @@ describe('layer-conversations-list', function() {
     });
   });
 
-  describe("The generateItem() method", function() {
+  describe("The _generateItem() method", function() {
     it("Should return a layer-conversation-item with a conversation setup", function() {
-      var result = el.generateItem(query.data[10]);
+      var result = el._generateItem(query.data[10]);
       expect(result.tagName).toEqual('LAYER-CONVERSATION-ITEM');
       expect(result.item).toBe(query.data[10]);
     });
 
     it("Should set deleteConversationEnabled via callback", function() {
       el.deleteConversationEnabled = jasmine.createSpy('deleteEnabled').and.returnValue(true);
-      var result = el.generateItem(query.data[1]);
+      var result = el._generateItem(query.data[1]);
       expect(result.nodes.delete.enabled).toBe(true);
       expect(el.deleteConversationEnabled).toHaveBeenCalledWith(query.data[1]);
 
       el.deleteConversationEnabled = jasmine.createSpy('deleteEnabled').and.returnValue(false);
-      var result = el.generateItem(query.data[1]);
+      var result = el._generateItem(query.data[1]);
       expect(el.deleteConversationEnabled).toHaveBeenCalledWith(query.data[1]);
       expect(result.nodes.delete.enabled).toBe(false);
     });
 
     it("Should run the filter", function() {
       el.filter = 'Not this again';
-      var result = el.generateItem(query.data[10]);
+      var result = el._generateItem(query.data[10]);
       expect(result.classList.contains('layer-item-filtered')).toBe(true);
     });
   });
 
-  describe("The rerender() method", function() {
-    it("Should call _rerender", function() {
-      spyOn(el, "_rerender");
+  describe("The _rerender() method", function() {
+    it("Should call _processQueryEvt", function() {
+      spyOn(el, "_processQueryEvt");
       var evt = {};
-      el.rerender(evt);
-      expect(el._rerender).toHaveBeenCalledWith(evt);
+      el._rerender(evt);
+      expect(el._processQueryEvt).toHaveBeenCalledWith(evt);
     });
 
-    it("Should call renderSelection", function() {
-      spyOn(el, "renderSelection");
-      el.rerender({
+    it("Should call _renderSelection", function() {
+      spyOn(el, "_renderSelection");
+      el._rerender({
         type: 'remove',
         target: query.data[1]
       });
-      expect(el.renderSelection).toHaveBeenCalledWith();
+      expect(el._renderSelection).toHaveBeenCalledWith();
     });
   });
 
-  describe("The renderSelection() method", function() {
+  describe("The _renderSelection() method", function() {
     it("Should select and deselect appropriately", function() {
       el.firstChild.classList.add('layer-conversation-item-selected');
       el.childNodes[1].classList.add('layer-conversation-item-selected');;
@@ -248,15 +248,15 @@ describe('layer-conversations-list', function() {
     });
   });
 
-  describe("The runFilter() method", function() {
+  describe("The _runFilter() method", function() {
     it("Should flag all nodes as unfiltered if there is no filter", function() {
       el.childNodes[1].classList.add('layer-item-filtered');
       el.childNodes[2].classList.add('layer-item-filtered');
-      el.runFilter('');
+      el._runFilter('');
       expect(el.querySelectorAllArray('.layer-item-filtered')).toEqual([]);
     });
 
-    it("Should call runFilter on all children", function() {
+    it("Should call _runFilter on all children", function() {
       el.childNodes[1].classList.add('layer-item-filtered');
       el.childNodes[2].classList.add('layer-item-filtered');
       el.filter = 'C 50';

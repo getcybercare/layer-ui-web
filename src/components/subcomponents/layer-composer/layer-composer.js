@@ -76,15 +76,15 @@ LUIComponent('layer-composer', {
     /**
      * Constructor.
      *
-     * @method created
+     * @method _created
      * @private
      */
-    created() {
+    _created() {
       this.classList.add('layer-composer-one-line-of-text');
 
       // Setting this in the template causes errors in IE 11.
       this.nodes.input.placeholder = 'Enter a message';
-      this.nodes.input.addEventListener('keydown', this.onKeyDown.bind(this));
+      this.nodes.input.addEventListener('keydown', this._onKeyDown.bind(this));
 
       // Event handlers
       this.addEventListener('layer-file-selected', this.handleAttachments.bind(this));
@@ -192,7 +192,7 @@ LUIComponent('layer-composer', {
      * @method
      * @private
      */
-    onKeyDown(event) {
+    _onKeyDown(event) {
       if (event.keyCode === ENTER) {
         if (!event.shiftKey && !event.ctrlKey && !event.metaKey) {
           event.preventDefault();

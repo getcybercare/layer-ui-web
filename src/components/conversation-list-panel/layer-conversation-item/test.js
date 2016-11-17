@@ -56,21 +56,21 @@ describe('layer-conversation-item', function() {
       expect(el.nodes.title.item).toBe(c2);
     });
 
-    it("Should wire up the rerender event", function() {
-      spyOn(el, "rerender");
+    it("Should wire up the _rerender event", function() {
+      spyOn(el, "_rerender");
       el.item = conversation;
-      el.rerender.calls.reset();
+      el._rerender.calls.reset();
       conversation.trigger('conversations:change', {property: 'unreadCount', oldValue: 5, newValue: 6});
-      expect(el.rerender).toHaveBeenCalledWith(jasmine.any(layer.LayerEvent));
+      expect(el._rerender).toHaveBeenCalledWith(jasmine.any(layer.LayerEvent));
     });
 
-    it("Should unwire up the rerender event if prior Conversation", function() {
-      spyOn(el, "rerender");
+    it("Should unwire up the _rerender event if prior Conversation", function() {
+      spyOn(el, "_rerender");
       el.item = conversation;
       el.item = null;
-      el.rerender.calls.reset();
+      el._rerender.calls.reset();
       conversation.trigger('conversations:change', {property: 'unreadCount', oldValue: 5, newValue: 6});
-      expect(el.rerender).not.toHaveBeenCalled();
+      expect(el._rerender).not.toHaveBeenCalled();
     });
   });
 
@@ -84,24 +84,13 @@ describe('layer-conversation-item', function() {
     });
   });
 
-  describe("The rerender() method", function() {
-    it("Should update layer-conversation-last-message listHeight and width", function(){
-      el.item = conversation;
-      var lastMessageWidget = el.querySelector('layer-conversation-last-message');
-      expect(lastMessageWidget).not.toBe(null);
-      expect(lastMessageWidget.listHeight).toEqual(el.listHeight);
+  describe("The _rerender() method", function() {
 
-      el.listHeight = 80;
-      el.listWidth = 65;
-      el.rerender();
-      expect(lastMessageWidget.listHeight).toEqual(80);
-      expect(lastMessageWidget.listWidth).toEqual(65);
-    });
 
     it("Should update layer-avatar users", function() {
       el.item = conversation;
       conversation.addParticipants(['layer:///identities/GandalfTheGruesome']);
-      el.rerender();
+      el._rerender();
       expect(el.nodes.avatar.users).toEqual([client.getIdentity('layer:///identities/GandalfTheGruesome')]);
     });
 
@@ -110,78 +99,78 @@ describe('layer-conversation-item', function() {
       var message = new layer.Message({client: client});
       message.isRead = false;
       conversation.lastMessage = message;
-      el.rerender();
+      el._rerender();
       expect(el.classList.contains('layer-conversation-unread-messages')).toBe(true);
 
       conversation.lastMessage.isRead = true;
-      el.rerender();
+      el._rerender();
       expect(el.classList.contains('layer-conversation-unread-messages')).toBe(false);
     });
   });
 
-  describe("The runFilter() method", function() {
+  describe("The _runFilter() method", function() {
     beforeEach(function() {
       el.item = conversation;
     });
     it("Should add layer-item-filtered if not a match", function() {
       expect(el.classList.contains('layer-item-filtered')).toBe(false);
-      el.runFilter('Samwise');
+      el._runFilter('Samwise');
       expect(el.classList.contains('layer-item-filtered')).toBe(true);
     });
 
     it("Should remove layer-item-filtered if it is a match", function() {
       el.classList.add('layer-item-filtered');
-      el.runFilter('Frodo');
+      el._runFilter('Frodo');
       expect(el.classList.contains('layer-item-filtered')).toBe(false);
     });
 
     it("Should match on substring against metadata.conversationName, displayName, firstName, lastName and emailAddress", function() {
       conversation.setMetadataProperties({conversationName: 'AraAcorn, returning king of squirrels'});
-      el.runFilter('araacorn');
+      el._runFilter('araacorn');
       expect(el.classList.contains('layer-item-filtered')).toBe(false);
-      el.runFilter('WringRaith');
+      el._runFilter('WringRaith');
       expect(el.classList.contains('layer-item-filtered')).toBe(true);
 
       client.user.firstName = 'Mojo';
-      el.runFilter('MoJo');
+      el._runFilter('MoJo');
       expect(el.classList.contains('layer-item-filtered')).toBe(false);
-      el.runFilter('POJO');
+      el._runFilter('POJO');
       expect(el.classList.contains('layer-item-filtered')).toBe(true);
 
       client.user.lastName = 'pojO';
-      el.runFilter('POJO');
+      el._runFilter('POJO');
       expect(el.classList.contains('layer-item-filtered')).toBe(false);
-      el.runFilter('pojo@layer');
+      el._runFilter('pojo@layer');
       expect(el.classList.contains('layer-item-filtered')).toBe(true);
 
       client.user.emailAddress = 'pojo@layer.com';
-      el.runFilter('pojo@layer');
+      el._runFilter('pojo@layer');
       expect(el.classList.contains('layer-item-filtered')).toBe(false);
     });
 
     it("Should match on RegEx against displayName, firstName, lastName and emailAddress", function() {
       conversation.setMetadataProperties({conversationName: 'AraAcorn, returning king of squirrels'});
-      el.runFilter(/Araacorn/);
+      el._runFilter(/Araacorn/);
       expect(el.classList.contains('layer-item-filtered')).toBe(true);
-      el.runFilter(/AraAcorn/i);
+      el._runFilter(/AraAcorn/i);
       expect(el.classList.contains('layer-item-filtered')).toBe(false);
-      el.runFilter(/moJo/i);
+      el._runFilter(/moJo/i);
       expect(el.classList.contains('layer-item-filtered')).toBe(true);
 
       client.user.firstName = 'Mojo';
-      el.runFilter(/moJo/i);
+      el._runFilter(/moJo/i);
       expect(el.classList.contains('layer-item-filtered')).toBe(false);
-      el.runFilter(/POJO/i);
+      el._runFilter(/POJO/i);
       expect(el.classList.contains('layer-item-filtered')).toBe(true);
 
       client.user.lastName = 'pojO';
-      el.runFilter(/POJO/i);
+      el._runFilter(/POJO/i);
       expect(el.classList.contains('layer-item-filtered')).toBe(false);
-      el.runFilter(/pojo@layer/);
+      el._runFilter(/pojo@layer/);
       expect(el.classList.contains('layer-item-filtered')).toBe(true);
 
       client.user.emailAddress = 'pojo@layer.com';
-      el.runFilter(/pojo@layer/);
+      el._runFilter(/pojo@layer/);
       expect(el.classList.contains('layer-item-filtered')).toBe(false);
     });
 
@@ -191,15 +180,15 @@ describe('layer-conversation-item', function() {
       function test(conversation) {
         return conversation.metadata.conversationName == 'AraAcorn, returning king of squirrels';
       }
-      el.runFilter(test);
+      el._runFilter(test);
       expect(el.classList.contains('layer-item-filtered')).toBe(false);
       conversation.setMetadataProperties({conversationName: 'Frodo ala Modo'});
-      el.runFilter(test);
+      el._runFilter(test);
       expect(el.classList.contains('layer-item-filtered')).toBe(true);
     });
 
     it("Should match if no filter", function() {
-      el.runFilter(null);
+      el._runFilter(null);
       expect(el.classList.contains('layer-item-filtered')).toBe(false);
     });
   });

@@ -38,31 +38,31 @@ describe('layer-conversation-last-message', function() {
   });
 
   describe('The item property', function() {
-    it("Should call rerender", function() {
-      spyOn(el, "rerender");
+    it("Should call _rerender", function() {
+      spyOn(el, "_rerender");
       el.item = conversation;
-      expect(el.rerender).toHaveBeenCalledWith();
+      expect(el._rerender).toHaveBeenCalledWith();
     });
 
-    it("Should wire up the rerender event", function() {
-      spyOn(el, "rerender");
+    it("Should wire up the _rerender event", function() {
+      spyOn(el, "_rerender");
       el.item = conversation;
-      el.rerender.calls.reset();
+      el._rerender.calls.reset();
       conversation.trigger('conversations:change', {});
-      expect(el.rerender).toHaveBeenCalledWith(jasmine.any(layer.LayerEvent));
+      expect(el._rerender).toHaveBeenCalledWith(jasmine.any(layer.LayerEvent));
     });
 
-    it("Should unwire up the rerender event if prior Conversation", function() {
-      spyOn(el, "rerender");
+    it("Should unwire up the _rerender event if prior Conversation", function() {
+      spyOn(el, "_rerender");
       el.item = conversation;
       el.item = null;
-      el.rerender.calls.reset();
+      el._rerender.calls.reset();
       conversation.trigger('conversations:change', {});
-      expect(el.rerender).not.toHaveBeenCalled();
+      expect(el._rerender).not.toHaveBeenCalled();
     });
   });
 
-  describe("The rerender() method", function() {
+  describe("The _rerender() method", function() {
     it("Should generate a layer-message-text-plain saying Hello Earthlings", function() {
       expect(el.querySelector('layer-message-text-plain')).toBe(null);
       el.item = conversation;
@@ -73,14 +73,6 @@ describe('layer-conversation-last-message', function() {
       el.item = conversation;
       el.item = null;
       expect(el.querySelector('layer-message-text-plain')).toBe(null);
-    });
-
-    it("Should set listHeight, listWidth, noPadding", function() {
-      el.item = conversation;
-      var handler = el.querySelector('layer-message-text-plain');
-      expect(handler.listHeight).toEqual(el.listHeight);
-      expect(handler.listWidth).toEqual(el.listWidth / 2);
-      expect(handler.noPadding).toBe(true);
     });
 
     it("Should use suitable Handler", function() {

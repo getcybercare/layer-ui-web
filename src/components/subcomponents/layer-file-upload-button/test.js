@@ -25,7 +25,7 @@ describe('layer-file-upload-button', function() {
     el.onChange();
 
     // Posttest
-    expect(spy).toHaveBeenCalledWith([], {width: 300, height: 300}, jasmine.any(Function));
+    expect(spy).toHaveBeenCalledWith([], jasmine.any(Function));
 
     // Cleanup
     layerUI.files.processAttachments = tmp;
@@ -33,7 +33,7 @@ describe('layer-file-upload-button', function() {
 
   it("Should trigger layer-file-selected onChange", function() {
     var part = new layer.MessagePart({body: "Frodo is a Dodo", mimeType: "text/plain"});
-    var spy = jasmine.createSpy('processAttachments').and.callFake(function(a, b, callback) {
+    var spy = jasmine.createSpy('processAttachments').and.callFake(function(a, callback) {
       callback([part]);
     });
     var tmp = layerUI.files.processAttachments;
@@ -49,11 +49,9 @@ describe('layer-file-upload-button', function() {
     el.onChange();
 
     // Posttest
-    expect(eventSpy).toHaveBeenCalledWith(jasmine.objectContaining({
-      detail: {
-        parts: [part]
-      }
-    }));
+    var args = eventSpy.calls.allArgs()[0];
+    expect(args.length).toEqual(1);
+    expect(args[0].detail).toEqual({ parts: [part] });
 
     // Cleanup
     layerUI.files.processAttachments = tmp;

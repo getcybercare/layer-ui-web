@@ -13,11 +13,12 @@ module.exports = {
      * Used by adapters to find components to adapte.
      * @private
      * @readonly
-     * @property {Boolean} [isMainComponent=true]
+     * @property {Boolean} [_isMainComponent=true]
      */
-    isMainComponent: {
+    _isMainComponent: {
       value: true,
       order: 1,
+      setBeforeCreate: true,
     },
 
     // TODO: Some MainComponents don't have Queries; this should be moved into a has-query mixin
@@ -74,19 +75,36 @@ module.exports = {
     client: {},
   },
   methods: {
-    created() {
+    _created() {
       if (settings.appId) this.appId = settings.appId;
     },
 
-    // Wait to give the app a chance to setup a query before we generate and fire one
-    scheduleGeneratedQuery() {
-      setTimeout(this.setupGeneratedQuery.bind(this), 50);
+    /**
+     * A Main Component typically expects a Query as an input... or it needs to create its own.
+     *
+     * The app using the widget may not have passed in a query at initialization time, but may have done
+     * so immediately after initialization, so pause a moment, let properties arrive, and then see if we need to
+     * create the Query.
+     *
+     * @method
+     * @private
+     */
+    _scheduleGeneratedQuery() {
+      setTimeout(this._setupGeneratedQuery.bind(this), 50);
     },
 
-    setupGeneratedQuery() {
-      if (this.queryModel && !this.query && this.client && !this.client.isDestroyed) {
+    /**
+     * A Main Component typically expects a Query as an input... or it needs to create its own.
+     *
+     * This method tests to see if it expects a Query and if it has a query, and creates one if needed.
+     *
+     * @method
+     * @private
+     */
+    _setupGeneratedQuery() {
+      if (this._queryModel && !this.query && this.client && !this.client.isDestroyed) {
         this.query = this.client.createQuery({
-          model: this.queryModel,
+          model: this._queryModel,
           dataType: LayerAPI.Query.InstanceDataType,
           paginationWindow: this.pageSize || 50,
         });

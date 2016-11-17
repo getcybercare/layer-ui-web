@@ -20,19 +20,19 @@ module.exports = {
         if (value) {
           if (this.queryId) {
             this.query = value.getQuery(this.queryId);
-          } else if (this.isMainComponent) {
-            this.scheduleGeneratedQuery();
+          } else if (this._isMainComponent) {
+            this._scheduleGeneratedQuery();
           }
         }
       },
     },
 
     /**
-     * The ID for the Identity Query providing the User list to render.
+     * The ID for the layer.Query providing the items to render.
      *
-     * Note that you can directly set the query property as well.
+     * Note that you can directly set the layerUI.mixins.List.query property as well.
      *
-     * Leaving this and the query properties empty will cause a Query to be generated for you.
+     * Leaving this and the query properties empty will cause a layer.Query to be generated for you.
      *
      * @property {String} [queryId='']
      */
@@ -46,25 +46,24 @@ module.exports = {
     },
 
     /**
-     * A Query identifies the data we are to render and page through.
+     * A layer.Query provides the items to render.
      *
      * Suggested practices:
      *
      * * If your not using this query elsewhere in your app, let this widget generate its own Query
-     * * If setting this from an html template, use layerUI.components.ConversationPanel.queryId instead.
-     * * Special case for layerUI.components.ConversationPanel: if providing your own query, you must update its predicate in addition to
-     *   setting the layerUI.components.ConversationPanel.conversationId.
+     * * If setting this from an html template, use layerUI.mixins.List.queryId instead.
      *
      * @property {layer.Query} [query=null]
      */
     query: {
-      set(value, oldValue) {
-        if (value instanceof LayerAPI.Query) {
+      set(newValue, oldValue) {
+        if (newValue instanceof LayerAPI.Query) {
+          // If there is an oldQuery that we didn't generate, its up to the app to destroy it when it is done.
           if (this.hasGeneratedQuery) {
             this.hasGeneratedQuery = false;
             oldValue.destroy();
           }
-          this.updateQuery();
+          this._updateQuery();
         } else {
           this.properties.query = null;
         }
@@ -74,9 +73,16 @@ module.exports = {
     /**
      * Set/get state related to whether the Query data is loading data from the server.
      *
+     * This is managed by the app, and is updated any time the layer.Query changes state.
+     *
+     * You could set this as well if you need to indicate some activity outside of the layer.Query:
+     *
+     * ```
+     * widget.isDataLoading = true;
+     * ```
+     *
      * @property {Boolean} [isDataLoading=false]
      */
-
     isDataLoading: {
       set(value) {
         this.classList[value ? 'add' : 'remove']('layer-loading-data');
@@ -132,7 +138,7 @@ module.exports = {
     },
   },
   methods: {
-    created() {
+    _created() {
       this.properties.listData = [];
       this.addEventListener('scroll', this._onScroll.bind(this));
     },
@@ -148,7 +154,7 @@ module.exports = {
       if (this.properties.isSelfScrolling) {
         evt.preventDefault();
       } else {
-        this.throttler(this.handleScroll.bind(this));
+        this._throttler(this._handleScroll.bind(this));
       }
     },
 
@@ -157,10 +163,10 @@ module.exports = {
      *
      * Not at this time safe for handling multiple types of events at the same time.
      *
-     * @method throttler
+     * @method _throttler
      * @private
      */
-    throttler(callback) {
+    _throttler(callback) {
       if (!this.properties.throttleTimeout) {
         this.properties.throttleTimeout = setTimeout(() => {
           this.properties.throttleTimeout = null;
@@ -172,23 +178,23 @@ module.exports = {
     /**
      * Any time we get a new Query assigned, wire it up.
      *
-     * @method updateQuery
+     * @method _updateQuery
      * @private
      */
-    updateQuery() {
+    _updateQuery() {
       // Allow this dom to finish being inserted into parent node so that size info can be available before rendering the items
-      setTimeout(this.render.bind(this), 1);
-      this.query.on('change', this.rerender, this);
+      setTimeout(this._render.bind(this), 1);
+      this.query.on('change', this._rerender, this);
       this.client = this.query.client;
     },
 
     /**
      * If the user scrolls to the bottom of the list, page the Query.
      *
-     * @method handleScroll
+     * @method _handleScroll
      * @private
      */
-    handleScroll() {
+    _handleScroll() {
       if (this.scrollTop >= this.scrollHeight - this.clientHeight - 20 && this.scrollTop > 0) {
         this.query.update({ paginationWindow: this.query.paginationWindow + this.pageSize });
         this.isDataLoading = this.properties.query.isFiring;
@@ -209,10 +215,10 @@ module.exports = {
     /**
      * Render the User List.  Called any time there is a Query is reset, or when we get assigned a new Query.
      *
-     * @method render
+     * @method _render
      * @private
      */
-    render() {
+    _render() {
       // Reset the query to initial state by cloning the template
       const clone = document.importNode(this.getTemplate().content, true);
       this.innerHTML = '';
@@ -221,20 +227,20 @@ module.exports = {
 
       // Render any data in the query
       if (this.query && this.query.size) {
-        this.rerender({ type: 'data', data: this.query.data });
+        this._rerender({ type: 'data', data: this.query.data });
       }
     },
 
     /**
      * Generate a document fragment with all the newly added Users.
      *
-     * @method generateFragment
+     * @method _generateFragment
      * @private
      */
-    generateFragment(data, fragment) {
+    _generateFragment(data, fragment) {
       if (!fragment) fragment = document.createDocumentFragment();
       data.forEach((item, index) => {
-        this.generateFragmentItem(item, fragment);
+        this._generateFragmentItem(item, fragment);
       }, this);
       return fragment;
     },
@@ -242,18 +248,15 @@ module.exports = {
     /**
      * Generate an list-item for one query result.
      *
-     * @method generateFragmentItem
+     * @method _generateFragmentItem
      * @private
      */
-    generateFragmentItem(item, fragment) {
+    _generateFragmentItem(item, fragment) {
       const itemInstance = item instanceof LayerAPI.Root ? item : this.client._getObject(item.id);
       if (itemInstance) {
-        const widget = this.generateItem(itemInstance);
+        const widget = this._generateItem(itemInstance);
 
         if (widget) {
-          // TODO: Handle resizing of window/panels
-          widget.listHeight = this.clientHeight;
-          widget.listWidth = this.clientWidth;
           widget.item = itemInstance;
           fragment.appendChild(widget);
         }
@@ -268,23 +271,23 @@ module.exports = {
      */
     _gatherAndProcessAffectedItems(affectedItems, isTopItemNew) {
       if (affectedItems.length) {
-        const itemIds = affectedItems.map(message => this.getItemId(message));
+        const itemIds = affectedItems.map(message => this._getItemId(message));
         const affectedWidgets = this.querySelectorAllArray('#' + itemIds.join(', #'));
-        this.processAffectedWidgets(affectedWidgets, isTopItemNew);
+        this._processAffectedWidgets(affectedWidgets, isTopItemNew);
       }
     },
 
     /**
      * For all newly added items, as well as items near them,
-     * call onRenderListItem and _processAffectedWidgets to udpate
+     * call onRenderListItem and _processAffectedWidgetsCustom to udpate
      * any rendering state needed.
      *
      * widgets are assumed to be sequential within the list.
      *
-     * @method processAffectedWidgets
+     * @method _processAffectedWidgets
      * @private
      */
-    processAffectedWidgets(widgets, isTopItemNew) {
+    _processAffectedWidgets(widgets, isTopItemNew) {
       // Get the index of our first widget within listData
       let firstIndex;
       for (let i = 0; i < this.properties.listData.length; i++) {
@@ -295,7 +298,7 @@ module.exports = {
       }
 
       // Do our internal processing of these widgets
-      this._processAffectedWidgets(widgets, firstIndex, isTopItemNew);
+      this._processAffectedWidgetsCustom(widgets, firstIndex, isTopItemNew);
 
       // Allow external processing of the widgets
       widgets.forEach((widget, index) => {
@@ -312,13 +315,13 @@ module.exports = {
     /**
      * Lists should override this to provide custom behaviors on newly added/affected items.
      *
-     * @method _processAffectedWidgets
+     * @method _processAffectedWidgetsCustom
      * @private
      * @param {layerUI.mixins.ListItem} widgets
      * @param {Number} firstIndex - Index in the listData array of the first item in the widgets array
      * @param {Boolean} isTopItemNew - If the top item is index 0 and its a new item rather than an "affected" item, this is true.
      */
-    _processAffectedWidgets(widgets, firstIndex, isTopItemNew) {
+    _processAffectedWidgetsCustom(widgets, firstIndex, isTopItemNew) {
     },
 
     /**
@@ -326,26 +329,26 @@ module.exports = {
      *
      * TODO: This should work on the MessageList which is in Reverse Order
      *
-     * @method _rerender
+     * @method _processQueryEvt
      * @private
      * @param {Event} evt
      */
-    _rerender(evt) {
+    _processQueryEvt(evt) {
       switch (evt.type) {
         case 'data':
-          this.renderPagedData(evt);
+          this._renderPagedData(evt);
           break;
         case 'insert':
-          this.renderInsertedData(evt);
+          this._renderInsertedData(evt);
           break;
         case 'remove':
-          this.renderWithoutRemovedData(evt);
+          this._renderWithoutRemovedData(evt);
           break;
         case 'reset':
-          this.renderResetData();
+          this._renderResetData();
           break;
         case 'move':
-          this.renderMovedData(evt);
+          this._renderMovedData(evt);
       }
     },
 
@@ -354,13 +357,13 @@ module.exports = {
      *
      * Clear all data and list state
      *
-     * @method renderResetData
+     * @method _renderResetData
      * @private
      */
-    renderResetData() {
+    _renderResetData() {
       this.properties.listData = [];
       this.scrollTo(0);
-      this.render();
+      this._render();
     },
 
     /**
@@ -368,10 +371,10 @@ module.exports = {
      *
      * We need to update our list to reflect that change.
      *
-     * @method renderMovedData
+     * @method _renderMovedData
      * @private
      */
-    renderMovedData(evt) {
+    _renderMovedData(evt) {
       const oldIndex = evt.fromIndex;
       const newIndex = evt.toIndex;
       const moveNode = this.childNodes[oldIndex];
@@ -384,14 +387,14 @@ module.exports = {
      *
      * Calls _gatherAndProcessAffectedItems on 3 items prior and 3 items after the removed item.
      *
-     * @method renderWithoutRemovedData
+     * @method _renderWithoutRemovedData
      * @private
      */
-    renderWithoutRemovedData(evt) {
+    _renderWithoutRemovedData(evt) {
       this.properties.listData = [].concat(this.properties.query.data);
       const removeIndex = evt.index;
       const affectedItems = this.properties.listData.slice(Math.max(0, removeIndex - 3), removeIndex + 3);
-      const listItem = this.querySelector('#' + this.getItemId(evt.target));
+      const listItem = this.querySelector('#' + this._getItemId(evt.target));
       if (listItem) this.removeChild(listItem);
 
       this._gatherAndProcessAffectedItems(affectedItems, false);
@@ -400,14 +403,14 @@ module.exports = {
     /**
      * Data has been inserted into the results; insert it into our UI list.
      *
-     * @method renderInsertedData
+     * @method _renderInsertedData
      * @private
      */
-    renderInsertedData(evt) {
+    _renderInsertedData(evt) {
       this.properties.listData = [].concat(this.properties.query.data);
       const insertIndex = evt.index;
       const affectedItems = this.properties.listData.slice(Math.max(0, insertIndex - 3), insertIndex + 4);
-      const fragment = this.generateFragment([evt.target]);
+      const fragment = this._generateFragment([evt.target]);
       this.insertBefore(fragment, this.childNodes[insertIndex]);
       this._gatherAndProcessAffectedItems(affectedItems, insertIndex === 0);
     },
@@ -415,13 +418,13 @@ module.exports = {
     /**
      * A new page of data has been loaded by the query; insert it into our results.
      *
-     * @method renderPagedData
+     * @method _renderPagedData
      * @private
      */
-    renderPagedData(evt) {
+    _renderPagedData(evt) {
       const affectedItems = this.properties.listData.slice(this.properties.listData.length - 3, this.properties.listData.length).concat(evt.data);
       this.properties.listData = [].concat(this.properties.query.data);
-      const fragment = this.generateFragment(evt.data);
+      const fragment = this._generateFragment(evt.data);
 
       this.insertBefore(fragment, this.nodes.loadIndicator);
 

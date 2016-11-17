@@ -92,20 +92,6 @@ module.exports = {
     },
 
     /**
-     * Height of the list; needed for some of the renderers to determine layout.
-     *
-     * @property {Number} [listHeight=0]
-     */
-    listHeight: {},
-
-    /**
-     * Width of the list; needed for some of the renderers to determine layout.
-     *
-     * @property {Number} [listWidth=0]
-     */
-    listWidth: {},
-
-    /**
      * The item of data in a list of data that this List Item will render.
      *
      * @property {layer.Root} [item=null]
@@ -113,7 +99,7 @@ module.exports = {
     item: {},
   },
   methods: {
-    created() {
+    _created() {
       this.innerNode = this.querySelector('.layer-list-item');
     },
 

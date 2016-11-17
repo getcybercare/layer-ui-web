@@ -34,7 +34,7 @@
 //     query: {
 //       set: function(value) {
 //         if (value instanceof layer.Query) {
-//           this.updateQuery();
+//           this._updateQuery();
 //         }
 //       }
 //     },
@@ -52,16 +52,16 @@
 //   methods: {
 //     created: function() {
 //       setTimeout(function() {
-//         if (this.client && this.queryModel && !this.getAttribute('query-id') && !this.queryId && !this.query) {
+//         if (this.client && this._queryModel && !this.getAttribute('query-id') && !this.queryId && !this.query) {
 //           this.query = this.client.createQuery({
-//             model: this.queryModel
+//             model: this._queryModel
 //         }
 //       }, 1);
 //     },
-//     updateQuery: function() {
+//     _updateQuery: function() {
 //       // Allow this dom to finish being inserted into parent node so that size info can be available before rendering the items
 //       setTimeout(this.render.bind(this), 1);
-//       this.query.on('change', this.rerender, this);
+//       this.query.on('change', this._rerender, this);
 //       this.client = this.query.client;
 //     },
 

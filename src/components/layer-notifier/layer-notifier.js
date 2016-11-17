@@ -28,12 +28,12 @@
  * @class layerUI.components.Notifier
  * @extends layerUI.components.Component
  */
-import * as NotifyLib from 'notifyjs';
+import NotifyLib from 'notifyjs';
 import { isInBackground as IsInBackground, getHandler as GetHandler } from '../../base';
 import LUIComponent from '../../components/component';
 import MainComponent from '../../mixins/main-component';
 
-const Notify = NotifyLib.default.default;
+const Notify = NotifyLib.default;
 
 LUIComponent('layer-notifier', {
   mixins: [MainComponent],
@@ -121,9 +121,11 @@ LUIComponent('layer-notifier', {
 
   events: ['layer-message-notification', 'layer-notification-click'],
   properties: {
+
+    // Docs in mixins/main-component.js
     client: {
       set(value) {
-        value.on('messages:notify', this.notify.bind(this));
+        value.on('messages:notify', this._notify.bind(this));
       },
     },
 
@@ -136,13 +138,17 @@ LUIComponent('layer-notifier', {
      * * toast: Use in-page toast notifications when app is in the background
      * * none or "": No notifications
      *
+     * ```
+     * <layer-notifier notify-in-background="none"></layer-notifier>
+     * ```
+     *
      * @property {String} [notifyInBackground=desktop]
      */
     notifyInBackground: {
       value: 'desktop',
       set(value) {
         if (value === 'desktop' && window.Notification) {
-          Notify.requestPermission(this.onPermissionGranted.bind(this));
+          Notify.requestPermission(this._onPermissionGranted.bind(this));
         }
       },
     },
@@ -156,19 +162,25 @@ LUIComponent('layer-notifier', {
      * * toast: Use in-page toast notifications when app is in the foreground
      * * none or "": No notifications
      *
+     * * ```
+     * <layer-notifier notify-in-foreground="toast"></layer-notifier>
+     * ```
+     *
      * @property {String} [notifyInForeground=none]
      */
     notifyInForeground: {
       value: 'none',
       set(value) {
         if (value === 'desktop' && window.Notification) {
-          Notify.requestPermission(this.onPermissionGranted.bind(this));
+          Notify.requestPermission(this._onPermissionGranted.bind(this));
         }
       },
     },
 
     /**
      * If the user hasn't granted priveledges to use desktop notifications, they won't be shown.
+     *
+     * This is a state property set by this component if/when the user/browser has approved the necessary permissions.
      *
      * @property {Boolean} [userEnabledDesktopNotifications=false]
      * @readonly
@@ -182,6 +194,10 @@ LUIComponent('layer-notifier', {
      *
      * Leave this blank to use the sender's `avatarUrl` as the notification icon.
      *
+     * * ```
+     * <layer-notifier icon-url="https://myco.co/logo.png"></layer-notifier>
+     * ```
+     *
      * @property {String} [iconUrl=]
      */
     iconUrl: {
@@ -191,9 +207,14 @@ LUIComponent('layer-notifier', {
     /**
      * Number of seconds the notification will stay before its automatically dismissed.
      *
+     * * ```
+     * <layer-notifier timeout-seconds="60"></layer-notifier>
+     * ```
+     *
      * @property {Number} [timeoutSeconds=30]
      */
     timeoutSeconds: {
+      type: Number,
       value: 30,
     },
 
@@ -201,9 +222,9 @@ LUIComponent('layer-notifier', {
      * Timeout ID for clearing the toast notification
      *
      * @private
-     * @property {Number} [toastTimeout=0]
+     * @property {Number} [_toastTimeout=0]
      */
-    toastTimeout: {
+    _toastTimeout: {
       value: 0,
     },
   },
@@ -212,31 +233,31 @@ LUIComponent('layer-notifier', {
     /**
      * Constructor.
      *
-     * @method created
+     * @method _created
      * @private
      */
-    created() {
-      this.addEventListener('click', this.clickToast.bind(this));
-      this.addEventListener('transitionend', this.afterTransition.bind(this), true);
+    _created() {
+      this.addEventListener('click', this._clickToast.bind(this));
+      this.addEventListener('transitionend', this._afterTransition.bind(this), true);
     },
 
     /**
      * After finishing an animation, trigger this callback which removes the animation classes.
      *
-     * @method afterTransition
+     * @method _afterTransition
      * @private
      */
-    afterTransition() {
+    _afterTransition() {
       this.classList.remove('layer-notifier-toast-fade');
     },
 
     /**
      * Callback indicating that the user has granted permissions for desktop notifications.
      *
-     * @method onPermissionGranted
+     * @method _onPermissionGranted
      * @private
      */
-    onPermissionGranted() {
+    _onPermissionGranted() {
       this.properties.userEnabledDesktopNotifications = true;
     },
 
@@ -248,11 +269,11 @@ LUIComponent('layer-notifier', {
      *
      * Triggers an event so the app can confirm/block the notification.
      *
-     * @method notify
+     * @method _notify
      * @param {layer.LayerEvent} evt
      * @private
      */
-    notify(evt) {
+    _notify(evt) {
       const isBackground = IsInBackground();
       const type = isBackground ? this.notifyInBackground : this.notifyInForeground;
       const message = evt.message;
@@ -268,7 +289,7 @@ LUIComponent('layer-notifier', {
     },
 
     /**
-     * Show a desktop notification.
+     * Show a desktop notification for this message.
      *
      * @method desktopNotify
      * @param {layer.Message} message
@@ -306,7 +327,6 @@ LUIComponent('layer-notifier', {
      * Close the desktop notification.
      *
      * @method closeDesktopNotify
-     * @private
      */
     closeDesktopNotify() {
       if (this.properties.desktopNotify) {
@@ -317,7 +337,7 @@ LUIComponent('layer-notifier', {
     },
 
     /**
-     * Show a toast notification.
+     * Show a toast notification for this message.
      *
      * @method toastNotify
      * @param {layer.Message} message
@@ -331,18 +351,18 @@ LUIComponent('layer-notifier', {
         this.nodes.avatar.users = [message.sender];
         this.nodes.title.innerHTML = message.sender.displayName;
 
-        if (this.properties.toastTimeout) clearTimeout(this.properties.toastTimeout);
+        if (this.properties._toastTimeout) clearTimeout(this.properties._toastTimeout);
         this.classList.add(handler.tagName);
+
         const messageHandler = document.createElement(handler.tagName);
-        messageHandler.listHeight = 200;
-        messageHandler.listWidth = 400;
-        messageHandler.noPadding = true;
+        messageHandler.parentContainer = this;
         messageHandler.message = message;
+
         messageHandler.classList.add('layer-message-item-placeholder');
         this.nodes.container.appendChild(messageHandler);
         this.classList.add('layer-notifier-toast-fade');
         this.classList.add('layer-notifier-toast');
-        this.properties.toastTimeout = setTimeout(this.closeToast.bind(this), this.timeoutSeconds * 1000);
+        this.properties._toastTimeout = setTimeout(this.closeToast.bind(this), this.timeoutSeconds * 1000);
 
         this.properties.toastMessage = message;
         message.on('messages:change', (evt) => {
@@ -362,8 +382,8 @@ LUIComponent('layer-notifier', {
       this.classList.add('layer-notifier-toast-fade');
       this.classList.remove('layer-notifier-toast');
 
-      clearTimeout(this.properties.toastTimeout);
-      this.properties.toastTimeout = 0;
+      clearTimeout(this.properties._toastTimeout);
+      this.properties._toastTimeout = 0;
       if (this.properties.toastMessage) this.properties.toastMessage.off(null, null, this);
       this.properties.toastMessage = null;
     },
@@ -371,11 +391,11 @@ LUIComponent('layer-notifier', {
     /**
      * The user has clicked on the toast dialog
      *
-     * @method clickToast
+     * @method _clickToast
      * @private
      * @param {Event} evt
      */
-    clickToast(evt) {
+    _clickToast(evt) {
       if (this.properties.toastMessage) {
         evt.preventDefault();
         evt.stopPropagation();

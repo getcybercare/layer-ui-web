@@ -41,9 +41,9 @@ LUIComponent('layer-conversation-title', {
         }
         if (value) {
           this.properties.oldConversation = value;
-          value.on('conversations:change', this.rerender, this);
+          value.on('conversations:change', this._rerender, this);
         }
-        this.rerender();
+        this._rerender();
       },
     },
   },
@@ -52,13 +52,13 @@ LUIComponent('layer-conversation-title', {
     /**
      * Constructor.
      *
-     * @method created
+     * @method _created
      * @private
      */
-    created() {
+    _created() {
     },
 
-    rerender(evt) {
+    _rerender(evt) {
       if (!evt || evt.hasProperty('metadata') || evt.hasProperty('participants')) {
         const conversation = this.item;
         if (!conversation) {

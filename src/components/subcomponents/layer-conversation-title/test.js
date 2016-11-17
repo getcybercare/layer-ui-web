@@ -50,31 +50,31 @@ describe('layer-conversation-title', function() {
   });
 
   describe('The item property', function() {
-    it("Should call rerender", function() {
-      spyOn(el, "rerender");
+    it("Should call _rerender", function() {
+      spyOn(el, "_rerender");
       el.item = conversation;
-      expect(el.rerender).toHaveBeenCalledWith();
+      expect(el._rerender).toHaveBeenCalledWith();
     });
 
-    it("Should wire up the rerender event", function() {
-      spyOn(el, "rerender");
+    it("Should wire up the _rerender event", function() {
+      spyOn(el, "_rerender");
       el.item = conversation;
-      el.rerender.calls.reset();
+      el._rerender.calls.reset();
       conversation.trigger('conversations:change', {property: 'unreadCount', oldValue: 5, newValue: 6});
-      expect(el.rerender).toHaveBeenCalledWith(jasmine.any(layer.LayerEvent));
+      expect(el._rerender).toHaveBeenCalledWith(jasmine.any(layer.LayerEvent));
     });
 
-    it("Should unwire up the rerender event if prior Conversation", function() {
-      spyOn(el, "rerender");
+    it("Should unwire up the _rerender event if prior Conversation", function() {
+      spyOn(el, "_rerender");
       el.item = conversation;
       el.item = null;
-      el.rerender.calls.reset();
+      el._rerender.calls.reset();
       conversation.trigger('conversations:change', {property: 'unreadCount', oldValue: 5, newValue: 6});
-      expect(el.rerender).not.toHaveBeenCalled();
+      expect(el._rerender).not.toHaveBeenCalled();
     });
   });
 
-  describe("The rerender() method", function() {
+  describe("The _rerender() method", function() {
     it("Should clear the label if no item", function(){
       el.item = conversation;
       expect(el.innerHTML).not.toEqual('');
