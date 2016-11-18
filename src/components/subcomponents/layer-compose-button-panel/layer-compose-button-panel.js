@@ -1,22 +1,26 @@
 /**
  * Provides a Button Panel for adding custom actions to the layerUI.Composer panel.
  *
- * You can populate this button panel by passing in a `composeButtons` property into layerUI.Conversation.
+ * You can populate this button panel using the layerUI.components.ConversationPanel.composeButtons property.
  *
  * Alternatively, you can replace this by defining a custom `layer-compose-button-panel` to make the resulting component entirely yours:
  *
  * ```
- * <script>
- * window.layerUI = {customComponents: ['layer-compose-button-panel']};
+ * layerUI.init({
+ *   layer: window.layer,
+ *   appId:  'layer:///apps/staging/UUID',
+ *   customComponents: ['layer-compose-button-panel']
+ * });
+ *
  * document.registerElement('layer-compose-button-panel', {
  *   prototype: Object.create(HTMLElement.prototype, {
  *     createdCallback: {
- *       this.innerHTML = "<button>Click me!</button>";
+ *       value: function() {
+ *         this.innerHTML = "<button>Click me!</button>";
+ *       }
  *     }
  *   })
  * });
- * </script>
- * <script src='layer-websdkui-standard.js'></script>
  * ```
  *
  * @class layerUI.components.subcomponents.ComposeButtonPanel
@@ -29,7 +33,7 @@ LUIComponent('layer-compose-button-panel', {
     /**
      * Custom buttons to put in the panel.
      *
-     * @property {HTMLElement[]}
+     * @property {HTMLElement[]} [buttons=[]]
      */
     buttons: {
       set(value) {

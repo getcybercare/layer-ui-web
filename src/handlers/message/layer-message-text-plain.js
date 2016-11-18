@@ -41,7 +41,7 @@ LUIComponent('layer-message-text-plain', {
      * @method
      * @private
      */
-    fixHtml(body) {
+    _fixHtml(body) {
       body = body.replace(/</g, '&lt;');
       body = body.replace(/>/g, '&gt;');
       return body;
@@ -50,15 +50,19 @@ LUIComponent('layer-message-text-plain', {
     /**
      * Format the text and render it.
      *
+     * Iterates over all Text Handlers allowing each to modify the `text` property, as well as to append values to `afterText`
+     *
+     * Renders the results after all TextHandlers have run.
+     *
      * @method
      * @private
      */
     render() {
-      if (!layerUI.textHandlersOrdered) this.setupOrderedHandlers();
+      if (!layerUI.textHandlersOrdered) this._setupOrderedHandlers();
 
       const text = this.message.parts[0].body;
       const textData = {
-        text: this.fixHtml(text),
+        text: this._fixHtml(text),
         afterText: [],
       };
 
@@ -69,7 +73,15 @@ LUIComponent('layer-message-text-plain', {
         (textData.afterText.length ? startDiv + textData.afterText.join('</div>' + startDiv) + '</div>' : '');
     },
 
-    setupOrderedHandlers() {
+    /**
+     * Order the Text handlers if they haven't previously been sorted.
+     *
+     * This is run as a method, but is treated more like a run-once static method.
+     *
+     * @method
+     * @private
+     */
+    _setupOrderedHandlers() {
       layerUI.textHandlersOrdered = Object.keys(layerUI.textHandlers).filter(handlerName =>
         layerUI.textHandlers[handlerName].enabled)
       .map(handlerName => layerUI.textHandlers[handlerName])

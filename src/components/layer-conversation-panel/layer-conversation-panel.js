@@ -42,9 +42,9 @@
  *
  * Events listed here come from either this component, or its subcomponents.
  *
- * * {@link layerUI.components.ConversationPanel.Composer#layer-send-message layer-send-message}: User has requested their Message be sent
- * * {@link layerUI.components.misc.Delete#layer-message-deleted layer-message-deleted}: User has requested a Message be deleted
- * * {@link layerUI.components.ConversationPanel.TypingIndicator#layer-typing-indicator-change layer-typing-indicator-change}: Someone in the Conversation has started/stopped typing
+ * * {@link layerUI.components.subcomponents.Composer#layer-send-message layer-send-message}: User has requested their Message be sent
+ * * {@link layerUI.components.subcomponents.Delete#layer-message-deleted layer-message-deleted}: User has requested a Message be deleted
+ * * {@link layerUI.components.subcomponents.TypingIndicator#layer-typing-indicator-change layer-typing-indicator-change}: Someone in the Conversation has started/stopped typing
  *
  * @class layerUI.components.ConversationPanel
  * @extends layerUI.components.Component
@@ -363,7 +363,7 @@ LUIComponent('layer-conversation-panel', {
      * ```
      *
      * @property {Function} onRenderListItem
-     * @property {layerUI.components.ConversationPanel.MessageItem} onRenderListItem.widget
+     * @property {layerUI.components.MessagesListPanel.Item} onRenderListItem.widget
      *    One row of the list
      * @property {layer.Message[]} onRenderListItem.items
      *    full set of messages in the list
@@ -521,7 +521,7 @@ LUIComponent('layer-conversation-panel', {
      * widget.focusText();
      * ```
      *
-     * @method focusText
+     * @method
      */
     focusText() {
       this.nodes.composer.focus();

@@ -1,13 +1,16 @@
 /**
- * The Layer Composer widget provides the text area for the layerUI.Conversation widget.
+ * The Layer Composer widget provides the textarea for layerUI.components.ConversationPanel.
  *
  * It provides a self-resizing text area that resizes to the size of the entered text, and sends typing indicators as the user types.
  *
- * Note that this widget is not designed to be used outside of the LayerUI.Conversation widget; to simplify such use cases, we'd want to accept
- * `appId` and `conversationId` instead of `client` and `conversation`.
+ * Special behaviors to know about:
  *
- * TODO: Support file attachments
- * TODO: Refactor out a resizable-text-area Component
+ * * CSS Class `layer-composer-one-line-of-text`: If there is only a single line's worth of text, then this CSS class is applied to
+ *   help center the text
+ * * Event `layer-file-selected`: This widget listens for this event, and if it receives it, uses that event to retrieve a file to send in
+ *   the Conversation.  Event comes from layerUI.components.subcomponents.FileUploadButton or from your custom widgets.
+ * * Keyboard Handling: ENTER: Sends message unless its accompanied by a modifier key.  TAB: Enters a \t character unless you
+ *   set `layerUI.settings.disableTabAsWhiteSpace` to true
  *
  * @class layerUI.components.subcomponents.Composer
  * @extends layerUI.components.Component
@@ -22,34 +25,34 @@ LUIComponent('layer-composer', {
   properties: {
 
     /**
-     * What Conversation are we sending messages and typing indicators to?
+     * Specify which Conversation we are sending messages and typing indicators to.
      *
-     * @property {layer.Conversation}
+     * @property {layer.Conversation} [conversation=null]
      */
     conversation: {
       set(value) {
         this.client = value.getClient();
-        this.updateTypingIndicator();
+        this._setTypingListenerConversation();
       },
     },
 
     /**
      * The Client are we using to communicate.
      *
-     * @property {layer.Client}
+     * @property {layer.Client} [client=null]
      */
     client: {
       set(value) {
         if (!this.nodes.input) console.error('NO INPUT FOR COMPOSER');
         this.properties.typingListener = this.properties.client.createTypingListener(this.nodes.input);
-        this.updateTypingIndicator();
+        this._setTypingListenerConversation();
       },
     },
 
     /**
      * Custom buttons to put in the panel.
      *
-     * @property {HTMLElement[]}
+     * @property {HTMLElement[]} [buttons=[]]
      */
     buttons: {
       set(value) {
@@ -58,14 +61,14 @@ LUIComponent('layer-composer', {
     },
 
     /**
-     * The text shown in the editor; editor value.
+     * The text shown in the editor; this is the editor's value.
      *
-     * @property {String}
+     * @property {String} [value='']
      */
     value: {
       set(value) {
         this.nodes.input.value = value;
-        this.resizeNode();
+        this._resizeNode();
       },
       get() {
         return this.nodes.input.value;
@@ -81,17 +84,18 @@ LUIComponent('layer-composer', {
      */
     _created() {
       this.classList.add('layer-composer-one-line-of-text');
+      this.properties.buttons = [];
 
       // Setting this in the template causes errors in IE 11.
       this.nodes.input.placeholder = 'Enter a message';
       this.nodes.input.addEventListener('keydown', this._onKeyDown.bind(this));
 
       // Event handlers
-      this.addEventListener('layer-file-selected', this.handleAttachments.bind(this));
+      this.addEventListener('layer-file-selected', this._handleAttachments.bind(this));
     },
 
     /**
-     * Focus on the textarea.
+     * Focus on the textarea so keyboard actions enter text into it.
      *
      * @method
      */
@@ -100,17 +104,30 @@ LUIComponent('layer-composer', {
     },
 
     /**
-     * Update the Conversation that our Typing Listener is using to send typing indicator events.
+     * Update the Typing Listener's `conversation` property so that it reports typing activity
+     * to the correct Conversation.
      *
      * @method
      * @private
      */
-    updateTypingIndicator() {
+    _setTypingListenerConversation() {
       this.properties.typingListener.setConversation(this.conversation);
     },
 
     /**
      * Send the Message that the user has typed in.
+     *
+     * This is called automatically when the user hits `ENTER`.
+     *
+     * This can also be called directly:
+     *
+     * ```
+     * widget.send(); // send the current text in the textarea
+     * ```
+     *
+     * ```
+     * widget.send(parts); // send custom message parts but NOT the text in the textarea
+     * ```
      *
      * @method
      * @param {layer.MessagePart[]} optionalParts
@@ -204,16 +221,16 @@ LUIComponent('layer-composer', {
         event.preventDefault();
         event.target.value += '\t  ';
       }
-      this.resizeNode();
+      this._resizeNode();
     },
 
     /**
-     * On any change in value, recalculate our height and lineHeight to fit the contents.
+     * On any change in value, recalculate our height and lineHeight to fit the input text.
      *
      * @method
      * @private
      */
-    resizeNode() {
+    _resizeNode() {
       setTimeout(() => {
         this.nodes.resizer.innerHTML = this.nodes.input.value.replace(/\n/g, '<br/>') || '&nbsp;';
         this.nodes.lineHeighter.innerHTML = this.nodes.input.value.replace(/\n/g, '<br/>') || '&nbsp;';
@@ -224,6 +241,8 @@ LUIComponent('layer-composer', {
           this.nodes.input.style.overflow = 'hidden';
           setTimeout(() => { this.nodes.input.style.overflow = ''; }, 1);
         }
+
+        // Note that classList.toggle doesn't work right in IE11
         this.classList[willBeOneLine ? 'add' : 'remove']('layer-composer-one-line-of-text');
       }, 10);
     },
@@ -234,7 +253,7 @@ LUIComponent('layer-composer', {
      * @method
      * @private
      */
-    handleAttachments(evt) {
+    _handleAttachments(evt) {
       this.send(evt.detail.parts);
     },
   },

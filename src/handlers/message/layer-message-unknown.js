@@ -1,5 +1,6 @@
 /**
- * The Unknown MessageHandler renders unhandled content with a placeholder politely suggesting that a developer should probably handle it.
+ * The Unknown MessageHandler renders unhandled content with a placeholder politely
+ * suggesting that a developer should probably handle it.
  *
  * @class layerUI.handlers.message.Unknown
  * @extends layerUI.components.Component
@@ -12,7 +13,7 @@ LUIComponent('layer-message-unknown', {
     /**
      * The Message property provides the MessageParts we are going to render.
      *
-     * @property {layer.Message}
+     * @property {layer.Message} [message=null]
      */
     message: {
       set(value) {
@@ -32,7 +33,7 @@ LUIComponent('layer-message-unknown', {
     },
 
     /**
-     * Format the text and render it.
+     * Render a message that is both polite and mildly annoying.
      *
      * @method
      * @private

@@ -43,10 +43,10 @@ describe('layer-composer', function() {
       expect(el.client).toBe(client);
     });
 
-    it("Should call updateTypingIndicator", function() {
-      spyOn(el, "updateTypingIndicator");
+    it("Should call _setTypingListenerConversation", function() {
+      spyOn(el, "_setTypingListenerConversation");
       el.conversation = conversation;
-      expect(el.updateTypingIndicator).toHaveBeenCalledWith();
+      expect(el._setTypingListenerConversation).toHaveBeenCalledWith();
     });
   });
 
@@ -138,12 +138,12 @@ describe('layer-composer', function() {
     });
   });
 
-  describe("The updateTypingIndicator() method", function() {
+  describe("The _setTypingListenerConversation() method", function() {
     it("Should update the conversation being reported upon", function() {
       el.client = client;
       el.properties.conversation = conversation;
       expect(el.properties.typingListener.conversation).toBe(null);
-      el.updateTypingIndicator();
+      el._setTypingListenerConversation();
       expect(el.properties.typingListener.conversation).toBe(conversation);
     });
   });
@@ -259,8 +259,8 @@ describe('layer-composer', function() {
       expect(el.nodes.input.value).toEqual("");
     });
 
-    it("Should call resizeNode() whether its an ENTER or a letter", function() {
-      spyOn(el, "resizeNode");
+    it("Should call _resizeNode() whether its an ENTER or a letter", function() {
+      spyOn(el, "_resizeNode");
       var preventSpy = jasmine.createSpy('preventDefault');
       el._onKeyDown({
         preventDefault: preventSpy,
@@ -269,18 +269,18 @@ describe('layer-composer', function() {
         ctrlKey: false,
         target: el.nodes.input
       });
-      expect(el.resizeNode).toHaveBeenCalledWith();
+      expect(el._resizeNode).toHaveBeenCalledWith();
     });
   });
 
-  describe("The resizeNode() method", function() {
+  describe("The _resizeNode() method", function() {
     it("Should assign resizer and lineHeighter the same value as input", function() {
       el.value = "Please eat Frodo\nand then we can at last digest the Shire";
       el.nodes.resizer.innerHTML = '';
       el.nodes.lineHeighter.innerHTML = '';
 
       // Run
-      el.resizeNode();
+      el._resizeNode();
       jasmine.clock().tick(100);
 
       // Posttest
@@ -294,7 +294,7 @@ describe('layer-composer', function() {
       el.nodes.lineHeighter.innerHTML = '';
 
       // Run
-      el.resizeNode();
+      el._resizeNode();
       jasmine.clock().tick(100);
 
       // Posttest
@@ -308,7 +308,7 @@ describe('layer-composer', function() {
       el.nodes.lineHeighter.innerHTML = '';
 
       // Run
-      el.resizeNode();
+      el._resizeNode();
       jasmine.clock().tick(100);
 
       // Posttest
@@ -318,7 +318,7 @@ describe('layer-composer', function() {
       el.value = new Array(1).join('Frodo is a Dodo');
       el.nodes.resizer.innerHTML = '';
       el.nodes.lineHeighter.innerHTML = '';
-      el.resizeNode();
+      el._resizeNode();
       jasmine.clock().tick(100);
 
       // Posttest

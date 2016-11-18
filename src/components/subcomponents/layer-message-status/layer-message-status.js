@@ -1,8 +1,34 @@
 /**
- * The Layer Date widget renders a date.
+ * The Layer Message Status widget renders a Message's sent/delivered/read status.
  *
  * This is provided as a specialized component so that it can be easily redefined by your app to
- * provide your own date formatting.
+ * provide your own date formatting.  Note that most customization of message status rendering can be accomplished instead
+ * using layerUI.components.ConversationPanel.messageStatusRenderer.
+ *
+ * ```
+ * layerUI.init({
+ *   layer: window.layer,
+ *   appId:  'layer:///apps/staging/UUID',
+ *   customComponents: ['layer-message-status']
+ * });
+ *
+ * layerUI.registerComponent('layer-message-status', {
+ *    properties: {
+ *      message: {
+ *        set: function(value) {
+ *          if (newMessage) newMessage.on('messages:change', this._rerender, this);
+ *          this._rerender();
+ *        }
+ *      }
+ *    },
+ *    methods: {
+ *      _rerender: function() {
+ *          var message = this.properties.message;
+ *          this.innerHTML = 'Nobody wants to read your message';
+ *      }
+ *    }
+ * });
+ * ```
  *
  * @class layerUI.components.subcomponents.MessageStatus
  * @extends layerUI.components.Component
@@ -16,26 +42,20 @@ LUIComponent('layer-message-status', {
     /**
      * Message whose status is to be rendered
      *
-     * @property {layer.Message}
+     * @property {layer.Message} [message=null]
      */
     message: {
-      set(value) {
-        if (this.properties.oldMessage) {
-          this.properties.oldMessage.off(null, null, this);
-          this.properties.oldMessage = null;
-        }
-        if (value) {
-          this.properties.oldMessage = value;
-          value.on('messages:change', this._rerender, this);
-          this._rerender();
-        }
+      set(newMessage, oldMessage) {
+        if (oldMessage) oldMessage.off(null, null, this);
+        if (newMessage) newMessage.on('messages:change', this._rerender, this);
+        this._rerender();
       },
     },
 
     /**
-     * Provide property to override the function used to render a date for each Message Item.
+     * Provide property to override the function used to render a message status for each Message Item.
      *
-     * Note that changing this will not regenerate the list; this should be set when initializing a new List.
+     * Note that changing this will not trigger a rerender; this should be set during initialization.
      *
      * ```javascript
      * statusItem.messageStatusRenderer = function(message) {
@@ -43,9 +63,11 @@ LUIComponent('layer-message-status', {
      * };
      * ```
      *
-     * @property {Function}
+     * @property {Function} [messageStatusRenderer=null]
      */
-    messageStatusRenderer: {},
+    messageStatusRenderer: {
+      order: 100, // make sure this is set before setting the message property
+    },
   },
   methods: {
 
@@ -58,6 +80,15 @@ LUIComponent('layer-message-status', {
     _created() {
     },
 
+    /**
+     * There are many ways to render the status of a Message.
+     *
+     * See layerUI.components.ConversationPanel.messageStatusRenderer to customize this.
+     *
+     * @method
+     * @private
+     * @param {Event} evt
+     */
     _rerender(evt) {
       if (!evt || evt.hasProperty('recipientStatus')) {
         const message = this.message;

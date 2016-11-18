@@ -3,20 +3,43 @@
  *
  * This widget appears within
  *
- * * layerUI.MessageItem: Represents the sender of a Message
- * * layerUI.ConversationItem: Represents the participants of a Conversation
- * * layerUI.UserItem: Represents a user in a User List
+ * * layerUI.components.MessagesListPanel.Item: Represents the sender of a Message
+ * * layerUI.components.ConversationsListPanel.Item: Represents the participants of a Conversation
+ * * layerUI.components.IdentitiesListPanel.Item: Represents a user in a User List
  *
- * Rendering is done using the `layer.Identity` object for each user, using the layer.Identity.avatarUrl if available to
- * add an image, or layer.Identity.firstName, layer.Identity.lastName if no avatarUrl is available.
+ * Rendering is done using data from the `layer.Identity` object for each user, using the layer.Identity.avatarUrl if available to
+ * add an image, or first initials from layer.Identity.firstName, layer.Identity.lastName if no avatarUrl is available.
  * layer.Identity.displayName is used as a fallback.
  *
  * The simplest way to customize this widget is to replace it with your own implementation of the `<layer-avatar />` tag.
  *
+ * ```javascript
+ * layerUI.init({
+ *   layer: window.layer,
+ *   appId:  'layer:///apps/staging/UUID',
+ *   customComponents: ['layer-avatar']
+ * });
+ *
+ * layerUI.registerComponent('layer-avatar', {
+ *    properties: {
+ *      users: {
+ *        set: function(value) {
+ *           this.render();
+ *        }
+ *      }
+ *    },
+ *    methods: {
+ *      render: function() {
+ *        this.innerHTML = 'All Hail ' + this.properties.users[0].displayName;
+ *      }
+ *    }
+ * });
+ * ```
+ *
  * Note that the main parameter is a `users` array, not a single user:
  *
- * * When used in a Message List or User List, there will be only one user in the list
- * * When used in a Conversation List, there may be multiple users who are participants of the Conversation.
+ * * When used in a Messages List or Identities List, there will be only one user in the list
+ * * When used in a Conversations List, there may be multiple users who are participants of the Conversation.
  *
  * @class layerUI.components.subcomponents.Avatar
  * @extends layerUI.components.Component
@@ -27,17 +50,20 @@ LUIComponent('layer-avatar', {
   properties: {
 
     /**
-     * Array of users to be represented by this Avatar
+     * Array of users to be represented by this Avatar.
      *
-     * @property {layer.Identity[]}
+     * Typically this only has one user represented with a layer.Identity.
+     *
+     * @property {layer.Identity[]} [users=[]}
      */
     users: {
       set(value) {
         if (!value) value = [];
         if (!Array.isArray(value)) value = [value];
         this.users = value;
+        // classList.toggle doesn't work right in IE 11
         this.classList[value.length ? 'add' : 'remove']('layer-has-user');
-        this.render();
+        this._render();
       },
     },
   },
@@ -59,16 +85,17 @@ LUIComponent('layer-avatar', {
      * @method
      * @private
      */
-    render() {
+    _render() {
       // Clear the innerHTML if we have rendered something before
       if (this.childNodes.length) {
         this.innerHTML = '';
       }
 
       // Render each user
-      this.users.forEach(this.renderUser.bind(this));
+      this.users.forEach(this._renderUser.bind(this));
 
       // Add the "cluster" css if rendering multiple users
+      // No classList.toggle due to poor IE11 support
       this.classList[this.users.length > 1 ? 'add' : 'remove']('layer-avatar-cluster');
     },
 
@@ -78,7 +105,7 @@ LUIComponent('layer-avatar', {
      * @method
      * @private
      */
-    renderUser(user) {
+    _renderUser(user) {
       if (user.avatarUrl) {
         const img = document.createElement('img');
         img.onerror = () => { img.style.display = 'none'; };

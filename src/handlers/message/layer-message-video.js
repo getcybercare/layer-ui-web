@@ -1,12 +1,9 @@
 /**
- * The Layer Image MessageHandler renders a single image, or an Atlas 3-message-part Image.
+ * The Layer Video MessageHandler renders a single MessagePart Video, or an Atlas 3-message-part Video.
  *
- * One of the challenges in rendering images is that browser `<img />` tags do not follow EXIF data
- * for orientation, which results in sideways and upside down photos.  This Component uses `blueimp-load-image`
- * to write the image to a Canvas, parse its EXIF data and orient it appropriately.
- *
- * Image heights should be fixed; any change in height of the image will cause our scroll position to be shifted
- * (i.e. the numeric value of `scrollTop` will remain unchanged, but what is visible to the user at that position may change)
+ * As with all Message Handling, Message Height should be fixed at rendering time, and should not change asynchrnously
+ * except in response to a user action.  Otherwise scroll positions get mucked and users get lost.
+ * As a result, video heights should be fixed before any asynchronously loaded video or preview has loaded.
  *
  * @class layerUI.handlers.message.Video
  * @extends layerUI.components.Component
@@ -21,7 +18,7 @@ LUIComponent('layer-message-video', {
     /**
      * The Message property provides the MessageParts we are going to render.
      *
-     * @property {layer.Message}
+     * @property {layer.Message} [message=null]
      */
     message: {
       set(value) {
@@ -32,7 +29,6 @@ LUIComponent('layer-message-video', {
         const meta = value.parts.filter(part => part.mimeType === 'application/json+imageSize')[0];
         if (meta) this.properties.meta = JSON.parse(meta.body);
 
-        // TODO: Investigate better defaults or better way to get defaults
         this.properties.sizes = normalizeSize(this.properties.meta, {
           width: UISettings.maxSizes.width,
           height: UISettings.maxSizes.height,
@@ -41,11 +37,11 @@ LUIComponent('layer-message-video', {
         if (!this.properties.video.url) this.properties.video.fetchStream();
         if (!this.properties.preview.url) this.properties.preview.fetchStream();
 
-        this.properties.preview.on('url-loaded', this.render, this);
-        this.properties.video.on('url-loaded', this.render, this);
+        this.properties.preview.on('url-loaded', this._render, this);
+        this.properties.video.on('url-loaded', this._render, this);
 
         // Render the Message
-        this.render();
+        this._render();
       },
     },
 
@@ -62,7 +58,7 @@ LUIComponent('layer-message-video', {
      * @method
      * @private
      */
-    render() {
+    _render() {
       const videoPlayer = document.createElement('video');
       videoPlayer.width = this.properties.sizes.width;
       videoPlayer.height = this.properties.sizes.height;

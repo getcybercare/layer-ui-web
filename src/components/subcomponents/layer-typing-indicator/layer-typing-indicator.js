@@ -5,6 +5,8 @@
  *
  * The simplest way to customize the behavior of this widget is using the `layer-typing-indicator-change` event.
  *
+ * TODO: Provide a layerUI.components.ConversationPanel.typingIndicatorRenderer property
+ *
  * @class layerUI.components.subcomponents.TypingIndicator
  * @extends layerUI.components.Component
  */
@@ -33,8 +35,9 @@
  *
  * @event layer-typing-indicator-change
  * @param {Event} evt
- * @param {layer.Identity[]] evt.detail.typing
- * @param {layer.Identity[]] evt.detail.paused
+ * @param {Object} evt.detail
+ * @param {layer.Identity[]} evt.detail.typing
+ * @param {layer.Identity[]} evt.detail.paused
  */
 import LUIComponent from '../../../components/component';
 
@@ -82,6 +85,7 @@ LUIComponent('layer-typing-indicator', {
     value: {
       set(text) {
         this.nodes.panel.innerHTML = text || '';
+        // classList.toggle doesn't work right in IE11
         this.classList[text ? 'add' : 'remove']('layer-typing-occuring');
       },
     },

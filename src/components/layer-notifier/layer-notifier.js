@@ -54,7 +54,7 @@ LUIComponent('layer-notifier', {
    * ```
    *
    * @event layer-message-notification
-   * @param {CustomEvent} evt
+   * @param {Event} evt
    * @param {Object} evt.detail
    * @param {layer.Message} evt.detail.message  The Message that has triggered this notification
    * @param {Boolean} evt.detail.isBackground   Is the app running in the background
@@ -76,7 +76,7 @@ LUIComponent('layer-notifier', {
    * ```
    *
    * @property {Function} onMessageNotification
-   * @param {CustomEvent} evt
+   * @param {Event} evt
    * @param {Object} evt.detail
    * @param {layer.Message} evt.detail.message  The Message that has triggered this notification
    * @param {Boolean} evt.detail.isBackground   Is the app running in the background
@@ -96,7 +96,7 @@ LUIComponent('layer-notifier', {
    * ```
    *
    * @event layer-notification-click
-   * @param {CustomEvent} evt
+   * @param {Event} evt
    * @param {Object} evt.detail
    * @param {layer.Message} evt.detail.message   The Message that has triggered this notification
    */
@@ -114,7 +114,7 @@ LUIComponent('layer-notifier', {
    * ```
    *
    * @property {Function} onNotificationClick
-   * @param {CustomEvent} evt
+   * @param {Event} evt
    * @param {Object} evt.detail
    * @param {layer.Message} evt.detail.message   The Message that has triggered this notification
    */

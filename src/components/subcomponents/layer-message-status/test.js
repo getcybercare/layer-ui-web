@@ -40,8 +40,8 @@ describe('layer-message-status', function() {
   it('Should not call rerender on any message change events once its no longer the right message', function() {
     spyOn(el, "_rerender");
     el.message = message;
-    el._rerender.calls.reset();
     el.message = null;
+    el._rerender.calls.reset();
 
     message.trigger('messages:change', {});
     expect(el._rerender).not.toHaveBeenCalled();

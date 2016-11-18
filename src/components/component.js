@@ -159,7 +159,7 @@
  */
 import layerUI from '../base';
 
-/**
+/*
  * Provides a basic mixin mechanism.
  *
  * Provide an array of objects with a `properties` key and a `methods` key,
@@ -198,7 +198,7 @@ function setupMixin(classDef, mixin) {
   });
 }
 
-/**
+/*
  * For each event defined in the `events` property, setup an `onXXX` property.
  *
  * The `onXXX` property works by:
@@ -233,7 +233,7 @@ function setupEvent(classDef, eventName) {
   }
 }
 
-/**
+/*
  * Get an ordered array of property descriptions.
  *
  * @method
@@ -261,7 +261,7 @@ function getOrderedProps(classDef) {
   });
 }
 
-/**
+/*
  * Define a single property based on a single property from the Component's `properties` definition.
  *
  * Will setup the properties getter, setter, default value, and type.
@@ -337,6 +337,9 @@ function setupProperty(classDef, prop, propertyDefHash) {
 layerUI.registerComponent = function registerComponent(tagName, classDef, force) {
   if (layerUI.settings.customComponents.indexOf(tagName) !== -1 && !force) return;
 
+  // Insure property exists
+  if (!classDef.methods) classDef.methods = [];
+
   // Add in mixins
   if (classDef.mixins) {
     classDef.mixins.forEach(mixin => setupMixin(classDef, mixin));
@@ -397,9 +400,9 @@ layerUI.registerComponent = function registerComponent(tagName, classDef, force)
       props.forEach(prop => this._stashAttribute(prop));
 
       /**
-       * Hash of all property names/values for this widget.
+       * Values for all properties of this widget.
        *
-       * All properties are stored in `this.properties`; any property defined in the class definition's properties hash
+       * All properties are stored in `this.properties`; any property defined in the class definition's `properties` hash
        * are read and written here.
        *
        * @property {Object} props
@@ -409,6 +412,8 @@ layerUI.registerComponent = function registerComponent(tagName, classDef, force)
       };
 
       /**
+       * Dom nodes that are important to this widget.
+       *
        * Any dom node in a template file that has a `layer-id` will be written to this hash.
        *
        * Example:
@@ -436,7 +441,7 @@ layerUI.registerComponent = function registerComponent(tagName, classDef, force)
        * }
        * ```
        *
-       * @property {Object} nodes    Hash of nodes indexed by layer-id attribute value.
+       * @property {Object} nodes
        */
       this.nodes = {};
 
@@ -474,6 +479,10 @@ layerUI.registerComponent = function registerComponent(tagName, classDef, force)
    * Further, the getter and setter functions will not invoke as long as this value is perceived as the definition
    * for this Object. So we delete the property `appId` from the object so that the getter/setter up the prototype chain can
    * once again function.  We stash the value in tmpdata which will be copied in later.
+   *
+   * @method
+   * @private
+   * @param {Object} prop   A property def whose value should be stashed
    */
   classDef._stashAttribute = {
     value: function _stashAttribute(prop) {
@@ -556,6 +565,7 @@ layerUI.registerComponent = function registerComponent(tagName, classDef, force)
    * it from the document.
    *
    * @method _destroyed
+   * @private
    */
   /**
    * By default, removing this widget from the dom will cause it to be destroyed.
@@ -593,6 +603,7 @@ layerUI.registerComponent = function registerComponent(tagName, classDef, force)
    * Any time a widget's attribute has changed, copy that change over to the properties where it can trigger the property setter.
    *
    * @method attributeChangedCallback
+   * @private
    * @param {String} name      Attribute name
    * @param {Mixed} oldValue   Original value of the attribute
    * @param {Mixed} newValue   Newly assigned value of the attribute

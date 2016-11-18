@@ -86,7 +86,7 @@ module.exports = function (grunt) {
     // Documentation
     jsduck: {
       build: {
-        src: ["src/**/*.js", "node_modules/layer-websdk/lib/**/*.js"],
+        src: ["lib/**/*.js", "node_modules/layer-websdk/lib/**/*.js"],
         dest: 'docs',
         options: {
           'builtin-classes': false,
@@ -143,20 +143,35 @@ module.exports = function (grunt) {
     var options = this.options();
 
     function createCombinedComponentFile(file, outputPath) {
+      // Extract the class name; TODO: class name should be same as file name.
+      var jsFileName = file.replace(/^.*\//, '');
+      var className = jsFileName.replace(/\.js$/, '');
+
+      if (jsFileName === 'test.js') return;
+
       var output = grunt.file.read(file);
       var babelResult = babel.transform(output, {
         presets: ["babel-preset-es2015"]
       });
       output = babelResult.code;
 
+      // Babel sometimes moves our jsduck comments defining the class to the end of the file, causing JSDuck to quack.
+      // Move it back to the top so that JSDuck knows what class all the properties and methods belong to
+      var indexOfClass = output.indexOf('@class');
+      if (indexOfClass !== -1) var indexOfClassCodeBlock = output.lastIndexOf('/**', indexOfClass);
+      if (indexOfClassCodeBlock !== -1) {
+        var endOfClassCodeBlock = output.indexOf('*/', indexOfClass);
+        if (endOfClassCodeBlock !== -1) {
+          endOfClassCodeBlock += 2;
+          var prefix = output.substring(0, indexOfClassCodeBlock);
+          var classComment = output.substring(indexOfClassCodeBlock, endOfClassCodeBlock);
+          var postfix =  output.substring(endOfClassCodeBlock);
+          output = classComment + prefix + postfix;
+        }
+      }
+
       var templateCount = 0;
       var outputFolder = path.dirname(outputPath);
-
-      // Extract the class name; TODO: class name should be same as file name.
-      var jsFileName = file.replace(/^.*\//, '');
-      var className = jsFileName.replace(/\.js$/, '');
-
-      if (jsFileName === 'test.js') return;
 
       // Find the template file by checking for an html file of the same name as the js file in the same folder.
       var parentFolder = path.dirname(file);
@@ -197,7 +212,7 @@ module.exports = function (grunt) {
           templateContents = templateContents.replace(/>\s+</g, '><');
 
           // Generate the <template /> and <style> objects
-          output += 'var layerUI = require("' + pathToBase + '");\n';
+          output += '\nvar layerUI = require("' + pathToBase + '");\n';
           output += 'layerUI.buildAndRegisterTemplate("' + className + '", ' + JSON.stringify(templateContents.replace(/\n/g,'').trim()) + ', "' + templateId + '");\n';
           output += 'layerUI.buildStyle("' + className + '", ' + JSON.stringify(style.trim()) + ', "' + templateId + '");\n';
         });

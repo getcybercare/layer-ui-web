@@ -21,7 +21,6 @@
           "layer.LayerError",
           "layer.ClientUtils",
           "layer.Root",
-          "layer.Content",
           "layer.Constants"
         ]
       },

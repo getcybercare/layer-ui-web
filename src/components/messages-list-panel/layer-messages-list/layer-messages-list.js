@@ -1,5 +1,5 @@
 /**
- * The Layer Message List widget renders a scrollable, pagable list of layerUI.MessageItem widgets.
+ * The Layer Message List widget renders a scrollable, pagable list of layerUI.components.MessagesListPanel.Item widgets.
  *
  * This is designed to go inside of the layerUI.Conversation widget.
  *
@@ -252,7 +252,7 @@ LUIComponent('layer-messages-list', {
      *
      * @method _markAsRead
      * @private
-     * @param {layerUI.MessageItem} child
+     * @param {layerUI.components.MessagesListPanel.Item} child
      */
     _markAsRead(child) {
       const visibleTop = this.scrollTop + this.offsetTop;
@@ -316,7 +316,7 @@ LUIComponent('layer-messages-list', {
      *
      * @method _processAffectedWidgetsCustom
      * @private
-     * @param {layerUI.Conversation.MessageItem[]} widgets
+     * @param {layerUI.components.MessagesListPanel.Item[]} widgets
      */
     _processAffectedWidgetsCustom(widgets, isTopItemNew) {
       if (widgets.length === 0) return;

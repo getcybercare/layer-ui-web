@@ -29,8 +29,8 @@
  *
  * Events listed here come from either this component, or its subcomponents.
  *
- * * {@link layerUI.components.identityList#layer-identity-deselected layer-identity-deselected}: User has clicked to unselect an Identity
- * * {@link layerUI.components.identityList#layer-identity-selected layer-identity-selected}: User has clicked to select an Identity
+ * * {@link layerUI.components.IdentitiesListPanel.List#layer-identity-deselected layer-identity-deselected}: User has clicked to unselect an Identity
+ * * {@link layerUI.components.IdentitiesListPanel.List#layer-identity-selected layer-identity-selected}: User has clicked to select an Identity
  *
  * @class layerUI.components.IdentitiesListPanel.List
  * @extends layerUI.components.Component
@@ -81,7 +81,7 @@ LUIComponent('layer-identities-list', {
   /**
    * A identity selection change has occurred
    *
-   * See the {@link layerUI.components.identityList#layer-identity-selected layer-identity-selected} event for more detail.
+   * See the {@link layerUI.components.IdentitiesListPanel.List#layer-identity-selected layer-identity-selected} event for more detail.
    *
    * @property {Function} onIdentitySelected
    * @param {Event} evt
@@ -120,7 +120,7 @@ LUIComponent('layer-identities-list', {
   /**
    * A identity selection change has occurred
    *
-   * See the {@link layerUI.components.identityList#layer-identity-deselected layer-identity-deselected} event for more detail.
+   * See the {@link layerUI.components.IdentitiesListPanel.List#layer-identity-deselected layer-identity-deselected} event for more detail.
    *
    * @property {Function} onIdentityDeselected
    * @param {Event} evt

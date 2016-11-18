@@ -6,6 +6,7 @@
  * This widget includes a checkbox for selection.
  *
  * @class layerUI.components.IdentitiesListPanel.Item
+ * @mixin layerUI.mixins.ListItem
  * @extends layerUI.components.Component
  */
 import { layer as LayerAPI } from '../../../base';

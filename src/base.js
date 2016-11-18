@@ -39,7 +39,7 @@ const layerUI = {};
  *
  * @property {Object} settings
  *
- * @property {layer} settings.layer    The Layer WebSDK
+ * @property {Object} settings.layer    The Layer WebSDK
  *
  * @property {String} [settings.appId]      The app ID to use for all webcomponents.
  *    Setting this is a short-hand for using the `app-id` property on each widget;
@@ -284,7 +284,7 @@ layerUI.adapters = {
  * @param {Object} options
  * @param {Function} options.handlesMessage
  * @param {layer.Message} options.handlesMessage.message    Message to test and handle with our handler if it matches
- * @param {DOMElement} options.handlesMessage.container     The container that this will be rendered within; typically identifies a specific
+ * @param {HTMLElement} options.handlesMessage.container     The container that this will be rendered within; typically identifies a specific
  *                                                          layerUI.MessageList or layerUI.ConversationItem.
  * @param {Boolean} options.handlesMessage.returns          Return true to signal that this handler accepts this Message.
  * @param {String} tagName                                  Dom node to create if this handler accepts the Message.
@@ -304,7 +304,7 @@ layerUI.registerMessageHandler = function registerMessageHandler(options) {
  * @method getHandler
  * @static
  * @param {layer.Message} message
- * @param {DOMElement} options.handlesMessage.container     The container that this will be rendered within
+ * @param {HTMLElement} container     The container that this will be rendered within
  * @return {Object} handler     See layerUI.registerMessageHandler for the structure of a handler.
  */
 layerUI.getHandler = (message, container) => {
@@ -353,7 +353,7 @@ layerUI.getHandler = (message, container) => {
  * @param {Number} options.order     A number used to sort your handler amongst other handlers as order
  *      of execution can matter for any text handler that modifies the text parsed by subsequent parsers.
  * @param {Function} options.handler
- * @param {object} options.handler.textData
+ * @param {Object} options.handler.textData
  * @param {String} options.handler.textData.text          Use this to read the current text value and write an update to it
  * @param {String[]} options.handler.textData.afterText   Append elements to this array to add stuff to be rendered below the text.
  *      Anything that goes into `afterText` should NOT be parsed by any text handler.

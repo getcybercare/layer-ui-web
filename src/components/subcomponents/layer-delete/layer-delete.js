@@ -4,6 +4,30 @@
  * This is provided as a specialized component so that it can be easily redefined by your app to
  * provide your own deletion capability.
  *
+ * Note that the `item` property can refer to any type of data that can be deleted, including layer.Message and layer.Conversation.
+ *
+ * ```
+ * layerUI.init({
+ *   layer: window.layer,
+ *   appId:  'layer:///apps/staging/UUID',
+ *   customComponents: ['layer-delete']
+ * });
+ *
+ * layerUI.registerComponent('layer-delete', {
+ *    properties: {
+ *      item: {}
+ *    },
+ *    methods: {
+ *      _created: function() {
+ *        this.addEventListener('click', this.onDeleteClick, this);
+ *      },
+ *      onDeleteClick: function() {
+ *         alert('I'm sorry Dave, I can't do that');
+ *      }
+ *    }
+ * });
+ * ```
+ *
  * @class layerUI.components.subcomponents.Delete
  * @extends layerUI.components.Component
  */
@@ -16,18 +40,19 @@ LUIComponent('layer-delete', {
     /**
      * Item to be deleted.
      *
-     * @property {Date}
+     * @property {layer.Root} [item=null]
      */
     item: {},
 
     /**
      * Is deletion enabled for this item?
      *
-     * @property {Boolean}
+     * @property {Boolean} [enabled=false]
      */
     enabled: {
       type: Boolean,
       set(value) {
+        // Note that IE11 doesn't propetly support classList.toggle()
         this.classList[value ? 'add' : 'remove']('layer-delete-enabled');
       },
     },
@@ -41,7 +66,7 @@ LUIComponent('layer-delete', {
      * @private
      */
     _created() {
-      this.addEventListener('click', this.onDeleteClick, this);
+      this.addEventListener('click', this._onDeleteClick, this);
     },
 
     /**
@@ -53,7 +78,7 @@ LUIComponent('layer-delete', {
      * @private
      * @param {Event} evt
      */
-    onDeleteClick(evt) {
+    _onDeleteClick(evt) {
       evt.preventDefault();
       evt.stopPropagation();
       if (this.enabled) {
