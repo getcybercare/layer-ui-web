@@ -7,6 +7,8 @@
 * Adds verification that appId refers to a Client
 * Adds a Date Separator component
 * Now uses `!conversation.lastMessage.isRead` instead of `conversation.unreadCount` for flagging a conversation as unread
+* Refactoring of method and property names to underscore prefix private names
+* JSDoc cleanup
 
 ## 0.9.1, 0.9.2, 0.9.3
 

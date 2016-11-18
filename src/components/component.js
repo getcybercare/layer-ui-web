@@ -405,7 +405,7 @@ layerUI.registerComponent = function registerComponent(tagName, classDef, force)
        * All properties are stored in `this.properties`; any property defined in the class definition's `properties` hash
        * are read and written here.
        *
-       * @property {Object} props
+       * @property {Object} properties
        */
       this.properties = {
         _layerEventSubscriptions: [],
@@ -603,7 +603,7 @@ layerUI.registerComponent = function registerComponent(tagName, classDef, force)
    * Any time a widget's attribute has changed, copy that change over to the properties where it can trigger the property setter.
    *
    * @method attributeChangedCallback
-   * @private
+   * @ignore
    * @param {String} name      Attribute name
    * @param {Mixed} oldValue   Original value of the attribute
    * @param {Mixed} newValue   Newly assigned value of the attribute
