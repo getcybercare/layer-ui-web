@@ -12,15 +12,9 @@ layer-notifier {
     margin-right: 10px;
   }
 
-  layer-avatar span {
-    font-size: 30px;
-  }
-
   .layer-notifier-title {
-    font-weight: bold;
-    font-size: 1.0rem;
+    .layer-text-list-heading();
     margin-bottom: 5px;
-    color: #000;
   }
   .layer-notifier-title:after {
     content: ':';
@@ -34,8 +28,7 @@ layer-notifier {
   }
 
   .layer-message-item-main {
-    font-size: 1.0rem;
-    color: #8798a4;
+    .layer-text-plain-deemphasized();
     width: 320px;
   }
 }

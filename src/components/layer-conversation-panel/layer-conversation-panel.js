@@ -89,7 +89,7 @@ LUIComponent('layer-conversation-panel', {
    * You can use this event to provide your own logic for sending the Message.
    *
    * ```javascript
-   * document.body.addEventListener('on-send-message', function(evt) {
+   * document.body.addEventListener('layer-send-message', function(evt) {
    *   evt.preventDefault();
    *   var message = evt.detail.message;
    *   myAsyncLookup(function(result) {
@@ -103,10 +103,11 @@ LUIComponent('layer-conversation-panel', {
    * });
    * ```
    *
-   * @event on-send-message
+   * @event layer-send-message
    * @param {Event} evt
    * @param {Object} evt.detail
    * @param {layer.Message} evt.detail.message
+   * @param {Object} evt.detail.notification
    */
 
   /**
@@ -134,14 +135,14 @@ LUIComponent('layer-conversation-panel', {
    * You can use this event to provide your own logic for deleting the Message, or preventing it from being deleted.
    *
    * ```javascript
-   * document.body.addEventListener('on-message-deleted', function(evt) {
+   * document.body.addEventListener('layer-message-deleted', function(evt) {
    *   evt.preventDefault();
    *   var message = evt.detail.message;
    *   message.delete(layer.Constants.DELETION_MODES.MY_DEVICES);
    * });
    * ```
    *
-   * @event on-message-deleted
+   * @event layer-message-deleted
    * @param {Event} evt
    * @param {Object} evt.detail
    * @param {layer.Message} evt.detail.message
@@ -182,7 +183,7 @@ LUIComponent('layer-conversation-panel', {
    * By calling `evt.preventDefault()` on the event you can provide your own custom typing indicator text to this widget:
    *
    * ```javascript
-   * document.body.addEventListener('on-typing-indicator-change', function(evt) {
+   * document.body.addEventListener('layer-typing-indicator-change', function(evt) {
    *    evt.preventDefault();
    *    var widget = evt.target;
    *    var typingUsers = evt.detail.typing;
@@ -198,7 +199,7 @@ LUIComponent('layer-conversation-panel', {
    * Note that as long as you have called `evt.preventDefault()` you can also just directly manipulate child domNodes of `evt.detail.widget`
    * if a plain textual message doesn't suffice.
    *
-   * @event on-typing-indicator-change
+   * @event layer-typing-indicator-change
    * @param {Event} evt
    * @param {Object} evt.detail
    * @param {layer.Identity[]} evt.detail.typing
@@ -425,6 +426,15 @@ LUIComponent('layer-conversation-panel', {
       },
     },
 
+    emptyMessageListNode: {
+      set(value) {
+        this.nodes.list.emptyNode = value;
+      },
+      get(value) {
+        return this.nodes.list.emptyNode;
+      },
+    },
+
     /**
      * An array of buttons (dom nodes) to be added to the Compose bar.
      *
@@ -459,6 +469,24 @@ LUIComponent('layer-conversation-panel', {
       },
       set(value) {
         this.nodes.composer.value = value;
+      },
+    },
+
+    /**
+     * Use this to get/set the text in the Compose bar.
+     *
+     * ```
+     * widget.composePlaceholder = 'Enter a message. Or dont. It really doesnt matter.';
+     * ```
+     *
+     * @property {String} [composePlaceholder='']
+     */
+    composePlaceholder: {
+      get() {
+        return this.nodes.composer.placeholder;
+      },
+      set(value) {
+        this.nodes.composer.placeholder = value;
       },
     },
 

@@ -6,6 +6,7 @@ const autolinker = new Autolinker({
     length: 40,
     location: 'middle',
   },
+  className: 'layer-parsed-url',
 });
 /**
  * The Layer Image TextHandler replaces all image URLs with image tags

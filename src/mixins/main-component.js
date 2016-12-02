@@ -73,6 +73,15 @@ module.exports = {
      * @property {layer.Client} [client=null]
      */
     client: {},
+
+    /**
+     * How many items to page in each time we page the Query.
+     *
+     * @property {Number} [pageSize=50]
+     */
+    pageSize: {
+      value: 50,
+    },
   },
   methods: {
     _created() {

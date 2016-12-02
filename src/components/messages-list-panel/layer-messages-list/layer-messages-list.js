@@ -70,6 +70,33 @@ LUIComponent('layer-messages-list', {
     screenFullsBeforePaging: {
       value: 1.5,
     },
+
+    /**
+     * If the query has no data and is not loading data, this should be true.
+     *
+     * @property {Boolean} [isEmptyList=false]
+     * @readonly
+     */
+    isEmptyList: {
+      value: false,
+      set(value) {
+        this.nodes.emptyNode.style.display = value ? '' : 'none';
+      },
+    },
+
+    /**
+     * A dom node to render when there are no messages in the list.
+     *
+     * Could just be a message "Empty Conversation".  Or you can add interactive widgets.
+     *
+     * @property {HTMLElement} [emptyNode=null]
+     */
+    emptyNode: {
+      set(value) {
+        this.nodes.emptyNode.innerHTML = '';
+        this.nodes.emptyNode.appendChild(value);
+      },
+    },
   },
   methods: {
 
@@ -269,7 +296,8 @@ LUIComponent('layer-messages-list', {
      * @private
      */
     _getItemId(message) {
-      return `message-item${this.id}-${LayerAPI.Util.uuid(message.id)}`;
+      const uuid = message.id.replace(/^.*\//, '');
+      return `message-item${this.id}-${uuid}`;
     },
 
 
@@ -337,7 +365,13 @@ LUIComponent('layer-messages-list', {
      * @param {Event} evt
      */
     _rerender(evt) {
-      this._processQueryEvt(evt);
+      if (this.query.isDestroyed) {
+        this.isEmptyList = false;
+        this._renderResetData();
+      } else {
+        this.isEmptyList = this.query.data.length === 0;
+        this._processQueryEvt(evt);
+      }
     },
 
     _renderResetData() {

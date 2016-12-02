@@ -1,17 +1,22 @@
 layer-identity-item {
-  cursor: pointer;
-  padding: 4px 5px;
+  .layer-list-item {
+    border-bottom: @border-list-item;
+    cursor: pointer;
+    .layer-text-list-heading();
 
-  &.layer-identity-item-selected {
-    background-color: #666;
+    line-height: 3.5rem;
+    padding: 0px 10px;
+
+    &:not(:first-child) {
+      border-top: @border-list-item;
+    }
+
+    &.layer-identity-item-selected {
+      .layer-identity-selected();
+    }
+
+    input {
+      margin: 0px 10px;
+    }
   }
-
-  label {
-    line-height: 40px;
-  }
-
-  input {
-    margin-top: 14px;
-  }
-
 }

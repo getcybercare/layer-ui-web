@@ -1,6 +1,7 @@
 <template>
   <style>
     layer-messages-list {
+      display: block;
       flex-grow: 1;
       height: 100px; /* flexbox bug */
       padding-bottom: 15px;
@@ -18,6 +19,7 @@
     }
 
   </style>
+  <div class='layer-empty-list' layer-id='emptyNode'></div>
   <div class='layer-load-indicator' layer-id='loadIndicator'>Loading messages...</div>
 </template>
 <script>

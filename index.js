@@ -43,7 +43,7 @@ layerUI.init = function(settings) {
   require("./lib/components/subcomponents/layer-file-upload-button/layer-file-upload-button");
   require("./lib/components/subcomponents/layer-message-status/layer-message-status");
   require("./lib/components/subcomponents/layer-typing-indicator/layer-typing-indicator");
-  require("./lib/handlers/message/layer-message-image");
+  require("./lib/handlers/message/layer-message-image/layer-message-image");
   require("./lib/handlers/message/layer-message-text-plain");
   require("./lib/handlers/message/layer-message-unknown");
   require("./lib/handlers/message/layer-message-video");

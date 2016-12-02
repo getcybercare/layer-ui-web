@@ -1,1 +1,72 @@
-@listitembottomborder: solid 1px rgb(221,228,231);
+/* Customize identities-list and conversation-list */
+@border-list-item: solid 1px rgb(221,228,231);
+@border-lightest: solid 1px rgba(0, 0, 0, 0.1);
+@listbackground: white;
+
+@fontsize-large: 1.1rem;
+@fontsize-normal: 1.0rem;
+@fontsize-small: 0.9rem;
+
+@fontcolor-normal: #313f48;
+@fontcolor-lighter: #8798a4;
+@fontcolor-lightest: #adb9c1;
+@fontcolor-emphasized: #47b7e9;
+@fontcolor-selected: #fff;
+
+@fontweight-lighter: 300;
+@fontweight-normal: 400;
+@fontweight-semibold: 500;
+@fontweight-bold: 700;
+
+.layer-text-list-heading() {
+  font-size: @fontsize-normal;
+  color: @fontcolor-normal;
+  font-weight: @fontweight-semibold;
+}
+
+.layer-text-list-heading-emphasized() {
+  font-size: @fontsize-normal;
+  color: @fontcolor-emphasized;
+  font-weight: @fontweight-bold;
+}
+
+.layer-text-plain() {
+  font-size: @fontsize-normal;
+  color: @fontcolor-normal;
+  font-weight: @fontweight-normal;
+}
+
+.layer-text-plain-emphasized() {
+  font-size: @fontsize-normal;
+  color: @fontcolor-normal;
+  font-weight: @fontweight-semibold;
+}
+
+.layer-text-plain-deemphasized() {
+  font-size: @fontsize-normal;
+  color: @fontcolor-lighter;
+  font-weight: @fontweight-normal;
+}
+
+.layer-text-fine-print() {
+  font-size: @fontsize-small;
+  color: @fontcolor-lightest;
+  font-weight: @fontweight-semibold;
+}
+
+.layer-text-composer() {
+  font-size: @fontsize-large;
+  color: @fontcolor-normal;
+  font-weight: @fontweight-normal;
+}
+
+.layer-avatar-emphasized() {
+  width: 44px;
+  height: 44px;
+  color: @fontcolor-normal;
+  border: @border-highlight;
+}
+
+.layer-identity-selected() {
+  background-color: #f4f5f6;
+}

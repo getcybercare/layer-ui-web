@@ -74,6 +74,20 @@ LUIComponent('layer-composer', {
         return this.nodes.input.value;
       },
     },
+    /**
+     * The text shown in the editor; this is the editor's placeholder.
+     *
+     * @property {String} [placeholder='']
+     */
+    placeholder: {
+      set(value) {
+        this.nodes.input.placeholder = value;
+        this._resizeNode();
+      },
+      get() {
+        return this.nodes.input.placeholder;
+      },
+    },
   },
   methods: {
     /**

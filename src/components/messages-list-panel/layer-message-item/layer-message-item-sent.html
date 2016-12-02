@@ -15,13 +15,14 @@
     layer-message-item.layer-message-item-sent .layer-list-item {
       display: flex;
       flex-direction: column;
-      align-items: flex-end;
+      align-items: stretch;
     }
 
     layer-message-item.layer-message-item-sent .layer-list-item .layer-list-item-container {
       display: flex;
       flex-direction: row;
       align-items: flex-end;
+      flex-grow: 1;
     }
 
     layer-message-item.layer-message-item-sent .layer-message-item-main {
@@ -29,13 +30,15 @@
       flex-grow: 1;
       overflow: hidden;
     }
+    layer-message-item.layer-message-item-sent .layer-message-item-main .layer-message-item-content {
+      display: inline-block;
+      text-align: right;
+      max-width: 90%;
+    }
 
     /* Insure that text, images, videos, etc... are all right aligned */
     layer-message-item.layer-message-item-sent layer-message-text-plain {
       display: block;
-      /*display: flex;
-      flex-direction: column;
-      align-items: flex-end;*/
     }
   </style>
 

@@ -19,9 +19,9 @@ import 'blueimp-load-image/js/load-image-orientation';
 import 'blueimp-load-image/js/load-image-meta';
 import 'blueimp-load-image/js/load-image-exif';
 
-import layerUI, { settings as UISettings } from '../../base';
-import LUIComponent from '../../components/component';
-import normalizeSize from '../../utils/sizing';
+import layerUI, { settings as UISettings } from '../../../base';
+import LUIComponent from '../../../components/component';
+import normalizeSize from '../../../utils/sizing';
 
 LUIComponent('layer-message-image', {
   properties: {
@@ -105,14 +105,14 @@ LUIComponent('layer-message-image', {
       // TODO: Need to be able to customize this height, as well as the conditions (parentContainers) under which different sizes are applied.
       if (this.parentContainer.tagName === 'LAYER-NOTIFIER') maxSizes = { height: 140, width: maxSizes.width };
       this.properties.sizes = normalizeSize(this.properties.meta, { width: maxSizes.width, height: maxSizes.height });
-      this.style.width = this.properties.sizes.width + 'px';
-      this.style.height = this.properties.sizes.height + 'px';
+      this.style.height = (UISettings.verticalMessagePadding + this.properties.sizes.height) + 'px';
       if (this.properties.preview && this.properties.preview.body) {
         this._renderCanvas(this.properties.preview.body);
       } else if (this.properties.image && this.properties.image.body) {
         this._renderCanvas(this.properties.image.body);
       }
     },
+
 
     /**
      * Parse the EXIF data, determine the orientation and then generate a Canvas with a correctly oriented Image.

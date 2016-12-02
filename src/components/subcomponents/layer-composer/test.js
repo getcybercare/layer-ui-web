@@ -96,6 +96,18 @@ describe('layer-composer', function() {
     });
   });
 
+  describe("The placeholder property", function() {
+    it("Should set the text in the composer", function() {
+      el.placeholder = "Please eat Frodo";
+      expect(el.nodes.input.placeholder).toEqual("Please eat Frodo");
+    });
+
+    it("Should retreive the placeholder in the composer", function() {
+      el.nodes.input.placeholder = "Please Gollum, just eat him";
+      expect(el.placeholder).toEqual("Please Gollum, just eat him");
+    });
+  });
+
   describe("The created() method", function() {
     it("Should add the layer-composer-one-line-of-text class", function() {
       expect(el.classList.contains('layer-composer-one-line-of-text')).toBe(true);

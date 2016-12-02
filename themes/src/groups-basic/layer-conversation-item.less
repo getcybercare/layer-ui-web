@@ -2,8 +2,7 @@ layer-conversation-item {
   cursor: pointer;
   padding: 6px 5px;
   color: black;
-  border-bottom: @listitembottomborder;
-
+  border-bottom: @border-list-item;
 
   .layer-conversation-item-content {
     white-space: nowrap;
@@ -11,50 +10,80 @@ layer-conversation-item {
     overflow: hidden;
   }
 
+  &.layer-conversation-item-selected {
+    background-color: #19a5e4;
+  }
+
+  /**
+   * Conversation Avatars have 1 state:
+   */
+   layer-avatar {
+    display: none;
+  }
+
+
+  /**
+   * Conversation Titles have 3 states:
+   * 1. Normal
+   * 2. Unread
+   * 3. Selected
+   */
+  layer-conversation-title {
+    .layer-text-list-heading();
+    margin-right: 15px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    display: inline;
+  }
+
+  &.layer-conversation-unread-messages layer-conversation-title {
+    .layer-text-list-heading-emphasized();
+  }
+
+  &.layer-conversation-item-selected layer-conversation-title,
+  &.layer-conversation-item-selected.layer-conversation-unread-messages layer-conversation-title {
+    color: white;
+  }
+
+
+  /**
+   * Conversation Last Messages have 3 states:
+   * 1. Normal
+   * 2. Unread
+   * 3. Selected
+   */
   layer-conversation-last-message {
     white-space: nowrap;
     text-overflow: ellipsis;
     overflow: hidden;
-    color: #8798a4;
     display: inline;
+    .layer-text-plain-deemphasized();
   }
 
-  layer-conversation-title {
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    margin-right: 15px;
-    font-weight: bold;
-    display: inline;
+  &.layer-conversation-unread-messages layer-conversation-last-message {
+    .layer-text-plain-emphasized();
   }
 
-  layer-avatar {
-    display: none;
-  }
+   &.layer-conversation-item-selected  layer-conversation-last-message, &.layer-conversation-item-selected.layer-conversation-unread-messages  layer-conversation-last-message {
+    color: @fontcolor-selected;
+   }
 
-  &.layer-conversation-unread-messages {
-    layer-conversation-last-message {
-      color: #313f48;
+  /**
+   * Conversation Delete button has 2 states:
+   * 1. Normal
+   * 2. Selected
+   */
+   layer-delete {
+      display: none;
     }
-  }
 
-  layer-delete {
-    opacity: 0;
-  }
-
-  &.layer-conversation-item-selected {
-    background-color: #19a5e4;
-    layer-conversation-title {
-       color: white;
-       border-radius: 16px;
-    }
-    layer-conversation-last-message {
-      color: white;
-    }
-    layer-delete {
+    &.layer-conversation-item-selected layer-delete {
+      display: block;
       opacity: 0.2;
+      padding: 2px 4px 8px;
       &:hover {
-        opacity: 1;
+        opacity: 0.8;
       }
     }
-  }
 }

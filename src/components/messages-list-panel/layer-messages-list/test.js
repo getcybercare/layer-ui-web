@@ -349,17 +349,17 @@ describe('layer-messages-list', function() {
 
   describe("The _markAsRead() method", function() {
     it("Should mark the first message as read", function() {
-      el.childNodes[1].item.isRead = false;
+      el.childNodes[2].item.isRead = false;
       el.scrollTop = 0;
-      el._markAsRead(el.childNodes[1]);
-      expect(el.childNodes[1].item.isRead).toBe(true);
+      el._markAsRead(el.childNodes[2]);
+      expect(el.childNodes[2].item.isRead).toBe(true);
     });
 
     it("Should not mark the first message as read if scrolled partially out of view", function() {
-      el.childNodes[1].item.isRead = false;
+      el.childNodes[2].item.isRead = false;
       el.scrollTop = 40;
-      el._markAsRead(el.childNodes[1]);
-      expect(el.childNodes[1].item.isRead).toBe(false);
+      el._markAsRead(el.childNodes[2]);
+      expect(el.childNodes[2].item.isRead).toBe(false);
     });
 
     it("Should  mark the 50th message as read if scrolled into view", function() {
@@ -522,6 +522,15 @@ describe('layer-messages-list', function() {
   });
 
   describe("The _rerender() method", function() {
+    it("Should update isEmptyList", function() {
+      el.isEmptyList = true;
+      el._rerender({});
+      expect(el.isEmptyList).toBe(false);
+
+      el.query.data = [];
+      el._rerender({});
+      expect(el.isEmptyList).toBe(true);
+    });
     it("Should call _processQueryEvt", function() {
       spyOn(el, "_processQueryEvt");
       var evt = {hey: "ho"};
@@ -548,10 +557,10 @@ describe('layer-messages-list', function() {
     it("Should empty the list of items, but still contain a loadingIndicator node", function() {
       el._render();
       jasmine.clock().tick(150);
-      expect(el.childNodes.length > 1).toBe(true);
+      expect(el.childNodes.length > 2).toBe(true);
       query.reset();
-      expect(el.childNodes.length > 1).toBe(false);
-      expect(el.firstChild.classList.contains('layer-load-indicator')).toBe(true);
+      expect(el.childNodes.length > 2).toBe(false);
+      expect(el.childNodes[1].classList.contains('layer-load-indicator')).toBe(true);
     });
 
     it("Should reset assorted state", function() {
@@ -612,14 +621,14 @@ describe('layer-messages-list', function() {
       var queryData = [].concat(query.data).reverse();
       var mid5 = queryData[5].id;
       var midNext = queryData[6].id;
-      expect(el.childNodes[6].item.id).toEqual(mid5);
+      expect(el.childNodes[7].item.id).toEqual(mid5);
 
       // Run
       queryData[5].destroy();
       jasmine.clock().tick(1);
 
       // Posttest
-      expect(el.childNodes[6].item.id).toEqual(midNext);
+      expect(el.childNodes[7].item.id).toEqual(midNext);
     });
   });
 
@@ -650,7 +659,7 @@ describe('layer-messages-list', function() {
       // Posttest
       var newElement = el.querySelector('#' + el._getItemId(message));
       expect(newElement.item).toBe(message);
-      expect(newElement).toBe(el.childNodes[80 + 1]); // + 1 for loadingIndicator
+      expect(newElement).toBe(el.childNodes[80 + 2]); // + 2 for loadingIndicator and emptyNode
     });
 
     it("Should call _gatherAndProcessAffectedItems on 3 items before and 3 items after the inserted item", function() {
@@ -809,16 +818,16 @@ describe('layer-messages-list', function() {
   describe("The _findFirstVisibleItem() method", function() {
     it("Should return first item", function() {
       el.scrollTop = 0;
-      expect(el._findFirstVisibleItem()).toBe(el.childNodes[1]);
+      expect(el._findFirstVisibleItem()).toBe(el.childNodes[2]);
     });
 
     it("Should return second item", function() {
-      el.scrollTo(el.childNodes[1].clientHeight + el.childNodes[0].clientHeight);
+      el.scrollTo(el.childNodes[2].offsetTop - el.childNodes[0].offsetTop);
       expect(el._findFirstVisibleItem()).toBe(el.childNodes[2]);
     });
 
     it("Should return third item", function() {
-      el.scrollTo(el.childNodes[2].clientHeight + el.childNodes[1].clientHeight + el.childNodes[0].clientHeight);
+      el.scrollTo(el.childNodes[3].offsetTop - el.childNodes[0].offsetTop);
       expect(el._findFirstVisibleItem()).toBe(el.childNodes[3]);
     });
   });
@@ -839,7 +848,7 @@ describe('layer-messages-list', function() {
     it("Should call _renderPagedDataDone with top 3 items and two new items", function() {
       spyOn(el, "_renderPagedDataDone");
       var messages = [conversation.createMessage("mm 0"), conversation.createMessage("mm 1")];
-      var affectedItems = [messages[1], messages[0], el.childNodes[1].item, el.childNodes[2].item, el.childNodes[3].item];
+      var affectedItems = [messages[1], messages[0], el.childNodes[2].item, el.childNodes[3].item, el.childNodes[4].item];
       el._renderPagedData({type: 'data', data: messages});
       jasmine.clock().tick(1000);
       expect(el._renderPagedDataDone).toHaveBeenCalledWith(affectedItems, jasmine.any(DocumentFragment), {type: 'data', data: messages});
@@ -861,15 +870,15 @@ describe('layer-messages-list', function() {
       var fragment = el._generateFragment(messages);
       spyOn(el, "_processAffectedWidgets");
       el._renderPagedDataDone([query.data[99], query.data[98], messages[0], messages[1]], fragment, {type: 'data', data: messages});
-      expect(el._processAffectedWidgets).toHaveBeenCalledWith(jasmine.arrayContaining([el.childNodes[1], el.childNodes[2], el.childNodes[3], el.childNodes[4]]), true);
+      expect(el._processAffectedWidgets).toHaveBeenCalledWith(jasmine.arrayContaining([el.childNodes[2], el.childNodes[3], el.childNodes[4], el.childNodes[4]]), true);
     });
 
     it("Should insert the Document Fragment just after the loading indicator", function() {
       var messages = [conversation.createMessage("mm 0"), conversation.createMessage("mm 1")];
       var fragment = el._generateFragment(messages);
       el._renderPagedDataDone([query.data[99], query.data[98], messages[0], messages[1]], fragment, {type: 'data', data: messages});
-      expect(el.childNodes[0].classList.contains('layer-load-indicator')).toBe(true);
-      expect(el.childNodes[1].item).toBe(messages[0]);
+      expect(el.childNodes[1].classList.contains('layer-load-indicator')).toBe(true);
+      expect(el.childNodes[2].item).toBe(messages[0]);
     });
 
     it("Should scroll to bottom if stuck to bottom", function() {
@@ -883,16 +892,44 @@ describe('layer-messages-list', function() {
     });
 
     it("Should scroll to the item that was on top of the visible viewport prior to the insertion", function() {
-      el.scrollTop = el.childNodes[10].offsetTop - el.offsetTop;
-      expect(el._findFirstVisibleItem()).toBe(el.childNodes[10]);
+      el.scrollTop = el.childNodes[11].offsetTop - el.offsetTop;
+      expect(el._findFirstVisibleItem()).toBe(el.childNodes[11]);
       el.properties.stuckToBottom = false;
       spyOn(el, "scrollTo");
       var messages = [conversation.createMessage("mm 0"), conversation.createMessage("mm 1")];
       var fragment = el._generateFragment(messages);
       el._renderPagedDataDone([query.data[99], query.data[98], messages[0], messages[1]], fragment, {type: 'data', data: messages});
 
-      // What was the 10th item is now the 12th item
-      expect(el.scrollTo).toHaveBeenCalledWith(el.childNodes[12].offsetTop - el.offsetTop);
+      // What was the 11th item is now the 13th item
+      expect(el.scrollTo).toHaveBeenCalledWith(el.childNodes[13].offsetTop - el.offsetTop);
+    });
+  });
+
+  describe("The isEmptyList property", function() {
+    it("Should initialize to hidden/false", function() {
+      expect(el.isEmptyList).toBe(false);
+      expect(el.nodes.emptyNode.style.display).toEqual("");
+    });
+    it("Should update the display state for emptyNode", function() {
+      el.isEmptyList = true;
+      expect(el.nodes.emptyNode.style.display).toEqual('');
+
+      el.isEmptyList = false;
+      expect(el.nodes.emptyNode.style.display).toEqual('none');
+    });
+  });
+
+  describe("The emptyNode property", function() {
+    it("Should add/remove nodes", function() {
+      var div = document.createElement("div");
+      el.emptyNode = div;
+      expect(div.parentNode).toBe(el.nodes.emptyNode);
+
+      var div2 = document.createElement("div");
+      el.emptyNode = div2;
+
+      expect(div.parentNode).toBe(null);
+      expect(div2.parentNode).toBe(el.nodes.emptyNode);
     });
   });
 });

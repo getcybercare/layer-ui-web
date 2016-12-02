@@ -266,6 +266,14 @@ describe('layer-conversation-panel', function() {
     });
   });
 
+  describe("The emptyMessageListNode property", function() {
+    it("Should set the list emptyNode property", function() {
+      var div = document.createElement('div');
+      el.emptyMessageListNode = div;
+      expect(el.nodes.list.emptyNode).toBe(div);
+    });
+  });
+
   describe("The composeButtons property", function() {
     it("Should set the list composeButtons property", function() {
       var buttons = [document.createElement("button"), document.createElement("button")];
@@ -279,6 +287,13 @@ describe('layer-conversation-panel', function() {
     it("Should set the list composeText property", function() {
       el.composeText = "Frodo Must Cry";
       expect(el.nodes.composer.value).toEqual("Frodo Must Cry");
+    });
+  });
+
+  describe("The composePlaceholder property", function() {
+    it("Should set the list composePlaceholder property", function() {
+      el.composePlaceholder = "Frodo Must Cry";
+      expect(el.nodes.composer.placeholder).toEqual("Frodo Must Cry");
     });
   });
 

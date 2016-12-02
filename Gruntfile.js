@@ -103,12 +103,18 @@ module.exports = function (grunt) {
 
     watch: {
       debug: {
-        files: ['src/**', "Gruntfile.js", '!**/test.js', 'index.js'],
-        tasks: ['debug', 'notify:watch']
+        files: ['src/**', "Gruntfile.js", '!**/test.js'],
+        tasks: ['debug', 'notify:watch'],
+        options: {
+          interrupt: true
+        }
       },
       themes: {
         files: ['themes/src/**'],
-        tasks: ['theme']
+        tasks: ['theme'],
+        options: {
+          interrupt: true
+        }
       }
     },
     notify: {

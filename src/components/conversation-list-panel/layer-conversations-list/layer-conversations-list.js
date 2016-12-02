@@ -256,7 +256,7 @@ LUIComponent('layer-conversations-list', {
      * @private
      */
     _getItemId(conversation) {
-      const uuid = LayerAPI.Util.uuid(conversation.id);
+      const uuid = conversation.id.replace(/^.*\//, '');
       return `conversation-list-item-${this.id}-${uuid}`;
     },
 

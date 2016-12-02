@@ -38,7 +38,7 @@ Note that if you do not have an `appId` at the time you call `init()` you can in
 ```html
 <script src='https://cdn.layer.com/sdk/3.0/layer-websdk.min.js'></script>
 <script src='https://cdn.layer.com/ui/0.9/layer-ui-web.min.js'></script>
-<link rel='stylesheet' href='https://cdn.layer.com/ui/0.9/themes/basic-bubbles.css' />
+<link rel='stylesheet' href='https://cdn.layer.com/ui/0.9/themes/bubbles-basic.css' />
 <script>
 window.layerUI.init({
   layer: window.layer,
@@ -50,8 +50,8 @@ window.layerUI.init({
 Alternatively, a separate theme and templates can be loaded using:
 
 ```html
-<link rel='stylesheet' href='https://cdn.layer.com/ui/0.9/themes/basic-group.css' />
-<link rel='import' href="https://cdn.layer.com/ui/0.9/themes/basic-group-templates.html">
+<link rel='stylesheet' href='https://cdn.layer.com/ui/0.9/themes/groups-basic.css' />
+<link rel='import' href="https://cdn.layer.com/ui/0.9/themes/groups-basic-templates.html">
 ```
 
 > Note: Using a custom template must access this package from the `window` object; as such, regardless of what module system you use, the default
@@ -75,8 +75,8 @@ layerUI.init({
 ```
 
 ```html
-<link rel='stylesheet' href='node_modules/layer-ui-web/themes/build/basic-group.css' />
-<link rel='import' href="node_modules/layer-ui-web/themes/build/basic-group-templates.html">
+<link rel='stylesheet' href='node_modules/layer-ui-web/themes/build/groups-basic.css' />
+<link rel='import' href="node_modules/layer-ui-web/themes/build/groups-basic-templates.html">
 ```
 
 Note that you can create a custom build that does not compile in all components; this would replace use of the index.js file in this repository with your own:

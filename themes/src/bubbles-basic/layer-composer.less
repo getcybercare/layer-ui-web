@@ -1,12 +1,13 @@
 /* Theming for the Composer panel and its buttons */
 layer-composer {
   background-color: #FAFBFC;
-  border-top: @listitembottomborder;
+  border-top: @border-list-item;
 
   /* Any change you make to textarea MUST be made to .hidden-resizer as well!!! */
   textarea, .hidden-resizer {
     border-width: 0px;
     background-color: #FAFBFC;
+    .layer-text-composer();
   }
 
   &.layer-composer-one-line-of-text {
@@ -19,15 +20,13 @@ layer-composer {
   layer-compose-button-panel {
     padding: 2px 10px 2px 2px;
     button, layer-file-upload-button {
-      font-size: 0.8rem;
-      border: solid 1px #C3CDD4;
-      color: #C3CDD4;
+      border: solid 1px  @fontcolor-lighter;
       background-color: transparent;
+     .layer-text-fine-print();
       border-radius: 8px;
       cursor: pointer;
       &:hover {
-        color: #000;
-        border-color: #000;
+        color: @fontcolor-normal;
       }
     }
   }

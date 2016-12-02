@@ -31,5 +31,8 @@ module.exports = utils.dateSeparator = (widget, messages, index) => {
     const options = { weekday: 'long', year: 'numeric', month: 'short', day: '2-digit' };
     const dateStr = messages[index].sentAt.toLocaleDateString(undefined, options);
     LayerUI.addListItemSeparator(widget, `<span>${dateStr}</span>`, dateClassName, true);
+  } else {
+    LayerUI.addListItemSeparator(widget, '', dateClassName, true);
   }
 };
+

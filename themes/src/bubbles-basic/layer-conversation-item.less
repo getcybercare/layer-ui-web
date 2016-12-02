@@ -5,92 +5,114 @@ layer-conversation-item {
    * background color on layer-conversations-list rather than layer-conversation-item
    */
   .layer-list-item {
-
-    /* Style your Conversation Item Container */
     cursor: pointer;
     padding: 12px 5px;
     border-left: 3px solid transparent;
-    border-bottom: @listitembottomborder;
+    border-bottom: @border-list-item;
     &:not(:first-child) {
-      border-top: @listitembottomborder;
+      border-top: @border-list-item;
     }
+  }
 
-    .layer-conversation-item-content {
+  /* Style the selected Conversation Item */
+  &.layer-conversation-item-selected  .layer-list-item {
+    border-left: 3px solid #19A5E4;
+  }
 
-      /* Style your Conversation Title */
-      layer-conversation-title {
-        font-weight: bold;
-        font-size: 1.0rem;
-        color: #313f48;
-        margin-right: 15px;
-        display: block;
-        font-weight: darker;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        overflow: hidden;
-      }
+  /**
+   * Conversation Titles have 3 states:
+   * 1. Normal
+   * 2. Unread
+   * 3. Selected
+   */
+  layer-conversation-title {
+    .layer-text-list-heading();
+    margin-right: 15px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
 
-      /* Style your (read) Conversation Last Message */
-      layer-conversation-last-message {
-        opacity: 0.4;
+  &.layer-conversation-unread-messages layer-conversation-title {
+    .layer-text-plain-emphasized();
+  }
 
-        /* Prevent videos, images and line breaks from messing with a concise one line last-message */
-        iframe, img:not(.emoji), br {
-          display: none;
+  &.layer-conversation-item-selected layer-conversation-title {
+
+  }
+
+  /**
+   * Conversation Avatars have 3 states:
+   * 1. Normal
+   * 2. Unread
+   * 3. Selected
+   */
+   layer-avatar * {
+      color: @fontcolor-lightest;
+      border: @border-lightest;
+   }
+
+   &.layer-conversation-unread-messages layer-avatar {
+      &:not(.layer-avatar-cluster) {
+        width: 44px;
+        height: 44px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin-right: 11px;
+        * {
+          border: @border-highlight;
         }
       }
+      * {
+        color: @fontcolor-normal;
+      }
+   }
+
+   &.layer-conversation-item-selected layer-avatar {
+
+   }
+
+  /**
+   * Conversation Last Messages have 3 states:
+   * 1. Normal
+   * 2. Unread
+   * 3. Selected
+   */
+   layer-conversation-last-message {
+      .layer-text-plain-deemphasized();
+
+      /* Prevent videos, images and line breaks from messing with a concise one line last-message */
+      iframe, img:not(.emoji), br {
+        display: none;
+      }
+   }
+
+   &.layer-conversation-unread-messages layer-conversation-last-message {
+      .layer-text-plain-emphasized();
+   }
+
+   &.layer-conversation-item-selected  layer-conversation-last-message {
+
+   }
+
+
+  /**
+   * Conversation Delete button has 2 states:
+   * 1. Normal
+   * 2. Selected
+   */
+   layer-delete {
+      display: none;
     }
-  }
 
-  /* The Conversation has unread messages */
-  &.layer-conversation-unread-messages {
-    .layer-list-item {
-
-      /* Style your Conversation Title with Unread Messages */
-      layer-conversation-title {
-
-      }
-
-      /* Style your Avatar for Conversation with Unread Messages */
-      layer-avatar * {
-
-      }
-
-      /* Style your (unread) Conversation Last Message */
-      layer-conversation-last-message {
-        opacity: 1.0;
+    &.layer-conversation-item-selected layer-delete {
+      display: block;
+      opacity: 0.2;
+      padding: 2px 4px 8px;
+      &:hover {
+        opacity: 0.8;
       }
     }
-  }
-
-  /* The Conversation is Selected */
-  &.layer-conversation-item-selected {
-    .layer-list-item {
-      border-left: 3px solid #19A5E4;
-
-      /* Style your Selected Conversation Title */
-      layer-conversation-title {
-
-      }
-
-      /* Style your Selected Avatar for Conversation */
-      layer-avatar * {
-
-      }
-
-      /* Style your Selected Conversation Last Message */
-      layer-conversation-last-message {
-
-      }
-    }
-  }
-
-  /* Conversation Delete Button */
-  layer-delete {
-    opacity: 0.1;
-    padding: 2px 4px 8px;
-    &:hover {
-      opacity: 1;
-    }
-  }
 }

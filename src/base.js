@@ -81,6 +81,8 @@ const layerUI = {};
  * @property {String[]} [settings.textHandlers=['autolinker', 'emoji', 'images', 'newline', 'youtube']] Specify which text handlers you want
  *    Note that any custom handlers you add do not need to be in the settings, they can be called after calling `init()` using layerUI.registerTextHandler.
  * @property {Object} [settings.maxSizes]  The maximum width/height for image and video previews
+ * @property {Object} [settings.verticalMessagePadding=0]  Message handlers that must hard code a height into their dom nodes can be
+ *     hard to add borders and padding around.  Use this property to offset any hardcoded height by this number of pixels
  */
 layerUI.settings = {
   appId: '',
@@ -93,6 +95,7 @@ layerUI.settings = {
   },
   textHandlers: ['autolinker', 'emoji', 'images', 'newline', 'youtube'],
   maxSizes: { width: 512, height: 512 },
+  verticalMessagePadding: 0,
 };
 
 /**
@@ -202,10 +205,12 @@ layerUI.addListItemSeparator = function addListItemSeparator(listItemNode, conte
     node.classList.add(contentClass);
   }
 
-  if (content && typeof content === 'string') {
-    node.innerHTML = content;
-  } else {
-    node.appendChild(content);
+  if (content) {
+    if (typeof content === 'string') {
+      node.innerHTML = content;
+    } else {
+      node.appendChild(content);
+    }
   }
 
   // If there is already a layer-list-item-separator-parent, then we just need to make sure it has this content

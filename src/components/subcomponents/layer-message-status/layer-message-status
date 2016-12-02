@@ -1,0 +1,11 @@
+<template>
+  <style>
+    layer-message-status {
+      display: inline;
+    }
+  </style>
+</template>
+<script>
+  window.layerUI.registerTemplate('layer-message-status');
+</script>
+
