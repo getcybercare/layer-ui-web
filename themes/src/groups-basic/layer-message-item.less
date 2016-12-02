@@ -2,7 +2,7 @@
 // Common to all message-items
 layer-message-item {
   .layer-list-item {
-    padding: 0px 4px;
+    padding: 0px 4px 0px 30px;
   }
 
   .layer-parsed-image {
@@ -30,7 +30,12 @@ layer-message-item {
     display: none;
   }
 
+
   layer-delete {
+    opacity: 0;
+
+  }
+  &:hover layer-delete {
     cursor: pointer;
     opacity: 0.2;
     &:hover {
@@ -54,9 +59,11 @@ layer-message-item.layer-list-item-first {
   .layer-sender-info {
     display: block;
     margin-top: 4px;
-    color: #adb9c1;
-    font-size: 0.9rem;
     margin-bottom: 5px;
+
+    layer-message-status {
+      .layer-text-fine-print();
+    }
 
     layer-message-status:after {
       content: '-';
@@ -64,8 +71,9 @@ layer-message-item.layer-list-item-first {
     }
     layer-date {
       display: inline-block;
-      font-size: 0.8em;
       margin-left: 5px;
+      .layer-text-fine-print();
+      font-weight: @fontweight-lighter;
     }
 
     .layer-sender-name {
