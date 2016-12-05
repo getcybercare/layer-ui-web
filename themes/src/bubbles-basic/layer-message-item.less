@@ -92,7 +92,7 @@ layer-messages-list layer-message-item {
   /**
    * Custom formatting for Messages sent by the session owner.
    */
-  &.layer-message-item-sent {
+  &.layer-message-item-sent .layer-list-item {
     layer-message-text-plain, layer-message-image canvas, layer-message-video video {
       color: @chatownerbubbletextcolor;
       margin: 0px;
@@ -101,6 +101,7 @@ layer-messages-list layer-message-item {
     layer-message-text-plain {
       margin-left: 20px;
       background-color: @chatownerbubblebackground;
+      color: @fontcolor-inverted;
 
       a, a:visited, a:focus, a:active {
         color: @chatownerbubbletextcolor;
