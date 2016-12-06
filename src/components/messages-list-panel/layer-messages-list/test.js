@@ -530,6 +530,11 @@ describe('layer-messages-list', function() {
       el.query.data = [];
       el._rerender({});
       expect(el.isEmptyList).toBe(true);
+
+      el.isEmptyList = false;
+      el.query.data = [];
+      el._rerender({type: "reset"});
+      expect(el.isEmptyList).toBe(false);
     });
     it("Should call _processQueryEvt", function() {
       spyOn(el, "_processQueryEvt");
@@ -822,13 +827,13 @@ describe('layer-messages-list', function() {
     });
 
     it("Should return second item", function() {
-      el.scrollTo(el.childNodes[2].offsetTop - el.childNodes[0].offsetTop);
-      expect(el._findFirstVisibleItem()).toBe(el.childNodes[2]);
+      el.scrollTo(el.childNodes[3].offsetTop + el.childNodes[0].offsetTop);
+      expect(el._findFirstVisibleItem()).toBe(el.childNodes[3]);
     });
 
     it("Should return third item", function() {
-      el.scrollTo(el.childNodes[3].offsetTop - el.childNodes[0].offsetTop);
-      expect(el._findFirstVisibleItem()).toBe(el.childNodes[3]);
+      el.scrollTo(el.childNodes[4].offsetTop + el.childNodes[0].offsetTop);
+      expect(el._findFirstVisibleItem()).toBe(el.childNodes[4]);
     });
   });
 
@@ -892,7 +897,7 @@ describe('layer-messages-list', function() {
     });
 
     it("Should scroll to the item that was on top of the visible viewport prior to the insertion", function() {
-      el.scrollTop = el.childNodes[11].offsetTop - el.offsetTop;
+      el.scrollTop = el.childNodes[11].offsetTop - el.firstChild.offsetTop;
       expect(el._findFirstVisibleItem()).toBe(el.childNodes[11]);
       el.properties.stuckToBottom = false;
       spyOn(el, "scrollTo");
@@ -901,14 +906,14 @@ describe('layer-messages-list', function() {
       el._renderPagedDataDone([query.data[99], query.data[98], messages[0], messages[1]], fragment, {type: 'data', data: messages});
 
       // What was the 11th item is now the 13th item
-      expect(el.scrollTo).toHaveBeenCalledWith(el.childNodes[13].offsetTop - el.offsetTop);
+      expect(el.scrollTo).toHaveBeenCalledWith(el.childNodes[13].offsetTop - el.firstChild.offsetTop);
     });
   });
 
   describe("The isEmptyList property", function() {
     it("Should initialize to hidden/false", function() {
       expect(el.isEmptyList).toBe(false);
-      expect(el.nodes.emptyNode.style.display).toEqual("");
+      expect(el.nodes.emptyNode.style.display).toEqual("none");
     });
     it("Should update the display state for emptyNode", function() {
       el.isEmptyList = true;
@@ -916,6 +921,12 @@ describe('layer-messages-list', function() {
 
       el.isEmptyList = false;
       expect(el.nodes.emptyNode.style.display).toEqual('none');
+    });
+    it("Should reapply its isEmptyList value after _rerender", function() {
+      el.isEmptyList = true;
+      query.data = [];
+      el._rerender({type: "add", messages: []});
+      expect(el.nodes.emptyNode.style.display).toEqual('');
     });
   });
 

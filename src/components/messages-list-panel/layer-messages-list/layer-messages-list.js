@@ -254,12 +254,12 @@ LUIComponent('layer-messages-list', {
       if (LayerUI.isInBackground()) return;
 
       // The top that we can see is marked by how far we have scrolled.
-      // However, all offsetTop values of the child nodes will be skewed by the value of this.offsetTop, so add that in.
-      const visibleTop = this.scrollTop + this.offsetTop;
+      // However, all offsetTop values of the child nodes will be skewed by the value of this.nodes.loadIndicator.offsetTop, so add that in.
+      const visibleTop = this.scrollTop + this.nodes.loadIndicator.offsetTop;
 
       // The bottom that we can see is marked by how far we have scrolled plus the height of the panel.
-      // However, all offsetTop values of the child nodes will be skewed by the value of this.offsetTop, so add that in.
-      const visibleBottom = this.scrollTop + this.clientHeight + this.offsetTop;
+      // However, all offsetTop values of the child nodes will be skewed by the value of this.nodes.loadIndicator.offsetTop, so add that in.
+      const visibleBottom = this.scrollTop + this.clientHeight + this.nodes.loadIndicator.offsetTop;
       const children = Array.prototype.slice.call(this.childNodes);
       children.forEach((child) => {
         if (child.offsetTop >= visibleTop && child.offsetTop + child.clientHeight <= visibleBottom) {
@@ -282,8 +282,8 @@ LUIComponent('layer-messages-list', {
      * @param {layerUI.components.MessagesListPanel.Item} child
      */
     _markAsRead(child) {
-      const visibleTop = this.scrollTop + this.offsetTop;
-      const visibleBottom = this.scrollTop + this.clientHeight + this.offsetTop;
+      const visibleTop = this.scrollTop + this.nodes.loadIndicator.offsetTop;
+      const visibleBottom = this.scrollTop + this.clientHeight + this.nodes.loadIndicator.offsetTop;
       if (child.offsetTop >= visibleTop && child.offsetTop + child.clientHeight <= visibleBottom) {
         child.properties.item.isRead = true;
       }
@@ -357,6 +357,10 @@ LUIComponent('layer-messages-list', {
       if (!widgets[widgets.length - 1].nextSibling) widgets[widgets.length - 1].lastInSeries = true;
     },
 
+    _postRender() {
+      this.nodes.emptyNode.style.display = this.isEmptyList ? '' : 'none';
+    },
+
     /**
      * Call this on any Query change events.
      *
@@ -369,7 +373,7 @@ LUIComponent('layer-messages-list', {
         this.isEmptyList = false;
         this._renderResetData();
       } else {
-        this.isEmptyList = this.query.data.length === 0;
+        this.isEmptyList = evt.type !== 'reset' && this.query.data.length === 0;
         this._processQueryEvt(evt);
       }
     },
@@ -458,8 +462,8 @@ LUIComponent('layer-messages-list', {
      * @private
      */
     _findFirstVisibleItem() {
-      const visibleTop = this.scrollTop + this.offsetTop;
-      const visibleBottom = this.scrollTop + this.clientHeight + this.offsetTop;
+      const visibleTop = this.scrollTop;
+      const visibleBottom = this.scrollTop + this.clientHeight;
       const children = Array.prototype.slice.call(this.childNodes);
       for (let i = 0; i < children.length; i++) {
         const child = children[i];
@@ -545,7 +549,7 @@ LUIComponent('layer-messages-list', {
       }
 
       const firstVisibleItem = this._findFirstVisibleItem();
-      const initialOffset = firstVisibleItem ? firstVisibleItem.offsetTop - this.offsetTop - this.scrollTop : 0;
+      const initialOffset = firstVisibleItem ? firstVisibleItem.offsetTop - this.nodes.loadIndicator.offsetTop - this.scrollTop : 0;
 
       // Now that DOM manipulation is completed,
       // we can add the document fragments to the page
@@ -558,7 +562,7 @@ LUIComponent('layer-messages-list', {
       if (this.properties.stuckToBottom) {
         this.scrollTo(this.scrollHeight - this.clientHeight);
       } else if (firstVisibleItem && evt.type === 'data' && evt.data.length !== 0) {
-        this.scrollTo(firstVisibleItem.offsetTop - this.offsetTop - initialOffset);
+        this.scrollTo(firstVisibleItem.offsetTop - this.nodes.loadIndicator.offsetTop - initialOffset);
       }
 
       this.isDataLoading = this.properties.query.isFiring;
