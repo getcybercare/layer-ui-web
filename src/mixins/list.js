@@ -229,6 +229,17 @@ module.exports = {
       if (this.query && this.query.size) {
         this._rerender({ type: 'data', data: this.query.data });
       }
+      this._postRender();
+    },
+
+    /**
+     * Called after _render has finished for component-specific handling.
+     *
+     * @method _postRender
+     * @private
+     */
+    _postRender() {
+      // Noop
     },
 
     /**
