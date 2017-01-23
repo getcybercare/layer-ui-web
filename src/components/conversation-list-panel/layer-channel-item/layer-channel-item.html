@@ -1,0 +1,29 @@
+<template>
+  <style>
+    layer-channel-item {
+      display: flex;
+      flex-direction: column;
+    }
+    layer-channel-item .layer-list-item {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+    }
+    layer-channel-item  .layer-list-item .layer-channel-item-content {
+      flex-grow: 1;
+      width: 100px; /* Flexbox bug */
+    }
+    layer-channel-item.layer-item-filtered .layer-list-item {
+      display: none;
+    }
+  </style>
+  <div class='layer-list-item' layer-id='innerNode'>
+    <div class='layer-channel-item-content'>
+      <div layer-id='title' class='layer-channel-title'></div>
+    </div>
+    <layer-delete layer-id='delete'></layer-delete>
+  </div>
+</template>
+<script>
+  window.layerUI.registerTemplate('layer-channel-item');
+</script>

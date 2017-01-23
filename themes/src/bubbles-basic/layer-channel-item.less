@@ -1,0 +1,62 @@
+/* Styles for channel Items that appear within the channel List widget */
+layer-channel-item {
+
+  /* Style a basic channel Item.  Note that it may be better to put
+   * background color on layer-channels-list rather than layer-channel-item
+   */
+  .layer-list-item {
+    cursor: pointer;
+    padding: 20px 5px;
+    border-left: 3px solid transparent;
+    border-bottom: @border-list-item;
+    &:not(:first-child) {
+      border-top: @border-list-item;
+    }
+  }
+
+  /* Style the selected channel Item */
+  &.layer-channel-item-selected  .layer-list-item {
+    border-left: 3px solid #19A5E4;
+  }
+
+  /**
+   * channel Titles have 3 states:
+   * 1. Normal
+   * 2. Unread
+   * 3. Selected
+   */
+  .layer-channel-title {
+    .layer-text-list-heading();
+    margin-right: 15px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+  }
+
+  &.layer-channel-item-selected .layer-channel-title {
+
+  }
+
+  &.layer-channel-item-selected  layer-channel-last-message {
+
+  }
+
+
+  /**
+   * channel Delete button has 2 states:
+   * 1. Normal
+   * 2. Selected
+   */
+   layer-delete {
+      display: none;
+    }
+
+    &.layer-channel-item-selected layer-delete {
+      display: block;
+      opacity: 0.2;
+      padding: 2px 4px 8px;
+      &:hover {
+        opacity: 0.8;
+      }
+    }
+}
