@@ -99,7 +99,8 @@ registerComponent('layer-message-status', {
           let text = '';
           if (message.isSaving()) {
             text = 'pending';
-          } else if (message.deliveryStatus === Layer.Constants.RECIPIENT_STATE.NONE) {
+          } else if (message instanceof Layer.Message.ChannelMessage ||
+            message.deliveryStatus === Layer.Constants.RECIPIENT_STATE.NONE) {
             text = 'sent';
           } else if (message.readStatus === Layer.Constants.RECIPIENT_STATE.NONE) {
             text = 'delivered';

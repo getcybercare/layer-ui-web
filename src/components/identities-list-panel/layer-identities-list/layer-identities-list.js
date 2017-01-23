@@ -195,17 +195,6 @@ registerComponent('layer-identities-list', {
   methods: {
 
     /**
-     * Generate a DOM ID for each Identity ID
-     *
-     * @method
-     * @private
-     * @param {String} id
-     */
-    _getItemId(identity) {
-      return `identities-list-item-${this.id}-${identity.internalId}`;
-    },
-
-    /**
      * Constructor.
      *
      * @method onCreate
@@ -279,7 +268,7 @@ registerComponent('layer-identities-list', {
     _generateItem(identity) {
       const identityWidget = document.createElement('layer-identity-item');
       identityWidget.item = identity;
-      identityWidget.id = this._getItemId(identity);
+      identityWidget.id = this._getItemId(identity.id);
       identityWidget.selected = this.selectedIdentities.indexOf(identity) !== -1;
       identityWidget._runFilter(this.filter);
       return identityWidget;
@@ -318,7 +307,7 @@ registerComponent('layer-identities-list', {
      */
     _renderSelection() {
       const selectedNodes = this.querySelectorAllArray('.layer-identity-item-selected').map(node => node.parentNode);
-      const selectedIds = this.selectedIdentities.map(identity => '#' + this._getItemId(identity));
+      const selectedIds = this.selectedIdentities.map(identity => '#' + this._getItemId(identity.id));
       const nodesToSelect = this.selectedIdentities.length ? this.querySelectorAllArray(selectedIds.join(', ')) : [];
       selectedNodes.forEach((node) => {
         if (nodesToSelect.indexOf(node) === -1) node.selected = false;

@@ -340,18 +340,6 @@ registerComponent('layer-messages-list', {
     },
 
     /**
-     * Generate a unique dom ID for this message to make it easy to lookup any given Message item.
-     *
-     * @method
-     * @private
-     */
-    _getItemId(message) {
-      const uuid = message.id.replace(/^.*\//, '');
-      return `message-item${this.id}-${uuid}`;
-    },
-
-
-    /**
      * Append a Message to the document fragment, updating the previous messages' lastInSeries property as needed.
      *
      * @method _generateItem
@@ -362,7 +350,7 @@ registerComponent('layer-messages-list', {
       if (handler) {
         const messageWidget = document.createElement(message.sender.sessionOwner ?
           'layer-message-item-sent' : 'layer-message-item-received');
-        messageWidget.id = this._getItemId(message);
+        messageWidget.id = this._getItemId(message.id);
         messageWidget.dateRenderer = this.dateRenderer;
         messageWidget.messageStatusRenderer = this.messageStatusRenderer;
         messageWidget._contentTag = handler.tagName;
@@ -422,7 +410,7 @@ registerComponent('layer-messages-list', {
       value(evt) {
         this.properties.listData = [].concat(this.properties.query.data).reverse();
 
-        const messageWidget = this.querySelector('#' + this._getItemId(evt.target));
+        const messageWidget = this.querySelector('#' + this._getItemId(evt.target.id));
         if (messageWidget) this.removeChild(messageWidget);
 
         const removeIndex = this.properties.listData.length - evt.index; // Inverted for reverse order
@@ -450,7 +438,7 @@ registerComponent('layer-messages-list', {
         const fragment = this._generateFragment([evt.target]);
         if (insertIndex < oldListData.length) {
           const insertBeforeNode = affectedItems.length > 1 ?
-            this.querySelector('#' + this._getItemId(oldListData[insertIndex])) : null;
+            this.querySelector('#' + this._getItemId(oldListData[insertIndex].id)) : null;
           this.insertBefore(fragment, insertBeforeNode);
         } else {
           this.appendChild(fragment);
@@ -481,7 +469,7 @@ registerComponent('layer-messages-list', {
     _updateLastMessageSent() {
       for (let i = this.properties.listData.length - 1; i >= 0; i--) {
         if (this.properties.listData[i].sender.sessionOwner) {
-          const item = this.querySelector('#' + this._getItemId(this.properties.listData[i]));
+          const item = this.querySelector('#' + this._getItemId(this.properties.listData[i].id));
           if (item && !item.classList.contains('layer-last-message-sent')) {
             this.querySelectorAllArray('.layer-last-message-sent').forEach((node) => {
               node.classList.remove('layer-last-message-sent');
@@ -582,7 +570,7 @@ registerComponent('layer-messages-list', {
       // Find the nodes of all affected items in both the document and the fragment,
       // and call processAffectedWidgets on them
       if (affectedItems.length) {
-        const affectedWidgetsQuery = '#' + affectedItems.map(message => this._getItemId(message)).join(', #');
+        const affectedWidgetsQuery = '#' + affectedItems.map(message => this._getItemId(message.id)).join(', #');
         let affectedWidgets = this.querySelectorAllArray(affectedWidgetsQuery);
         if (fragment) {
           const fragmentWidgets = Array.prototype.slice.call(fragment.querySelectorAll(affectedWidgetsQuery));

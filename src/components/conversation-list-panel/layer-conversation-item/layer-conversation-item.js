@@ -10,25 +10,24 @@
  *
  * * Badges for unread messages (currently just adds a css class so styling can change if there are any unread messages)
  *
- * @class layerUI.components.ConversationsListPanel.Item
+ * @class layerUI.components.ConversationsListPanel.Item.Conversation
  * @extends layerUI.components.Component
  */
 import { registerComponent } from '../../../components/component';
 import ListItem from '../../../mixins/list-item';
+import ListItemSelection from '../../../mixins/list-item-selection';
 import '../../subcomponents/layer-conversation-last-message/layer-conversation-last-message';
 import '../../subcomponents/layer-delete/layer-delete';
 import '../../subcomponents/layer-avatar/layer-avatar';
 import '../../subcomponents/layer-conversation-title/layer-conversation-title';
 
 registerComponent('layer-conversation-item', {
-  mixins: [ListItem],
+  mixins: [ListItem, ListItemSelection],
   properties: {
 
     // Every List Item has an item property, here it represents the Conversation to render
     item: {
       set(newConversation, oldConversation) {
-        if (this.nodes.delete) this.nodes.delete.item = newConversation;
-        if (this.nodes.title) this.nodes.title.item = newConversation;
         if (this.nodes.lastMessage) {
           this.nodes.lastMessage.canFullyRenderLastMessage = this.canFullyRenderLastMessage;
         }

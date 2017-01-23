@@ -4,7 +4,7 @@
  * This widget appears within
  *
  * * layerUI.components.MessagesListPanel.Item: Represents the sender of a Message
- * * layerUI.components.ConversationsListPanel.Item: Represents the participants of a Conversation
+ * * layerUI.components.ConversationsListPanel.Item.Conversation: Represents the participants of a Conversation
  * * layerUI.components.IdentitiesListPanel.Item: Represents a user in a User List
  *
  * Rendering is done using data from the `layer.Identity` object for each user, using the layer.Identity.avatarUrl if available to

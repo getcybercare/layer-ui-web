@@ -243,14 +243,14 @@ describe('layer-conversations-list', function() {
 
   describe("The _renderSelection() method", function() {
     it("Should select and deselect appropriately", function() {
-      el.firstChild.classList.add('layer-conversation-item-selected');
-      el.childNodes[1].classList.add('layer-conversation-item-selected');;
+      el.firstChild.classList.add('layer-selected-item');
+      el.childNodes[1].classList.add('layer-selected-item');;
 
       el.selectedConversationId = query.data[6].id;
-      expect(el.childNodes[0].classList.contains('layer-conversation-item-selected')).toBe(false);
-      expect(el.childNodes[1].classList.contains('layer-conversation-item-selected')).toBe(false);
-      expect(el.childNodes[5].classList.contains('layer-conversation-item-selected')).toBe(false);
-      expect(el.childNodes[6].classList.contains('layer-conversation-item-selected')).toBe(true);
+      expect(el.childNodes[0].classList.contains('layer-selected-item')).toBe(false);
+      expect(el.childNodes[1].classList.contains('layer-selected-item')).toBe(false);
+      expect(el.childNodes[5].classList.contains('layer-selected-item')).toBe(false);
+      expect(el.childNodes[6].classList.contains('layer-selected-item')).toBe(true);
     });
   });
 

@@ -15,8 +15,8 @@
  * @class layerUI.components.subcomponents.Composer
  * @extends layerUI.components.Component
  */
-import layerUI from '../../../base';
 import * as Layer from 'layer-websdk';
+import layerUI from '../../../base';
 import { registerComponent } from '../../../components/component';
 import '../layer-compose-button-panel/layer-compose-button-panel';
 
@@ -254,7 +254,8 @@ registerComponent('layer-composer', {
         text: textPart ? textPart.body : 'File received',
         title: `New Message from ${message.sender.displayName}`,
       };
-      if (this.trigger('layer-send-message', { message, notification })) {
+
+      if (this.trigger('layer-send-message', { itme: message, notification })) {
         if (this.conversation instanceof Layer.Channel) {
           this.onSend(message);
           message.send();

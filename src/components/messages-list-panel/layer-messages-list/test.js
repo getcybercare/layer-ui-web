@@ -663,7 +663,7 @@ describe('layer-messages-list', function() {
       layer.Util.defer.flush();
       jasmine.clock().tick(500);
 
-      var newElement = el.querySelector('#' + el._getItemId(message));
+      var newElement = el.querySelector('#' + el._getItemId(message.id));
       expect(newElement.item).toBe(message);
       expect(newElement).toBe(el.childNodes[80 + 2]); // + 2 for loadingIndicator and emptyNode
     });
@@ -682,7 +682,7 @@ describe('layer-messages-list', function() {
       layer.Util.defer.flush();
       jasmine.clock().tick(500);
 
-      var newElement = el.querySelector('#' + el._getItemId(message));
+      var newElement = el.querySelector('#' + el._getItemId(message.id));
       expect(newElement.item).toBe(message);
       expect(newElement).toBe(el.childNodes[80 + 2]); // + 2 for loadingIndicator and emptyNode
     });

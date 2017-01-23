@@ -11,7 +11,7 @@ layer-conversation-item {
     height: 1.8em;
   }
 
-  &.layer-conversation-item-selected {
+  &.layer-selected-item {
     background-color: #19a5e4;
   }
 
@@ -42,8 +42,8 @@ layer-conversation-item {
     .layer-text-list-heading-emphasized();
   }
 
-  &.layer-conversation-item-selected layer-conversation-title,
-  &.layer-conversation-item-selected.layer-conversation-unread-messages layer-conversation-title {
+  &.layer-selected-item layer-conversation-title,
+  &.layer-selected-item.layer-conversation-unread-messages layer-conversation-title {
     color: white;
   }
 
@@ -66,7 +66,7 @@ layer-conversation-item {
     .layer-text-plain-emphasized();
   }
 
-   &.layer-conversation-item-selected  layer-conversation-last-message, &.layer-conversation-item-selected.layer-conversation-unread-messages  layer-conversation-last-message {
+   &.layer-selected-item  layer-conversation-last-message, &.layer-selected-item.layer-conversation-unread-messages  layer-conversation-last-message {
     color: @fontcolor-selected;
    }
 
@@ -79,7 +79,7 @@ layer-conversation-item {
       display: none;
     }
 
-    &.layer-conversation-item-selected layer-delete {
+    &.layer-selected-item layer-delete {
       display: block;
       opacity: 0.2;
       padding: 2px 0px 8px 0px;

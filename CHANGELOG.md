@@ -1,5 +1,9 @@
 # Layer UI for Web Change Log
 
+# 0.9.11
+
+* Adds Channel support
+
 ## 0.9.10
 
 * `layerUI.init()` no longer expects a `layer` property

@@ -148,6 +148,7 @@ module.exports = {
   },
   methods: {
     onCreate() {
+      if (!this.id) this.id = LayerAPI.Util.generateUUID();
       this.properties.listData = [];
       this.addEventListener('scroll', this._onScroll.bind(this));
       this.onRender();
@@ -259,6 +260,17 @@ module.exports = {
     },
 
     /**
+     * Generate a unique but consistent DOM ID for each layerUI.mixins.ListItem.
+     *
+     * @method _getItemId
+     * @param {String} itemId
+     * @private
+     */
+    _getItemId(itemId) {
+      return 'list-item-' + this.id + '-' + itemId.replace(/[^a-zA-Z0-9-_]/g, '-').replace(/-+/g, '-');
+    },
+
+    /**
      * Generate an list-item for one query result.
      *
      * @method _generateFragmentItem
@@ -268,6 +280,7 @@ module.exports = {
       const itemInstance = item instanceof Layer.Root ? item : this.client.getObject(item.id);
       if (itemInstance) {
         const widget = this._generateItem(itemInstance);
+        widget.setAttribute('layer-item-id', item.id.replace(/^layer:\/\/\//, '').replace(/\//g, '_'));
         if (widget) {
           this.onGenerateListItem(widget);
           fragment.appendChild(widget);
@@ -296,7 +309,7 @@ module.exports = {
      */
     _gatherAndProcessAffectedItems(affectedItems, isTopItemNew) {
       if (affectedItems.length) {
-        const itemIds = affectedItems.map(message => this._getItemId(message));
+        const itemIds = affectedItems.map(item => this._getItemId(item.id));
         const affectedWidgets = this.querySelectorAllArray('#' + itemIds.join(', #'));
         this._processAffectedWidgets(affectedWidgets, isTopItemNew);
       }
@@ -420,7 +433,7 @@ module.exports = {
       this.properties.listData = [].concat(this.properties.query.data);
       const removeIndex = evt.index;
       const affectedItems = this.properties.listData.slice(Math.max(0, removeIndex - 3), removeIndex + 3);
-      const listItem = this.querySelector('#' + this._getItemId(evt.target));
+      const listItem = this.querySelector('#' + this._getItemId(evt.target.id));
       if (listItem) this.removeChild(listItem);
 
       this._gatherAndProcessAffectedItems(affectedItems, false);

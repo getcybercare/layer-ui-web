@@ -769,7 +769,7 @@ describe('layer-identities-list', function() {
         });
 
         // Posttest
-        var newElement = el.querySelector('#' + el._getItemId(identity));
+        var newElement = el.querySelector('#' + el._getItemId(identity.id));
         expect(newElement.item.userId).toEqual("user10000");
         expect(newElement).toBe(el.childNodes[50]);
       });

@@ -68,7 +68,7 @@ registerComponent('layer-conversation-panel', {
    * ```javascript
    * conversationPanel.onSendMessage = function(evt) {
    *   evt.preventDefault();
-   *   var message = evt.detail.message;
+   *   var message = evt.detail.item;
    *   myAsyncLookup(function(result) {
    *     var part = new layer.MessagePart({
    *       mimeType: 'application/json',
@@ -83,7 +83,7 @@ registerComponent('layer-conversation-panel', {
    * @property {Function} onSendMessage
    * @param {Event} evt
    * @param {Object} evt.detail
-   * @param {layer.Message} evt.detail.message
+   * @param {layer.Message} evt.detail.item
    */
 
   /**
@@ -94,7 +94,7 @@ registerComponent('layer-conversation-panel', {
    * ```javascript
    * document.body.addEventListener('layer-send-message', function(evt) {
    *   evt.preventDefault();
-   *   var message = evt.detail.message;
+   *   var message = evt.detail.item;
    *   myAsyncLookup(function(result) {
    *     var part = new layer.MessagePart({
    *       mimeType: 'application/json',
@@ -109,7 +109,7 @@ registerComponent('layer-conversation-panel', {
    * @event layer-send-message
    * @param {Event} evt
    * @param {Object} evt.detail
-   * @param {layer.Message} evt.detail.message
+   * @param {layer.Message} evt.detail.item
    * @param {Object} evt.detail.notification
    */
 
@@ -121,7 +121,7 @@ registerComponent('layer-conversation-panel', {
    * ```javascript
    * conversationPanel.onMessageDeleted = function(evt) {
    *   evt.preventDefault();
-   *   var message = evt.detail.message;
+   *   var message = evt.detail.item;
    *   message.delete(layer.Constants.DELETION_MODES.MY_DEVICES);
    * };
    * ```
@@ -129,7 +129,7 @@ registerComponent('layer-conversation-panel', {
    * @property {Function} onMessageDeleted
    * @param {Event} evt
    * @param {Object} evt.detail
-   * @param {layer.Message} evt.detail.message
+   * @param {layer.Message} evt.detail.item
    */
 
   /**
@@ -140,7 +140,7 @@ registerComponent('layer-conversation-panel', {
    * ```javascript
    * document.body.addEventListener('layer-message-deleted', function(evt) {
    *   evt.preventDefault();
-   *   var message = evt.detail.message;
+   *   var message = evt.detail.item;
    *   message.delete(layer.Constants.DELETION_MODES.MY_DEVICES);
    * });
    * ```
@@ -148,7 +148,7 @@ registerComponent('layer-conversation-panel', {
    * @event layer-message-deleted
    * @param {Event} evt
    * @param {Object} evt.detail
-   * @param {layer.Message} evt.detail.message
+   * @param {layer.Message} evt.detail.item
    */
 
   /**
@@ -273,6 +273,7 @@ registerComponent('layer-conversation-panel', {
         } else {
           this.properties.query = null;
         }
+        if (value && value.client !== this.client) this.client = value.client;
       },
     },
 
@@ -297,7 +298,7 @@ registerComponent('layer-conversation-panel', {
      */
     conversationId: {
       set(value) {
-        if (value && value.indexOf('layer:///conversations') !== 0) this.properties.conversationId = '';
+        if (value && value.indexOf('layer:///conversations') !== 0 && value.indexOf('layer:///channels') !== 0) this.properties.conversationId = '';
         if (this.client && this.conversationId) {
           if (this.client.isReady && !this.client.isDestroyed) {
             this.conversation = this.client.getConversation(this.conversationId, true);
@@ -331,7 +332,7 @@ registerComponent('layer-conversation-panel', {
      */
     conversation: {
       set(value) {
-        if (value && !(value instanceof Layer.Conversation)) this.properties.conversation = '';
+        if (value && !(value instanceof Layer.Container)) this.properties.conversation = '';
         if (this.client && this.conversation) this._setupConversation();
       },
     },
@@ -361,7 +362,7 @@ registerComponent('layer-conversation-panel', {
     client: {
       set(value) {
         if (value) {
-          if (!this.conversation && this.conversationId) this.conversation = value.getConversation(this.conversationId, true);
+          if (!this.conversation && this.conversationId) this.conversation = value.getObject(this.conversationId, true);
           if (this.conversation) this._setupConversation();
           if (this.queryId) {
             this.query = value.getQuery(this.queryId);

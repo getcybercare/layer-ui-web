@@ -18,7 +18,7 @@
  * ```javascript
  * var list = document.querySelector('layer-conversations-list');
  * list.onConversationSelected = function(evt) {
- *    alert(evt.detail.conversation.id + ' has been selected');
+ *    alert(evt.detail.item.id + ' has been selected');
  * }
  * ```
  *
@@ -31,7 +31,7 @@
  *
  * ```
  * document.body.addEventListener('layer-conversation-selected', function(evt) {
- *    alert(evt.detail.conversation.id + ' has been selected');
+ *    alert(evt.detail.item.id + ' has been selected');
  * });
  * ```
  *
@@ -49,11 +49,12 @@
 import * as Layer from 'layer-websdk';
 import { registerComponent } from '../../../components/component';
 import List from '../../../mixins/list';
+import ListSelection from '../../../mixins/list-selection';
 import MainComponent from '../../../mixins/main-component';
 import '../layer-conversation-item/layer-conversation-item';
 
 registerComponent('layer-conversations-list', {
-  mixins: [List, MainComponent],
+  mixins: [List, ListSelection, MainComponent],
 
   /**
    * Configure a custom action when a Conversation is selected;
@@ -131,7 +132,7 @@ registerComponent('layer-conversations-list', {
    */
 
   /**
-   * See layerUI.components.ConversationsListPanel.onConversationDeleted.
+   * See layerUI.components.ConversationsListPanel.List.onConversationDeleted.
    *
    * @event layer-conversation-deleted
    * @param {Event} evt
@@ -158,10 +159,14 @@ registerComponent('layer-conversations-list', {
      * The above code will set the selected Conversation and render the conversation as selected.
      *
      * @property {String} [selectedConversationId='']
+     * @deprecated see layerUI.components.ConversationsListPanel.ListSelection.selectedId
      */
     selectedConversationId: {
       set(value) {
-        this._renderSelection();
+        this.selectedId = value;
+      },
+      get() {
+        return this.selectedId;
       },
     },
 
@@ -228,6 +233,17 @@ registerComponent('layer-conversations-list', {
     },
 
     /**
+     * The event name to trigger on selecting a Conversation.
+     *
+     * @readonly
+     * @private
+     * @property {String} [_selectedItemEventName=layer-conversation-selected]
+     */
+    _selectedItemEventName: {
+      value: 'layer-conversation-selected',
+    },
+
+    /**
      * Provide a function to determine if the last message is rendered in the Conversation List.
      *
      * By default, only text/plain last-messages are rendered in the Conversation List.
@@ -256,73 +272,6 @@ registerComponent('layer-conversations-list', {
   },
   methods: {
     /**
-     * Generate a unique but consistent DOM ID for each layerUI.components.ConversationsListPanel.Item.
-     *
-     * @method _getItemId
-     * @param {layer.Conversation} conversation
-     * @private
-     */
-    _getItemId(conversation) {
-      const uuid = conversation.id.replace(/^.*\//, '');
-      return `conversation-list-item-${this.id}-${uuid}`;
-    },
-
-    /**
-     * Constructor.
-     *
-     * @method onCreate
-     * @private
-     */
-    onCreate() {
-      if (!this.id) this.id = Layer.Util.generateUUID();
-      this.addEventListener('click', this._onClick.bind(this));
-    },
-
-    /**
-     * User has selected something in the Conversation List that didn't handle that click event.
-     *
-     * Find the Conversation Item selected and generate a `layer-conversation-selected` event.
-     * Click events do NOT bubble up; they must either be handled by the layerUI.components.ConversationsListPanel.Item or
-     * they are treated as a selection event.
-     *
-     * Listening to `layer-conversation-selected` you will still receive the original click event
-     * in case you wish to process that futher; see `originalEvent` below.
-     *
-     * Calling `evt.preventDefault()` will prevent selection from occuring.
-     *
-     * @method _onClick
-     * @private
-     * @param {Event} evt
-     */
-    _onClick(evt) {
-      let target = evt.target;
-      while (target && target !== this && !target.item) {
-        target = target.parentNode;
-      }
-
-      if (target.item) {
-        evt.preventDefault();
-        evt.stopPropagation();
-        if (this.trigger('layer-conversation-selected', { conversation: target.item, originalEvent: evt })) {
-          this.selectedConversationId = target.item.id;
-        }
-      }
-      this.onClick(evt);
-    },
-
-    /**
-     * MIXIN HOOK: Each time a Conversation is Clicked, you can hook into that by providing an onClick method.
-     *
-     * Note that prior to this call, `evt.preventDefault()` and `evt.stopPropagation()` were already called.
-     *
-     * @method onClick
-     * @param {Event} evt
-     */
-    onClick(evt) {
-      // No-op
-    },
-
-    /**
      * Generate a `layer-conversation-item` widget.
      *
      * @method _generateItem
@@ -330,50 +279,15 @@ registerComponent('layer-conversations-list', {
      * @param {layer.Conversation} conversation
      */
     _generateItem(conversation) {
-      const conversationWidget = document.createElement('layer-conversation-item');
-      conversationWidget.id = this._getItemId(conversation);
+      const isChannel = conversation instanceof Layer.Channel;
+      const conversationWidget = document.createElement(`layer-${isChannel ? 'channel' : 'conversation'}-item`);
+      conversationWidget.id = this._getItemId(conversation.id);
       conversationWidget.deleteConversationEnabled = typeof this.deleteConversationEnabled === 'function' ?
         this.deleteConversationEnabled(conversation) : true;
       conversationWidget.canFullyRenderLastMessage = this.canFullyRenderLastMessage;
       conversationWidget.item = conversation;
       if (this.filter) conversationWidget._runFilter(this.filter);
       return conversationWidget;
-    },
-
-    /**
-     * Handle Query data changes.
-     *
-     * Updates rendering of the list, and then updates rendering of the list selection.
-     *
-     * @method onRerender
-     * @private
-     */
-    onRerender: function(evt) {
-      this._renderSelection();
-    },
-
-    /**
-     * Render the currently selected Conversation; remove any selection rendering from formerly selected Conversations.
-     *
-     * See layerUI.components.ConversationsListPanel.List.onSelect for Mixin point for customizing Selection behavior.
-     *
-     * @method _renderSelection
-     */
-    _renderSelection() {
-      const selectedNodes = this.querySelectorAllArray('.layer-conversation-item-selected');
-      const itemId = this.selectedConversationId ? this._getItemId({ id: this.selectedConversationId }) : null;
-      const nodeToSelect = this.selectedConversationId ? this.querySelector('#' + itemId) : null;
-
-      // Deselect everything if the selected nodes are not the node to select...
-      // assumes only one item would ever be selected at a time.
-      if (selectedNodes.length !== 1 || selectedNodes[0] !== nodeToSelect) {
-        if (selectedNodes) {
-          selectedNodes.forEach(node => node.removeClass('layer-conversation-item-selected'));
-        }
-
-        // Select the new item
-        if (nodeToSelect) nodeToSelect.addClass('layer-conversation-item-selected');
-      }
     },
 
     /**

@@ -89,14 +89,14 @@ registerComponent('layer-delete', {
            * ```javascript
            * document.body.addEventListener('layer-message-deleted', function(evt) {
            *    evt.preventDefault();
-           *    var message = evt.message;
+           *    var message = evt.item;
            *    message.delete(layer.Constants.DELETION_MODE.MY_DEVICES);
            * });
            * ```
            *
            * @event layer-message-deleted
            */
-          if (this.trigger('layer-message-deleted', { message: this.item })) {
+          if (this.trigger('layer-message-deleted', { item: this.item })) {
             if (window.confirm('Are you sure you want to delete this message?')) {
               this.item.delete(Layer.Constants.DELETION_MODE.ALL);
             }
@@ -111,14 +111,14 @@ registerComponent('layer-delete', {
          * ```javascript
          * document.body.addEventListener('layer-conversation-deleted', function(evt) {
          *    evt.preventDefault();
-         *    var conversation = evt.conversation;
+         *    var conversation = evt.item;
          *    conversation.delete(layer.Constants.DELETION_MODE.MY_DEVICES);
          * });
          * ```
          *
          * @event layer-conversation-deleted
          */
-        else if (this.trigger('layer-conversation-deleted', { conversation: this.item })) {
+        else if (this.trigger('layer-conversation-deleted', { item: this.item })) {
           if (window.confirm('Are you sure you want to delete this conversation?')) {
             this.item.delete(Layer.Constants.DELETION_MODE.ALL);
           }
