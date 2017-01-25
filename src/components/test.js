@@ -431,9 +431,119 @@ describe('Components', function() {
       expect(el1.properties._internalState.onAfterCreateCalled).toBe(true);
       expect(el1.properties._internalState.disableSetters).toBe(false);
     });
+
+    it("Should call setters in the designated order", function() {
+      var calls = [];
+      layerUI.registerComponent('mixin-ordering-test1', {
+        properties: {
+          prop10: {
+            order: 10,
+            value: 1,
+            set: function() {
+              calls.push(10);
+            }
+          },
+          prop5: {
+            order: 5,
+            value: 1,
+            set: function() {
+              calls.push(5);
+            }
+          },
+          prop15: {
+            order: 15,
+            value: 1,
+            set: function() {
+              calls.push(15);
+            }
+          },
+          prop3: {
+            order: 3,
+            value: 1,
+            set: function() {
+              calls.push(3);
+            }
+          },
+          prop35: {
+            order: 35,
+            value: 1,
+            set: function() {
+              calls.push(35);
+            }
+          },
+          propX: {
+            value: 1,
+            set: function() {
+              calls.push("X");
+            }
+          },
+        }
+      });
+
+      var el1 = document.createElement('mixin-ordering-test1');
+
+      layer.Util.defer.flush();
+      expect(calls).toEqual([3, 5, 10, 15, 35, "X"]);
+    });
+
+    it("Should call setters only once", function() {
+      var calls = [];
+      layerUI.registerComponent('mixin-ordering-test1', {
+        properties: {
+          prop10: {
+            order: 10,
+            value: 1,
+            set: function() {
+              calls.push(10);
+            }
+          },
+          prop5: {
+            order: 5,
+            value: 1,
+            set: function() {
+              calls.push(5);
+              this.prop10 = this.prop10 + 1;
+            }
+          },
+          prop15: {
+            order: 15,
+            value: 1,
+            set: function() {
+              calls.push(15);
+            }
+          },
+          prop3: {
+            order: 3,
+            value: 1,
+            set: function() {
+              calls.push(3);
+              this.prop5 = this.prop5 + 1;
+            }
+          },
+          prop35: {
+            order: 35,
+            value: 1,
+            set: function() {
+              calls.push(35);
+            }
+          },
+          propX: {
+            value: 1,
+            set: function() {
+              calls.push("X");
+            }
+          },
+        }
+      });
+
+      var el1 = document.createElement('mixin-ordering-test1');
+
+      layer.Util.defer.flush();
+      expect(calls).toEqual([3, 5, 10, 15, 35, "X"]);
+    });
   });
 
-  describe("The onRender method", function() {
+  describe("The onRender() method", function() {
     var called = false;
     beforeAll(function() {
       layerUI.registerComponent('onrender-test1', {
@@ -526,50 +636,6 @@ describe('Components', function() {
       el.hasValue = 5;
       el.onAfterCreate();
       expect(called).toBe(true);
-    });
-  });
-
-
-  describe("State property", function() {
-    it("Should trigger onRenderState", function() {
-      layerUI.registerComponent('state-test1', {});
-      var el = document.createElement('state-test1');
-      layer.Util.defer.flush();
-
-      spyOn(el, "onRenderState");
-      el.state = {hey: "ho"};
-      expect(el.onRenderState).toHaveBeenCalledWith();
-    });
-
-    it("Should be set to its parent when onAttached is called", function() {
-      layerUI.registerComponent('state-test2', {});
-      var elParent = document.createElement('layer-avatar');
-      elParent.state = {hey: "ho2"};
-      var el = document.createElement('state-test2');
-      elParent.nodes.el = el;
-      spyOn(el, "onRenderState");
-      elParent.appendChild(el);
-      testRoot.appendChild(elParent);
-
-      layer.Util.defer.flush();
-      expect(el.state).toEqual({hey: "ho2"});
-      expect(el.onRenderState).toHaveBeenCalledWith();
-      expect(el.onRenderState.calls.count()).toEqual(1);
-
-      elParent.state = {hey: "ho3"};
-      expect(el.onRenderState.calls.count()).toEqual(2);
-    });
-
-    it("Should not call onRenderState if no state is set", function() {
-      layerUI.registerComponent('state-test3', {});
-      var elParent = document.createElement('layer-avatar');
-      var el = document.createElement('state-test3');
-      spyOn(el, "onRenderState");
-      elParent.appendChild(el);
-      testRoot.appendChild(elParent);
-      layer.Util.defer.flush();
-      expect(el.state).toEqual(null);
-      expect(el.onRenderState).not.toHaveBeenCalled();
     });
   });
 });

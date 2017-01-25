@@ -3,6 +3,11 @@
 # 0.9.11
 
 * Adds Channel support
+* Added `list-selection` and `list-item-selection` mixins, and removed selection code from `layer-conversation-list`.
+* **Breaking Change**: Events that previously had properties such as `evt.detail.conversation`, `evt.detail.message`, `evt.detail.identity`
+  now just use `evt.detail.item`
+* Restores use of property definition ordering to insure that `app-id` setter can set a `client` prior to other setters triggering
+* Insures that setters get called only once per value prior to `onAfterCreate`
 
 ## 0.9.10
 

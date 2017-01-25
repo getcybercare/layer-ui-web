@@ -416,7 +416,6 @@ registerComponent('layer-messages-list', {
         const removeIndex = this.properties.listData.length - evt.index; // Inverted for reverse order
         const affectedItems = this.properties.listData.slice(Math.max(0, removeIndex - 3), removeIndex + 3);
         this._gatherAndProcessAffectedItems(affectedItems, false);
-        if (!evt.inRender) this.onRerender();
       },
     },
 

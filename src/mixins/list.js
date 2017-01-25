@@ -58,6 +58,7 @@ module.exports = {
      */
     query: {
       set(newValue, oldValue) {
+        if (oldValue) oldValue.off(null, null, this);
         if (newValue instanceof Layer.Query) {
           // If there is an oldQuery that we didn't generate, its up to the app to destroy it when it is done.
           if (this.hasGeneratedQuery) {
@@ -139,16 +140,16 @@ module.exports = {
     },
 
     state: {
-      set: function(newState) {
+      set(newState) {
         Array.prototype.slice.call(this.childNodes).forEach((node) => {
           node.state = newState;
         });
-      }
+      },
     },
   },
   methods: {
     onCreate() {
-      if (!this.id) this.id = LayerAPI.Util.generateUUID();
+      if (!this.id) this.id = Layer.Util.generateUUID();
       this.properties.listData = [];
       this.addEventListener('scroll', this._onScroll.bind(this));
       this.onRender();
@@ -236,7 +237,7 @@ module.exports = {
 
     onRerender: {
       mode: registerComponent.MODES.BEFORE,
-      value: function(evt = {}) {
+      value(evt = {}) {
         if (this.query.isDestroyed) {
           this._renderResetData(evt);
         } else {
@@ -437,7 +438,6 @@ module.exports = {
       if (listItem) this.removeChild(listItem);
 
       this._gatherAndProcessAffectedItems(affectedItems, false);
-      if (!evt.inRender) this.onRerender();
     },
 
     /**
@@ -453,7 +453,6 @@ module.exports = {
       const fragment = this._generateFragment([evt.target]);
       this.insertBefore(fragment, this.childNodes[insertIndex]);
       this._gatherAndProcessAffectedItems(affectedItems, insertIndex === 0);
-      if (!evt.inRender) this.onRerender();
     },
 
     /**
@@ -463,7 +462,9 @@ module.exports = {
      * @private
      */
     _renderPagedData(evt) {
-      const affectedItems = this.properties.listData.slice(this.properties.listData.length - 3, this.properties.listData.length).concat(evt.data);
+      const affectedItems = this.properties.listData
+        .slice(this.properties.listData.length - 3, this.properties.listData.length)
+        .concat(evt.data);
       this.properties.listData = [].concat(this.properties.query.data);
       const fragment = this._generateFragment(evt.data);
 

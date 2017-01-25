@@ -75,24 +75,21 @@ function initReact(React, ReactDom) {
         .replace(/^Layer/, '');
 
     libraryResult[className] = React.createClass({
-
       /**
        * On mounting, copy in all properties, and optionally setup a Query.
        *
        * Delay added to prevent Webcomponents property setters from being blown away in safari and firefox
        */
       componentDidMount() {
-        Layer.Util.defer(() => {
-          // Get the properties/attributes that match those used in this.props
-          const props = component.properties.filter(property =>
-            this.props[property.propertyName] || this.props[property.attributeName]);
+        // Get the properties/attributes that match those used in this.props
+        const props = component.properties.filter(property =>
+          this.props[property.propertyName] || this.props[property.attributeName]);
 
-          // Set the webcomponent properties
-          props.forEach((propDef) => {
-            const value = propDef.propertyName in this.props ?
-              this.props[propDef.propertyName] : this.props[propDef.attributeName];
-            this.node[propDef.propertyName] = value;
-          });
+        // Set the webcomponent properties
+        props.forEach((propDef) => {
+          const value = propDef.propertyName in this.props ?
+            this.props[propDef.propertyName] : this.props[propDef.attributeName];
+          this.node[propDef.propertyName] = value;
         });
       },
 

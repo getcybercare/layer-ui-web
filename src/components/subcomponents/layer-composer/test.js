@@ -182,7 +182,7 @@ describe('layer-composer', function() {
     it("Should trigger layer-send-message and send the message typed", function() {
       var calledFor = null;
       document.body.addEventListener("layer-send-message", function(evt) {
-        calledFor = evt.detail.message;
+        calledFor = evt.detail.item;
       });
       el.send();
 
@@ -194,7 +194,7 @@ describe('layer-composer', function() {
     it("Should trigger layer-send-message and cancel the message on evt.preventDefault()", function() {
       var calledFor = null;
       document.body.addEventListener("layer-send-message", function(evt) {
-        calledFor = evt.detail.message;
+        calledFor = evt.detail.item;
         evt.preventDefault();
       });
       el.send();
@@ -208,7 +208,7 @@ describe('layer-composer', function() {
 
       var calledFor = null;
       document.body.addEventListener("layer-send-message", function(evt) {
-        calledFor = evt.detail.message;
+        calledFor = evt.detail.item;
         evt.preventDefault();
       });
 

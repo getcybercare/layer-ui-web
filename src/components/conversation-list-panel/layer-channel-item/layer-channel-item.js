@@ -15,15 +15,16 @@
  */
 import LUIComponent from '../../../components/component';
 import ListItem from '../../../mixins/list-item';
+import ListItemSelection from '../../../mixins/list-item-selection';
 
 LUIComponent('layer-channel-item', {
-  mixins: [ListItem],
+  mixins: [ListItem, ListItemSelection],
   properties: {
 
     // Every List Item has an item property, here it represents the Conversation to render
     item: {
       set(newConversation, oldConversation) {
-        this.nodes.title.innerHTML = newConversation.name;
+        if (newConversation) this.onRerender();
       },
     },
 
@@ -51,7 +52,7 @@ LUIComponent('layer-channel-item', {
     },
 
     onRerender() {
-      this.nodes.title.innerHTML = this.item.name;
+      if (this.item) this.nodes.title.innerHTML = this.item.name;
     },
 
     /**
@@ -61,7 +62,19 @@ LUIComponent('layer-channel-item', {
      * @param {String|Regex|Function} filter
      */
     _runFilter(filter) {
-
+      const channel = this.properties.item;
+      let match;
+      if (!filter) {
+        match = true;
+      } else if (typeof filter === 'function') {
+        match = filter(channel);
+      } else if (filter instanceof RegExp) {
+        match = filter.test(channel.name);
+      } else {
+        filter = filter.toLowerCase();
+        match = channel.name.toLowerCase().indexOf(filter) !== -1;
+      }
+      this.classList[match ? 'remove' : 'add']('layer-item-filtered');
     },
   },
 });

@@ -212,12 +212,12 @@ registerComponent('layer-composer', {
        *
        * ```javascript
        * document.body.addEventListener('layer-send-message', function(evt) {
-       *   var message = evt.detail.message;
+       *   var message = evt.detail.item;
        *   var notification = evt.detail.notification;
        *   notification.title = 'You have a new Message from ' + message.sender.displayName;
        *   notification.sound = 'sneeze.aiff';
        *   if (message.parts[0].mimeType === 'text/plain') {
-       *     notification.text = evt.detail.message.parts[0].body;
+       *     notification.text = evt.detail.item.parts[0].body;
        *   } else {
        *     notification.text = 'You have received a file';
        *   }
@@ -243,7 +243,7 @@ registerComponent('layer-composer', {
        * @event layer-send-message
        * @param {Event} evt
        * @param {Object} evt.detail
-       * @param {layer.Message} evt.detail.message
+       * @param {layer.Message} evt.detail.item
        * @param {Object} evt.detail.notification
        * @param {String} evt.detail.notification.text
        * @param {String} evt.detail.notification.title

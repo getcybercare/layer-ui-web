@@ -68,14 +68,6 @@ describe('layer-conversations-list', function() {
     });
   });
 
-  describe("The selectedConversationId property", function() {
-    it("Should call _renderSelection on change", function() {
-      spyOn(el, '_renderSelection');
-      el.selectedConversationId = query.data[5].id;
-      expect(el._renderSelection).toHaveBeenCalledWith();
-    });
-  });
-
   describe("The deleteConversationEnabled property", function() {
     it("Should accept a function", function() {
       var f = function() {console.log("F-ing Function");};
@@ -229,28 +221,6 @@ describe('layer-conversations-list', function() {
       var evt = {};
       el.onRerender(evt);
       expect(el._processQueryEvt).toHaveBeenCalledWith(evt);
-    });
-
-    it("Should call _renderSelection", function() {
-      spyOn(el, "_renderSelection");
-      el.onRerender({
-        type: 'remove',
-        target: query.data[1]
-      });
-      expect(el._renderSelection).toHaveBeenCalledWith();
-    });
-  });
-
-  describe("The _renderSelection() method", function() {
-    it("Should select and deselect appropriately", function() {
-      el.firstChild.classList.add('layer-selected-item');
-      el.childNodes[1].classList.add('layer-selected-item');;
-
-      el.selectedConversationId = query.data[6].id;
-      expect(el.childNodes[0].classList.contains('layer-selected-item')).toBe(false);
-      expect(el.childNodes[1].classList.contains('layer-selected-item')).toBe(false);
-      expect(el.childNodes[5].classList.contains('layer-selected-item')).toBe(false);
-      expect(el.childNodes[6].classList.contains('layer-selected-item')).toBe(true);
     });
   });
 

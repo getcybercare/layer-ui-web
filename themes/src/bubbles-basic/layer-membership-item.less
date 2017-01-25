@@ -1,0 +1,19 @@
+layer-membership-item {
+  .layer-list-item {
+    border-bottom: @border-list-item;
+    cursor: pointer;
+    .layer-text-list-heading();
+    border-left: 3px solid transparent;
+    line-height: 3.5rem;
+    padding: 20px 5px;
+
+
+    &:not(:first-child) {
+      border-top: @border-list-item;
+    }
+  }
+  /* Style the selected Conversation Item */
+  &.layer-selected-item  .layer-list-item {
+    border-left: 3px solid #19A5E4;
+  }
+}

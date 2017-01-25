@@ -178,6 +178,7 @@ describe('layer-conversation-panel', function() {
 
     it("Should not call _setupConversation if no client", function() {
       el.conversationId = conversation.id;
+      el.client = null;
       spyOn(el, "_setupConversation");
       el.hasGeneratedQuery = true;
       expect(el._setupConversation).not.toHaveBeenCalled();

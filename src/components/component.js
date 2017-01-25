@@ -482,7 +482,11 @@ function setupMixin(classDef, mixin) {
 
     // Make sure that this becomes a part of the properties definition of the class if the prop
     // isn't already defined.  used by the props array.
-    if (!classDef.properties[name]) classDef.properties[name] = mixin.properties[name];
+    if (!classDef.properties[name]) {
+      classDef.properties[name] = mixin.properties[name];
+    } else if (mixin.properties[name].order !== undefined && classDef.properties[name].order === undefined) {
+      classDef.properties[name].order = mixin.properties[name].order;
+    }
   });
 
   setupMethods(classDef, mixin.methods || {});
@@ -588,9 +592,21 @@ function getPropArray(classDef) {
       propertyName,
       attributeName: layerUI.hyphenate(propertyName),
       type: classDef.properties[propertyName].type,
+      order: classDef.properties[propertyName].order,
     };
+  }).sort((a, b) => {
+    if (a.order !== undefined && b.order !== undefined) {
+      return a.order - b.order;
+    } else if (a.order !== undefined) {
+      return -1;
+    } else if (b.order !== undefined) {
+      return 1;
+    } else {
+      return 0;
+    }
   });
 }
+
 
 /*
  * Cast a property value to its specified type
@@ -660,18 +676,18 @@ function setupProperty(classDef, prop, propertyDefHash) {
     if (propDef.type) value = castProperty(propDef.type, value);
 
     const oldValue = this[name];
-    if (oldValue !== value || this.properties._internalState.inPropInit) {
+    if (oldValue !== value || this.properties._internalState.inPropInit.indexOf(name) !== -1) {
 
       // can't call setters with this on because the setters will set other properties which should not
       // trigger further setters if there was no actual change
-      const wasInit = this.properties._internalState.inPropInit;
-      this.properties._internalState.inPropInit = false;
+      const initIndex = this.properties._internalState.inPropInit.indexOf(name);
+      const wasInit = initIndex !== -1;
+      if (wasInit) this.properties._internalState.inPropInit.splice(initIndex, 1);
 
       this.properties[name] = value;
       if (classDef['__set_' + name] && !this.properties._internalState.disableSetters) {
         classDef['__set_' + name].forEach(setter => setter.call(this, value, wasInit ? null : oldValue));
       }
-      this.properties._internalState.inPropInit = wasInit;
     }
   };
 
@@ -798,7 +814,8 @@ function _registerComponent(tagName) {
       Layer.Util.defer(() => {
         this.properties._internalState.disableSetters = false;
         this.properties._internalState.disableGetters = false;
-        this.properties._internalState.inPropInit = true;
+        this.properties._internalState.inPropInit = layerUI.components[tagName].properties.map(propDef => propDef.propertyName);
+
         props.forEach((prop) => {
           const value = this.properties[prop.propertyName];
           // UNIT TEST: This line is primarily to keep unit tests from throwing errors
@@ -809,7 +826,7 @@ function _registerComponent(tagName) {
             this[prop.propertyName] = value;
           }
         });
-        this.properties._internalState.inPropInit = false;
+        this.properties._internalState.inPropInit = [];
         this.onAfterCreate();
       });
     },
@@ -895,7 +912,7 @@ function _registerComponent(tagName) {
           onDetachCalled: false,
           disableSetters: true,
           disableGetters: true,
-          inPropInit: false,
+          inPropInit: [],
         },
       };
 

@@ -52,7 +52,7 @@ registerComponent('layer-identities-list', {
    *
    * ```javascript
    *    identityList.onIdentitySelected = function(evt) {
-   *      var identityAdded = evt.detail.identity;
+   *      var identityAdded = evt.detail.item;
    *      var selectedIdentities = evt.target.selectedIdentities;
    *
    *      // To prevent the UI from proceding to add the identity to the selectedIdentities:
@@ -65,7 +65,7 @@ registerComponent('layer-identities-list', {
    *
    * ```javascript
    *    document.body.addEventListener('layer-identity-selected', function(evt) {
-   *      var identityAdded = evt.detail.identity;
+   *      var identityAdded = evt.detail.item;
    *      var selectedIdentities = evt.target.selectedIdentities;
    *
    *      // To prevent the UI from proceding to add the identity to the selectedIdentities:
@@ -77,7 +77,7 @@ registerComponent('layer-identities-list', {
    * @event layer-identity-selected
    * @param {Event} evt
    * @param {Object} evt.detail
-   * @param {layer.Identity} evt.detail.identity
+   * @param {layer.Identity} evt.detail.item
    */
   /**
    * A identity selection change has occurred
@@ -87,14 +87,14 @@ registerComponent('layer-identities-list', {
    * @property {Function} onIdentitySelected
    * @param {Event} evt
    * @param {Object} evt.detail
-   * @param {layer.Identity} evt.detail.identity
+   * @param {layer.Identity} evt.detail.item
    */
 
   /**
    * The user has clicked to deselect a identity in the identities list.
    *
    *    identityList.onIdentityDeselected = function(evt) {
-   *      var identityRemoved = evt.detail.identity;
+   *      var identityRemoved = evt.detail.item;
    *      var selectedIdentities = evt.target.selectedIdentities;
    *
    *      // To prevent the UI from proceding to add the identity to the selectedIdentities:
@@ -105,7 +105,7 @@ registerComponent('layer-identities-list', {
    *  OR
    *
    *    document.body.addEventListener('layer-identity-deselected', function(evt) {
-   *      var identityRemoved = evt.detail.identity;
+   *      var identityRemoved = evt.detail.item;
    *      var selectedIdentities = evt.target.selectedIdentities;
    *
    *      // To prevent the UI from proceding to add the identity to the selectedIdentities:
@@ -116,7 +116,7 @@ registerComponent('layer-identities-list', {
    * @event layer-identity-deselected
    * @param {Event} evt
    * @param {Object} evt.detail
-   * @param {layer.Identity} evt.detail.identity
+   * @param {layer.Identity} evt.detail.item
    */
   /**
    * A identity selection change has occurred
@@ -126,7 +126,7 @@ registerComponent('layer-identities-list', {
    * @property {Function} onIdentityDeselected
    * @param {Event} evt
    * @param {Object} evt.detail
-   * @param {layer.Identity} evt.detail.identity
+   * @param {layer.Identity} evt.detail.item
    */
 
   events: ['layer-identity-selected', 'layer-identity-deselected'],
@@ -219,19 +219,20 @@ registerComponent('layer-identities-list', {
      */
     _handleIdentitySelect(evt) {
       evt.stopPropagation();
-      const identity = evt.detail.identity;
+      const identity = evt.detail.item;
       const index = this.selectedIdentities.indexOf(identity);
 
       // If the item is not in our selectedIdentities array, add it
       if (index === -1) {
         // If app calls prevent default, then don't add the identity to our selectedIdentities list, just call preventDefault on the original event.
-        if (this.trigger('layer-identity-selected', { identity })) {
+        if (this.trigger('layer-identity-selected', { item: identity })) {
           this.selectedIdentities.push(identity);
         } else {
           evt.preventDefault();
         }
       }
     },
+
 
     /**
      * Handle a user Deselection event triggered by a layerUI.components.IdentitiesListPanel.Item
@@ -244,13 +245,13 @@ registerComponent('layer-identities-list', {
      */
     _handleIdentityDeselect(evt) {
       evt.stopPropagation();
-      const identity = evt.detail.identity;
+      const identity = evt.detail.item;
       const index = this.selectedIdentities.indexOf(identity);
 
       // If the item is in our selectedIdentities array, remove it
       if (index !== -1) {
         // If app calls prevent default, then don't remove the identity, just call preventDefault on the original event.
-        if (this.trigger('layer-identity-deselected', { identity })) {
+        if (this.trigger('layer-identity-deselected', { item: identity })) {
           this.selectedIdentities.splice(index, 1);
         } else {
           evt.preventDefault();

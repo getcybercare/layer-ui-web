@@ -25,6 +25,7 @@ require('./lib/components/identities-list-panel/layer-identities-list/layer-iden
 require('./lib/components/layer-conversation-panel/layer-conversation-panel');
 require('./lib/components/layer-notifier/layer-notifier');
 
+
 // Load standard utilities
 require('./lib/components/subcomponents/layer-file-upload-button/layer-file-upload-button');
 require('./lib/components/subcomponents/layer-send-button/layer-send-button');

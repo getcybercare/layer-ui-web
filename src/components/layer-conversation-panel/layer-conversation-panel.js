@@ -301,10 +301,10 @@ registerComponent('layer-conversation-panel', {
         if (value && value.indexOf('layer:///conversations') !== 0 && value.indexOf('layer:///channels') !== 0) this.properties.conversationId = '';
         if (this.client && this.conversationId) {
           if (this.client.isReady && !this.client.isDestroyed) {
-            this.conversation = this.client.getConversation(this.conversationId, true);
+            this.conversation = this.client.getObject(this.conversationId, true);
           } else {
             this.client.once('ready', () => {
-              if (this.conversationId) this.conversation = this.client.getConversation(this.conversationId, true);
+              if (this.conversationId) this.conversation = this.client.getObject(this.conversationId, true);
             });
           }
         }

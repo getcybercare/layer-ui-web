@@ -25,7 +25,7 @@ As these are standard DOM events, they bubble up, and can be listened for at wha
 
 ```javascript
 document.body.addEventListener('layer-delete-conversation-click', function(evt) {
-  var conversation = evt.detail.conversation;
+  var conversation = evt.detail.item;
 
   // If your application wanted to manage a `metadata.delete` property to determine if a user can delete this Conversation,
   // you might then want a custom event handler when the user tries to delete the Conversation that uses that metadata property.

@@ -259,6 +259,7 @@ describe('layer-messages-list', function() {
     });
 
     it("Should scroll to the specified position", function(done) {
+      jasmine.clock().uninstall();
       el.animateScrollTo(55);
       setTimeout(function() {
         expect(el.scrollTop).toEqual(55);
@@ -267,6 +268,7 @@ describe('layer-messages-list', function() {
     });
 
     it("Should check for visibility", function(done) {
+      jasmine.clock().uninstall();
       spyOn(el, "_checkVisibility");
       el.animateScrollTo(55);
       setTimeout(function() {
@@ -276,6 +278,7 @@ describe('layer-messages-list', function() {
     });
 
     it("Should not cause paging of the query", function(done) {
+      jasmine.clock().uninstall();
       spyOn(query, "update");
       el.animateScrollTo(55);
       setTimeout(function() {
@@ -522,20 +525,6 @@ describe('layer-messages-list', function() {
   });
 
   describe("The onRerender() method", function() {
-    it("Should update isEmptyList", function() {
-      el.isEmptyList = true;
-      el.onRerender({});
-      expect(el.isEmptyList).toBe(false);
-
-      el.query.data = [];
-      el.onRerender({});
-      expect(el.isEmptyList).toBe(true);
-
-      el.isEmptyList = false;
-      el.query.data = [];
-      el.onRerender({type: "reset"});
-      expect(el.isEmptyList).toBe(false);
-    });
     it("Should call _processQueryEvt", function() {
       spyOn(el, "_processQueryEvt");
       var evt = {hey: "ho"};
@@ -928,40 +917,6 @@ describe('layer-messages-list', function() {
 
       // What was the 11th item is now the 13th item
       expect(el.scrollTo).toHaveBeenCalledWith(el.childNodes[13].offsetTop - el.firstChild.offsetTop);
-    });
-  });
-
-  describe("The isEmptyList property", function() {
-    it("Should initialize to hidden/false", function() {
-      expect(el.isEmptyList).toBe(false);
-      expect(el.nodes.emptyNode.style.display).toEqual("none");
-    });
-    it("Should update the display state for emptyNode", function() {
-      el.isEmptyList = true;
-      expect(el.nodes.emptyNode.style.display).toEqual('');
-
-      el.isEmptyList = false;
-      expect(el.nodes.emptyNode.style.display).toEqual('none');
-    });
-    it("Should reapply its isEmptyList value after onRerender", function() {
-      el.isEmptyList = true;
-      query.data = [];
-      el.onRerender({type: "add", messages: []});
-      expect(el.nodes.emptyNode.style.display).toEqual('');
-    });
-  });
-
-  describe("The emptyNode property", function() {
-    it("Should add/remove nodes", function() {
-      var div = document.createElement("div");
-      el.emptyNode = div;
-      expect(div.parentNode).toBe(el.nodes.emptyNode);
-
-      var div2 = document.createElement("div");
-      el.emptyNode = div2;
-
-      expect(div.parentNode).toBe(null);
-      expect(div2.parentNode).toBe(el.nodes.emptyNode);
     });
   });
 });

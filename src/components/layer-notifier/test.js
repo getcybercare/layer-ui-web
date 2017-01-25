@@ -152,7 +152,7 @@ if (window.Notification) {
           expect(args[0].detail).toEqual({
             type: 'toast',
             isBackground: true,
-            message: message
+            item: message
           });
 
           // Cleanup
@@ -373,7 +373,7 @@ if (window.Notification) {
           var args = spy1.calls.allArgs()[0];
           expect(args.length).toEqual(1);
           expect(args[0].detail).toEqual({
-            message: message
+            item: message
           });
         });
       });

@@ -63,7 +63,7 @@ registerComponent('layer-conversations-list', {
    *
    * ```javascript
    *    document.body.addEventListener('layer-conversation-selected', function(evt) {
-   *      var conversation = evt.detail.conversation;
+   *      var conversation = evt.detail.item;
    *
    *      // To prevent the UI from proceding to select this conversation:
    *      evt.preventDefault();
@@ -74,7 +74,7 @@ registerComponent('layer-conversations-list', {
    *
    * ```javascript
    *    converationList.onConversationSelected = function(evt) {
-   *      var conversation = evt.detail.conversation;
+   *      var conversation = evt.detail.item;
    *
    *      // To prevent the UI from proceding to select this conversation:
    *      evt.preventDefault();
@@ -84,7 +84,7 @@ registerComponent('layer-conversations-list', {
    * @property {Function} onConversationSelected
    * @param {Event} evt
    * @param {Object} evt.detail
-   * @param {layer.Conversation} evt.detail.conversation   The selected Conversation
+   * @param {layer.Conversation} evt.detail.item   The selected Conversation
    * @param {Event} evt.detail.originalEvent               The click event that selected the Conversation
    */
 
@@ -94,7 +94,7 @@ registerComponent('layer-conversations-list', {
    * @event layer-conversation-selected
    * @param {Event} evt
    * @param {Object} evt.detail
-   * @param {layer.Conversation} evt.detail.conversation   The selected Conversation
+   * @param {layer.Conversation} evt.detail.item   The selected Conversation
    * @param {Event} evt.detail.originalEvent               The click event that selected the Conversation
    */
 
@@ -103,7 +103,7 @@ registerComponent('layer-conversations-list', {
    *
    * ```javascript
    *    conversationListNode.onConversationDeleted = function(evt) {
-   *      var conversation = evt.detail.conversation;
+   *      var conversation = evt.detail.item;
    *
    *      // To prevent the UI from proceding to delete this conversation (perhaps you want
    *      // to leave the Conversation instead of delete it):
@@ -116,7 +116,7 @@ registerComponent('layer-conversations-list', {
    *
    * ```javascript
    *    document.body.addEventListener('layer-conversation-deleted', function(evt) {
-   *      var conversation = evt.detail.conversation;
+   *      var conversation = evt.detail.item;
    *
    *      // To prevent the UI from proceding to delete this conversation (perhaps you want
    *      // to leave the Conversation instead of delete it):
@@ -128,7 +128,7 @@ registerComponent('layer-conversations-list', {
    * @property {Function} onConversationDeleted
    * @param {Event} evt
    * @param {Object} evt.detail
-   * @param {layer.Conversation} evt.detail.conversation
+   * @param {layer.Conversation} evt.detail.item
    */
 
   /**
@@ -137,7 +137,7 @@ registerComponent('layer-conversations-list', {
    * @event layer-conversation-deleted
    * @param {Event} evt
    * @param {Object} evt.detail
-   * @param {layer.Conversation} evt.detail.conversation
+   * @param {layer.Conversation} evt.detail.item
    */
 
   events: ['layer-conversation-selected', 'layer-conversation-deleted'],

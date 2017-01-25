@@ -46,7 +46,7 @@ module.exports = function (grunt) {
         files: [
           {
             dest: 'lib',
-            src: ['src/**/*.js']
+            src: ['src/**/*.js', '!src/**/test.js', '!src/**/tests/*.js']
           }
         ],
         options: {

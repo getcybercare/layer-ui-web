@@ -2,7 +2,8 @@
   "framework": "jasmine2",
   "src_files": [
     "build/layer-ui-web-test.js",
-    "src/**/test.js"
+    "src/**/test.js",
+    "src/**/tests/*.js"
   ],
   "watch_files": ["build/layer-ui-web-test.js"],
   "port": 7358

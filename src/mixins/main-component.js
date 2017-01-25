@@ -47,6 +47,7 @@ module.exports = {
      * @property {String} [appId=""]
      */
     appId: {
+      order: 1,
       set(value) {
         if (value && value.indexOf('layer:///') === 0) {
           const client = Layer.Client.getClient(value);
@@ -71,9 +72,14 @@ module.exports = {
      * @property {layer.Client} [client=null]
      */
     client: {
+      order: 2,
       set(value) {
-        if (value) value.on('destroy', () => this.properties.client = null, this);
-      }
+        if (value) {
+          value.on('destroy', (evt) => {
+            if (evt.target === value) this.properties.client = null;
+          }, this);
+        }
+      },
     },
 
     /**

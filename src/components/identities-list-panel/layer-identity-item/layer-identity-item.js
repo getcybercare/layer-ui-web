@@ -66,7 +66,7 @@ registerComponent('layer-identity-item', {
       const identity = this.item;
 
       // Trigger the event and see if evt.preventDefault() was called
-      const customEventResult = this.trigger(`layer-identity-item-${checked ? 'selected' : 'deselected'}`, { identity });
+      const customEventResult = this.trigger(`layer-identity-item-${checked ? 'selected' : 'deselected'}`, { item: identity });
 
       if (customEventResult) {
         this.innerNode.classList[checked ? 'add' : 'remove']('layer-identity-item-selected');
