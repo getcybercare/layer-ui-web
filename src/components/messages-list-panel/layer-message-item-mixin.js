@@ -68,7 +68,7 @@
  *         _handleCustomCheckboxEvent(evt) {
  *           this.trigger('custom-message-checkbox-change', {
  *             isChecked: this.selected,
- *             message: this.item
+ *             item: this.item
  *           });
  *         }
  *       }

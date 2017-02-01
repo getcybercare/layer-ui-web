@@ -21,7 +21,7 @@ describe('layer-avatar', function() {
     layer.Util.defer.flush();
   });
   afterEach(function() {
-    document.body.removeChild(testRoot);
+    //document.body.removeChild(testRoot);
   });
 
   it('Should start without a layer-has-user class', function() {
@@ -51,27 +51,30 @@ describe('layer-avatar', function() {
   it("Should generate an img for one user with an avatar", function() {
     client.user.avatarUrl = 'http://abby.normal.frankentein/';
     el.users = [client.user];
-    expect(el.childNodes.length).toEqual(1);
+    expect(el.childNodes.length).toEqual(2);
     expect(el.firstChild.tagName).toEqual('IMG');
     expect(el.firstChild.src).toEqual(client.user.avatarUrl);
+    expect(el.childNodes[1].tagName).toEqual('LAYER-PRESENCE');
   });
 
   it("Should generate a span with initials if firstName/lastName", function() {
     client.user.firstName = 'Abby';
     client.user.lastName = 'Normal'
     el.users = [client.user];
-    expect(el.childNodes.length).toEqual(1);
+    expect(el.childNodes.length).toEqual(2);
     expect(el.firstChild.tagName).toEqual('SPAN');
-    expect(el.firstChild.innerHTML).toEqual('AN');
+    expect(el.firstChild.firstChild.textContent).toEqual('AN');
+    expect(el.childNodes[1].tagName).toEqual('LAYER-PRESENCE');
   });
 
   it("Should generate a span with first two letters of displayName", function() {
     client.user.displayName = 'Abby';
     client.user.lastName = 'Normal'
     el.users = [client.user];
-    expect(el.childNodes.length).toEqual(1);
+    expect(el.childNodes.length).toEqual(2);
     expect(el.firstChild.tagName).toEqual('SPAN');
-    expect(el.firstChild.innerHTML).toEqual('AB');
+    expect(el.firstChild.firstChild.textContent).toEqual('AB');
+    expect(el.childNodes[1].tagName).toEqual('LAYER-PRESENCE');
   });
 
   it("Should generate multiple spans for multiple users", function() {
@@ -81,8 +84,8 @@ describe('layer-avatar', function() {
     expect(el.childNodes.length).toEqual(2);
     expect(el.childNodes[0].tagName).toEqual('SPAN');
     expect(el.childNodes[1].tagName).toEqual('SPAN');
-    expect(el.childNodes[0].innerHTML).toEqual('AN');
-    expect(el.childNodes[1].innerHTML).toEqual('AN');
+    expect(el.childNodes[0].firstChild.textContent).toEqual('AN');
+    expect(el.childNodes[1].firstChild.textContent).toEqual('AN');
   });
 
   it("Should not set cluster class if one user", function() {
@@ -93,5 +96,11 @@ describe('layer-avatar', function() {
   it("Should set cluster class if multiple users", function() {
     el.users = [client.user, client.user];
     expect(el.classList.contains('layer-avatar-cluster')).toBe(true);
+  });
+
+  it("Should have a layer-presence widget with its user set", function() {
+    el.users = [client.user];
+    expect(el.nodes.presence.tagName).toEqual('LAYER-PRESENCE');
+    expect(el.nodes.presence.item).toBe(client.user);
   });
 });

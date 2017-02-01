@@ -52,6 +52,7 @@ import List from '../../../mixins/list';
 import ListSelection from '../../../mixins/list-selection';
 import MainComponent from '../../../mixins/main-component';
 import '../layer-conversation-item/layer-conversation-item';
+import '../layer-channel-item/layer-channel-item';
 
 registerComponent('layer-conversations-list', {
   mixins: [List, ListSelection, MainComponent],

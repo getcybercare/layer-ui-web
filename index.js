@@ -22,6 +22,7 @@ require('./lib/adapters/react');
 // Load Main Components
 require('./lib/components/conversation-list-panel/layer-conversations-list/layer-conversations-list');
 require('./lib/components/identities-list-panel/layer-identities-list/layer-identities-list');
+require('./lib/components/membership-list-panel/layer-membership-list/layer-membership-list');
 require('./lib/components/layer-conversation-panel/layer-conversation-panel');
 require('./lib/components/layer-notifier/layer-notifier');
 

@@ -63,11 +63,11 @@ module.exports = {
      */
     _onClick(evt) {
       let target = evt.target;
-      while (target && target !== this && !target.item) {
+      while (target && target !== this && !target._isListItem) {
         target = target.parentNode;
       }
 
-      if (target.item) {
+      if (target.item && target._isListItem) {
         evt.preventDefault();
         evt.stopPropagation();
         if (this.trigger(this._selectedItemEventName, { item: target.item, originalEvent: evt })) {

@@ -488,7 +488,7 @@ describe('Components', function() {
 
     it("Should call setters only once", function() {
       var calls = [];
-      layerUI.registerComponent('mixin-ordering-test1', {
+      layerUI.registerComponent('mixin-ordering-test2', {
         properties: {
           prop10: {
             order: 10,
@@ -536,7 +536,7 @@ describe('Components', function() {
         }
       });
 
-      var el1 = document.createElement('mixin-ordering-test1');
+      var el1 = document.createElement('mixin-ordering-test2');
 
       layer.Util.defer.flush();
       expect(calls).toEqual([3, 5, 10, 15, 35, "X"]);

@@ -44,6 +44,7 @@
  * @extends layerUI.components.Component
  */
 import { registerComponent } from '../../../components/component';
+import '../layer-presence/layer-presence';
 
 registerComponent('layer-avatar', {
   properties: {
@@ -63,6 +64,11 @@ registerComponent('layer-avatar', {
         this.classList[value.length ? 'add' : 'remove']('layer-has-user');
         this.onRender();
       },
+    },
+
+    showPresence: {
+      value: true,
+      type: Boolean,
     },
   },
   methods: {
@@ -85,7 +91,7 @@ registerComponent('layer-avatar', {
      */
     onRender() {
       // Clear the innerHTML if we have rendered something before
-      if (this.childNodes.length) {
+      if (this.users.length) {
         this.innerHTML = '';
       }
 
@@ -95,6 +101,11 @@ registerComponent('layer-avatar', {
       // Add the "cluster" css if rendering multiple users
       // No classList.toggle due to poor IE11 support
       this.classList[this.users.length > 1 ? 'add' : 'remove']('layer-avatar-cluster');
+      if (this.users.length === 1 && this.showPresence) {
+        this.nodes.presence = document.createElement('layer-presence');
+        this.nodes.presence.item = this.users[0];
+        this.appendChild(this.nodes.presence);
+      }
     },
 
     /**

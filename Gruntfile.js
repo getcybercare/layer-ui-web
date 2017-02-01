@@ -58,8 +58,7 @@ module.exports = function (grunt) {
         files: [
           {src: ['themes/src/bubbles-basic/theme.less'], dest: 'themes/build/bubbles-basic.css'},
           {src: ['themes/src/groups-basic/theme.less'], dest: 'themes/build/groups-basic.css'},
-          {src: ['themes/src/layerblue/theme.less'], dest: 'themes/build/layerblue.css'},
-          {src: ['themes/src/slacklike/theme.less'], dest: 'themes/build/slacklike.css'}
+          {src: ['themes/src/layerblue/theme.less'], dest: 'themes/build/layerblue.css'}
         ]
       }
     },
@@ -122,7 +121,7 @@ module.exports = function (grunt) {
       },
       themes: {
         files: ['themes/src/**'],
-        tasks: ['theme'],
+        tasks: ['theme', 'make-npm-link-safe'],
         options: {
           interrupt: true
         }

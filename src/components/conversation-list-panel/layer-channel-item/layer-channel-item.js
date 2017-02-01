@@ -13,11 +13,12 @@
  * @class layerUI.components.ConversationsListPanel.Item.Channel
  * @extends layerUI.components.Component
  */
-import LUIComponent from '../../../components/component';
+import { registerComponent } from '../../../components/component';
 import ListItem from '../../../mixins/list-item';
 import ListItemSelection from '../../../mixins/list-item-selection';
+import '../../subcomponents/layer-delete/layer-delete';
 
-LUIComponent('layer-channel-item', {
+registerComponent('layer-channel-item', {
   mixins: [ListItem, ListItemSelection],
   properties: {
 

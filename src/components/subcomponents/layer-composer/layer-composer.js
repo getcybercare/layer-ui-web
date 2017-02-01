@@ -255,7 +255,7 @@ registerComponent('layer-composer', {
         title: `New Message from ${message.sender.displayName}`,
       };
 
-      if (this.trigger('layer-send-message', { itme: message, notification })) {
+      if (this.trigger('layer-send-message', { item: message, notification })) {
         if (this.conversation instanceof Layer.Channel) {
           this.onSend(message);
           message.send();
@@ -314,7 +314,7 @@ registerComponent('layer-composer', {
       setTimeout(() => {
         this.nodes.resizer.innerHTML = this.nodes.input.value.replace(/\n/g, '<br/>') || '&nbsp;';
         this.nodes.lineHeighter.innerHTML = this.nodes.input.value.replace(/\n/g, '<br/>') || '&nbsp;';
-        const willBeOneLine = this.nodes.resizer.clientHeight - this.nodes.lineHeighter.clientHeight < 10;
+        const willBeOneLine = !this.nodes.input.value.match(/\n/) && (this.nodes.resizer.clientHeight - this.nodes.lineHeighter.clientHeight < 10);
 
         // Prevent scrollbar flickering in and then out
         if (willBeOneLine) {

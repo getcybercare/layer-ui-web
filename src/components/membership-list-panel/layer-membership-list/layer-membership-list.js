@@ -20,13 +20,14 @@
  * @mixin layerUI.mixins.List
  * @mixin layerUI.mixins.MainComponent
  */
-import { layer as LayerAPI } from '../../../base';
-import LUIComponent from '../../../components/component';
+import Layer from 'layer-websdk';
+import { registerComponent } from '../../component';
 import List from '../../../mixins/list';
 import MainComponent from '../../../mixins/main-component';
 import ListSelection from '../../../mixins/list-selection';
+import '../layer-membership-item/layer-membership-item';
 
-LUIComponent('layer-membership-list', {
+registerComponent('layer-membership-list', {
   mixins: [List, ListSelection, MainComponent],
 
 
@@ -104,7 +105,7 @@ LUIComponent('layer-membership-list', {
         if (!Array.isArray(value)) return;
         if (!value) value = [];
         this.properties.selectedIdentities = value.map((identity) => {
-          if (!(identity instanceof LayerAPI.Identity)) return this.properties.client.getIdentity(identity.id);
+          if (!(identity instanceof Layer.Identity)) return this.properties.client.getIdentity(identity.id);
           return identity;
         });
         this._renderSelection();
@@ -133,7 +134,7 @@ LUIComponent('layer-membership-list', {
      * @property {String} [_queryModel=layer.Query.Identity]
      */
     _queryModel: {
-      value: LayerAPI.Query.Identity,
+      value: Layer.Query.Identity,
     },
 
     /**
@@ -176,7 +177,7 @@ LUIComponent('layer-membership-list', {
       } else {
         for (let i = 0; i < this.childNodes.length; i++) {
           const listItem = this.childNodes[i];
-          if (listItem.item instanceof LayerAPI.Root) {
+          if (listItem.item instanceof Layer.Root) {
             listItem._runFilter(this.filter);
           }
         }

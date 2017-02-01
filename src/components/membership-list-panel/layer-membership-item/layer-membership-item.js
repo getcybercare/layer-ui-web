@@ -9,13 +9,12 @@
  * @mixin layerUI.mixins.ListItem
  * @extends layerUI.components.Component
  */
-import { layer as LayerAPI } from '../../../base';
-import LUIComponent from '../../../components/component';
 import ListItem from '../../../mixins/list-item';
 import ListItemSelection from '../../../mixins/list-item-selection';
+import { registerComponent } from '../../component';
+import '../../subcomponents/layer-avatar/layer-avatar';
 
-
-LUIComponent('layer-membership-item', {
+registerComponent('layer-membership-item', {
   mixins: [ListItem, ListItemSelection],
   properties: {
 
