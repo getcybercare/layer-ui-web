@@ -107,6 +107,7 @@ describe('layer-message-item', function() {
       el.item = message;
       layer.Util.defer.flush();
       expect(el.querySelector('layer-avatar').users).toEqual([message.sender]);
+      expect(el.querySelector('layer-presence')).toBe(null);
     });
 
     it("Should setup the layer-date", function() {

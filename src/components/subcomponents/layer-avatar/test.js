@@ -103,4 +103,10 @@ describe('layer-avatar', function() {
     expect(el.nodes.presence.tagName).toEqual('LAYER-PRESENCE');
     expect(el.nodes.presence.item).toBe(client.user);
   });
+
+  it("Should respect showPresence of false", function() {
+    el.showPresence = false;
+    el.users = [client.user];
+    expect(el.nodes.presence).toBe(undefined);
+  });
 });

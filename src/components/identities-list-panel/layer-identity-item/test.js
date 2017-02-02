@@ -180,6 +180,7 @@ describe('layer-identity-item', function() {
       el.nodes.avatar.users = [];
       el.onRender();
       expect(el.nodes.avatar.users).toEqual([client.user]);
+      expect(el.querySelector('layer-presence').tagName).toEqual('LAYER-PRESENCE');
     });
 
     it("Should _render the displayName", function() {
