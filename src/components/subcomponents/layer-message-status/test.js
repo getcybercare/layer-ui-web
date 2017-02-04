@@ -55,12 +55,14 @@ describe('layer-message-status', function() {
   });
 
   it('Should show sent', function() {
+    message.syncState = layer.Constants.SYNC_STATE.SYNCED;
     message.deliveryStatus = layer.Constants.RECIPIENT_STATE.NONE;
     el.item = message;
     expect(el.innerHTML).toEqual('sent');
   });
 
   it('Should show delivered', function() {
+    message.syncState = layer.Constants.SYNC_STATE.SYNCED;
     message.deliveryStatus = layer.Constants.RECIPIENT_STATE.SOME;
     message.readStatus = layer.Constants.RECIPIENT_STATE.NONE;
     el.item = message;
@@ -68,6 +70,7 @@ describe('layer-message-status', function() {
   });
 
   it('Should show read by some', function() {
+    message.syncState = layer.Constants.SYNC_STATE.SYNCED;
     message.recipientStatus['a'] = 'read';
     message.recipientStatus['b'] = 'read';
     message.deliveryStatus = layer.Constants.RECIPIENT_STATE.SOME;
@@ -77,6 +80,7 @@ describe('layer-message-status', function() {
   });
 
   it('Should show read', function() {
+    message.syncState = layer.Constants.SYNC_STATE.SYNCED;
     message.deliveryStatus = layer.Constants.RECIPIENT_STATE.SOME;
     message.readStatus = layer.Constants.RECIPIENT_STATE.ALL;
     el.item = message;

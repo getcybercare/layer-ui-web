@@ -396,6 +396,47 @@
    the document for more than a few moments. Use this function to unsubscribe from any custom event listeners you setup for your widget.
 
  *
+ * #### Templates
+ *
+ * There are a number of ways that a template can be registered to your component.
+ *
+ * _Define a full Template while registering Component_:
+ *
+ * ```
+ * var template = document.querySelector('template');
+ * layerUI.registerComponent('my-widget', {
+ *     template: template
+ * });
+ * ```
+ *
+ * _Define a template string while registering Component_:
+ *
+ * Note that unles the `<template/>` node, the template string is assumed to be DOM nodes only, and no `<style/>` blocks.
+ *
+ * ```
+ * layerUI.registerComponent('my-widget', {
+ *     template: '<div><button />Click me</div>'
+ * });
+ * ```
+ *
+ * _Define a template after defining your component_:
+ *
+ * ```
+ * layerUI.registerComponent('my-widget', {
+ * });
+ *
+ * layerUI.registerTemplate('my-widget', document.querySelector('template'));
+ * ```
+ *
+ * _Define a template string after defining your component_:
+ *
+ * ```
+ * layerUI.registerComponent('my-widget', {
+ * });
+ *
+ * layerUI.buildAndRegisterTemplate('my-widget', '<div><button />Click me</div>');
+ * ```
+ *
  * @class layerUI.components.Component
  */
 
@@ -717,6 +758,15 @@ function registerAll() {
 
 function _registerComponent(tagName) {
   const classDef = layerUI.components[tagName];
+
+  if (classDef.template) {
+    if (typeof classDef.template === 'string') {
+      layerUI.buildAndRegisterTemplate(tagName, classDef.template);
+    } else if (classDef.template.getAttribute('layer-template-registered') !== 'true') {
+      layerUI.registerTemplate(tagName, classDef.template);
+    }
+  }
+
   const template = classDef.template;
   delete classDef.template;
   const style = classDef.style;

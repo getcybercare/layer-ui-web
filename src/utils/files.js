@@ -3,10 +3,10 @@ import 'blueimp-load-image/js/load-image-orientation';
 import 'blueimp-load-image/js/load-image-meta';
 import 'blueimp-load-image/js/load-image-exif';
 import * as Layer from 'layer-websdk';
-import layerUI, {settings as UISettings } from '../base';
+import layerUI from '../base';
 import normalizeSize from './sizing';
 
-(function() {
+(function files() {
   const Files = layerUI.files = {};
   window.loadImage = ImageManager;
 
@@ -91,7 +91,7 @@ import normalizeSize from './sizing';
    * @method
    * @private
    */
-  Files.DragAndDropFileWatcher.prototype.ignoreDrop = (evt) => {
+  Files.DragAndDropFileWatcher.prototype.ignoreDrop = function ignoreDrop(evt) {
     if (evt.preventDefault) {
       evt.preventDefault();
       evt.stopPropagation();
@@ -105,7 +105,7 @@ import normalizeSize from './sizing';
    * @method
    * @private
    */
-  Files.DragAndDropFileWatcher.prototype.onDragOver = (evt) => {
+  Files.DragAndDropFileWatcher.prototype.onDragOver = function onDragOver(evt) {
     this.node.classList.add('layer-file-drag-and-drop-hover');
     evt.preventDefault();
     return false;
@@ -117,7 +117,7 @@ import normalizeSize from './sizing';
    * @method
    * @private
    */
-  Files.DragAndDropFileWatcher.prototype.onDragEnd = (evt) => {
+  Files.DragAndDropFileWatcher.prototype.onDragEnd = function onDragEnd(evt) {
     this.node.classList.remove('layer-file-drag-and-drop-hover');
   };
 
@@ -128,7 +128,7 @@ import normalizeSize from './sizing';
    * @method
    * @private
    */
-  Files.DragAndDropFileWatcher.prototype.onFileDrop = (evt) => {
+  Files.DragAndDropFileWatcher.prototype.onFileDrop = function onFileDrop(evt) {
     this.onDragEnd();
 
     // stops the browser from redirecting off to the image.
@@ -155,7 +155,7 @@ import normalizeSize from './sizing';
    * @param {Function} callback            Callback on completion; may be called synchronously
    * @param {layer.MessagePart[]} callback.parts  The MessageParts to send in your Message
    */
-  Files.processAttachments = (parts, callback) => {
+  Files.processAttachments = function processAttachments(parts, callback) {
     // TODO: Need a way to register additional handlers; currently relies on the callback for additional handling.
     parts.forEach((part) => {
       if (['image/gif', 'image/png', 'image/jpeg'].indexOf(part.mimeType) !== -1) {
@@ -168,7 +168,7 @@ import normalizeSize from './sizing';
     });
   };
 
-  Files.generateImageMessageParts = (part, callback) => {
+  Files.generateImageMessageParts = function generateImageMessageParts(part, callback) {
     // First part is the original image; the rest of the code is for generating the other 2 parts of the 3 part Image
     const parts = [part];
     let orientation = 0;
@@ -197,7 +197,7 @@ import normalizeSize from './sizing';
         height: srcCanvas.height,
       };
 
-      const size = normalizeSize(originalSize, UISettings.maxSizes);
+      const size = normalizeSize(originalSize, layerUI.settings.maxSizes);
       const canvas = document.createElement('canvas');
       canvas.width = size.width;
       canvas.height = size.height;
@@ -239,7 +239,7 @@ import normalizeSize from './sizing';
     }
   };
 
-  Files.generateVideoMessageParts = (part, callback) => {
+  Files.generateVideoMessageParts = function generateVideoMessageParts(part, callback) {
     const parts = [part];
     const video = document.createElement('video');
 
@@ -249,7 +249,7 @@ import normalizeSize from './sizing';
         height: video.videoHeight,
       };
 
-      const size = normalizeSize(originalSize, UISettings.maxSizes);
+      const size = normalizeSize(originalSize, layerUI.settings.maxSizes);
 
       const canvas = document.createElement('canvas');
       canvas.width = size.width;

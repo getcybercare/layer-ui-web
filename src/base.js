@@ -428,6 +428,7 @@ layerUI.registerTemplate = function registerTemplate(className, template) {
   // Write template and style as static properties of the Component.
   layerUI.components[className].template = template;
   layerUI.components[className].style = styles;
+  template.setAttribute('layer-template-registered', 'true');
 };
 
 /**
@@ -453,6 +454,7 @@ layerUI.buildAndRegisterTemplate = function buildTemplate(className, templateStr
 
   // Write it as a static property of the Component
   layerUI.components[className].template = template;
+  template.setAttribute('layer-template-registered', 'true');
 };
 
 /**

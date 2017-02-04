@@ -22,8 +22,10 @@ import 'blueimp-load-image/js/load-image-exif';
 import layerUI, { settings as UISettings } from '../../../base';
 import { registerComponent } from '../../../components/component';
 import normalizeSize from '../../../utils/sizing';
+import MessageHandler from '../../../mixins/message-handler';
 
 registerComponent('layer-message-image', {
+  mixins: [MessageHandler],
   properties: {
 
     /**
@@ -56,9 +58,6 @@ registerComponent('layer-message-image', {
           this.properties.image.fetchContent();
           this.properties.image.on('content-loaded', this._render, this);
         }
-
-        // Render the Message
-        this.onRender();
       },
     },
 

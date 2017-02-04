@@ -638,4 +638,103 @@ describe('Components', function() {
       expect(called).toBe(true);
     });
   });
+
+  describe("The template property", function() {
+    it("Should accept a string", function() {
+      var called = false;
+      layerUI.registerComponent('template-test1', {
+        template: '<label layer-id="label">Frodo must die</label>',
+        methods: {
+          onCreate() {
+            expect(this.nodes.label.tagName).toEqual('LABEL');
+            expect(this.nodes.label.innerHTML).toEqual('Frodo must die');
+            expect(this.nodes.label.parentNode).toBe(this);
+            called = true;
+          }
+        }
+      });
+
+      var el = document.createElement('template-test1');
+      testRoot.appendChild(el);
+      jasmine.clock().tick(10);
+      CustomElements.takeRecords();
+      layer.Util.defer.flush();
+
+      expect(called).toBe(true);
+    });
+
+    it("Should accept a template node", function() {
+      var called = false;
+      var template = document.createElement('template');
+      template.innerHTML = '<label layer-id="label">Frodo must die</label>';
+      layerUI.registerComponent('template-test2', {
+        template: template,
+        methods: {
+          onCreate() {
+            expect(this.nodes.label.tagName).toEqual('LABEL');
+            expect(this.nodes.label.innerHTML).toEqual('Frodo must die');
+            expect(this.nodes.label.parentNode).toBe(this);
+            called = true;
+          }
+        }
+      });
+
+      var el = document.createElement('template-test2');
+      testRoot.appendChild(el);
+      jasmine.clock().tick(10);
+      CustomElements.takeRecords();
+      layer.Util.defer.flush();
+
+      expect(called).toBe(true);
+
+    });
+
+    it("Should support a template sent via registerTemplate", function() {
+      var called = false;
+      var template = document.createElement('template');
+      template.innerHTML = '<label layer-id="label">Frodo must die</label>';
+      layerUI.registerComponent('template-test3', {
+        methods: {
+          onCreate() {
+            expect(this.nodes.label.tagName).toEqual('LABEL');
+            expect(this.nodes.label.innerHTML).toEqual('Frodo must die');
+            expect(this.nodes.label.parentNode).toBe(this);
+            called = true;
+          }
+        }
+      });
+      layerUI.registerTemplate('template-test3', template);
+
+      var el = document.createElement('template-test3');
+      testRoot.appendChild(el);
+      jasmine.clock().tick(10);
+      CustomElements.takeRecords();
+      layer.Util.defer.flush();
+
+      expect(called).toBe(true);
+    });
+
+    it("Should support a template sent via buildAndRegisterTemplate", function() {
+      var called = false;
+      layerUI.registerComponent('template-test4', {
+        methods: {
+          onCreate() {
+            expect(this.nodes.label.tagName).toEqual('LABEL');
+            expect(this.nodes.label.innerHTML).toEqual('Frodo must die');
+            expect(this.nodes.label.parentNode).toBe(this);
+            called = true;
+          }
+        }
+      });
+      layerUI.buildAndRegisterTemplate('template-test4', '<label layer-id="label">Frodo must die</label>');
+
+      var el = document.createElement('template-test4');
+      testRoot.appendChild(el);
+      jasmine.clock().tick(10);
+      CustomElements.takeRecords();
+      layer.Util.defer.flush();
+
+      expect(called).toBe(true);
+    });
+  });
 });

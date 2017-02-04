@@ -97,7 +97,9 @@ registerComponent('layer-message-status', {
           this.innerHTML = this.messageStatusRenderer(message);
         } else {
           let text = '';
-          if (message.isSaving()) {
+          if (message.isNew()) {
+            text = '';
+          } else if (message.isSaving() || message.isNew()) {
             text = 'pending';
           } else if (message instanceof Layer.Message.ChannelMessage ||
             message.deliveryStatus === Layer.Constants.RECIPIENT_STATE.NONE) {

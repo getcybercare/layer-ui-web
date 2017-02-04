@@ -3,6 +3,9 @@
 # 0.9.11
 
 * Adds Channel support
+* Adds `<layer-presence />` widget, which is now built into `<layer-avatar />`
+* Adds `message-handler.js` mixin for easier Card creation
+* Adds support for a `template` property that takes a String or `<template />` in `layerUI.registerComponent`
 * Added `list-selection` and `list-item-selection` mixins, and removed selection code from `layer-conversation-list`.
 * **Breaking Change**: Events that previously had properties such as `evt.detail.conversation`, `evt.detail.message`, `evt.detail.identity`
   now just use `evt.detail.item`

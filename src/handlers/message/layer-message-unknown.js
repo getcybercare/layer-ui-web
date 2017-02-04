@@ -6,39 +6,18 @@
  * @extends layerUI.components.Component
  */
 import { registerComponent } from '../../components/component';
+import MessageHandler from '../../mixins/message-handler';
 
 registerComponent('layer-message-unknown', {
-  properties: {
-
-    /**
-     * The Message property provides the MessageParts we are going to render.
-     *
-     * @property {layer.Message} [message=null]
-     */
-    message: {
-      set(value) {
-        this.render();
-      },
-    },
-  },
+  mixins: [MessageHandler],
   methods: {
-
-    /**
-     * Constructor.
-     *
-     * @method onCreate
-     * @private
-     */
-    onCreate() {
-    },
-
     /**
      * Render a message that is both polite and mildly annoying.
      *
      * @method
      * @private
      */
-    render() {
+    onRender() {
       const mimeTypes = this.message.parts.map(part => part.mimeType)
       .join(', ');
       this.innerHTML = `Message with mimeTypes ${mimeTypes} has been received but has no renderer`;

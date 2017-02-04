@@ -8,31 +8,11 @@
  */
 import layerUI from '../../base';
 import { registerComponent } from '../../components/component';
+import MessageHandler from '../../mixins/message-handler';
 
 registerComponent('layer-message-text-plain', {
-  properties: {
-
-    /**
-     * The Message property provides the MessageParts we are going to render.
-     *
-     * @property {layer.Message}
-     */
-    message: {
-      set(value) {
-        this.render();
-      },
-    },
-  },
+  mixins: [MessageHandler],
   methods: {
-
-    /**
-     * Constructor.
-     *
-     * @method onCreate
-     * @private
-     */
-    onCreate() {
-    },
 
     /**
      * Replaces any html tags with escaped html tags so that the recipient
@@ -55,9 +35,8 @@ registerComponent('layer-message-text-plain', {
      * Renders the results after all TextHandlers have run.
      *
      * @method
-     * @private
      */
-    render() {
+    onRender() {
       if (!layerUI.textHandlersOrdered) this._setupOrderedHandlers();
 
       const text = this.message.parts[0].body;
