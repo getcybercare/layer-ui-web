@@ -501,6 +501,7 @@ function setupMethods(classDef, methodsIn) {
   });
 }
 
+
 /*
  * Provides a basic mixin mechanism.
  *
