@@ -1,6 +1,6 @@
 # Layer UI for Web Change Log
 
-# 0.9.11
+# 0.9.12
 
 * Adds Channel support
 * Adds `<layer-presence />` widget, which is now built into `<layer-avatar />`
@@ -11,6 +11,10 @@
   now just use `evt.detail.item`
 * Restores use of property definition ordering to insure that `app-id` setter can set a `client` prior to other setters triggering
 * Insures that setters get called only once per value prior to `onAfterCreate`
+
+## 0.9.11
+
+Fixes issue where client property is lost causing widgets to stop performing actions.
 
 ## 0.9.10
 
