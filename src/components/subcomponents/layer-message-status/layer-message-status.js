@@ -91,7 +91,7 @@ registerComponent('layer-message-status', {
      * @param {Event} evt
      */
     onRerender(evt) {
-      if (this.item && (!evt || evt.hasProperty('recipientStatus'))) {
+      if (this.item && (!evt || evt.hasProperty('recipientStatus') || evt.hasProperty('syncState'))) {
         const message = this.item;
         if (this.messageStatusRenderer) {
           this.innerHTML = this.messageStatusRenderer(message);
@@ -121,4 +121,3 @@ registerComponent('layer-message-status', {
     },
   },
 });
-

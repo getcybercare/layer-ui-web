@@ -411,11 +411,13 @@
  *
  * _Define a template string while registering Component_:
  *
- * Note that unles the `<template/>` node, the template string is assumed to be DOM nodes only, and no `<style/>` blocks.
+ * Note that unless the `<template/>` node, the template string is assumed to be DOM nodes only, and no `<style/>` blocks.
+ * If using a template string, you may separately provide a style string:
  *
  * ```
  * layerUI.registerComponent('my-widget', {
- *     template: '<div><button />Click me</div>'
+ *     template: '<div><button />Click me</div>',
+ *     styles: 'my-widget {display: block}'
  * });
  * ```
  *
@@ -456,11 +458,13 @@
  *
  * @method registerComponent
  * @static
- * @param {String} tagName - Tag name that is being defined (`layer-avatar`)
- * @param {Object} classDef - Definition of your class
- * @param {Object} classDef.properties - Definition of your class properties
- * @param {Object} classDef.methods - Definition of your class methods
- * @param {String[]} classDef.events - Array of events to listen for and repackage as event handler properties
+ * @param {String} tagName    Tag name that is being defined (`layer-avatar`)
+ * @param {Object} classDef    Definition of your class
+ * @param {Object} classDef.properties    Definition of your class properties
+ * @param {Object} classDef.methods    Definition of your class methods
+ * @param {String[]} classDef.events    Array of events to listen for and repackage as event handler properties
+ * @param {Mixed} template     A `<template />` node or a template string such as `<div><button /></div>`
+ * @param {String} style       A String with CSS styles for this widget
  */
 import Layer from 'layer-websdk';
 import layerUI from '../base';
@@ -754,7 +758,6 @@ function registerAll() {
     .filter(tagName => typeof layerUI.components[tagName] !== 'function')
     .forEach(tagName => _registerComponent(tagName));
 }
-
 
 function _registerComponent(tagName) {
   const classDef = layerUI.components[tagName];

@@ -26,10 +26,7 @@ module.exports = function (grunt) {
             dest: 'build/layer-ui-web.js',
             src: 'index.js'
           }
-        ],
-        options: {
-          exclude: ['layer-websdk']
-        }
+        ]
       },
       debug: {
         files: [
@@ -152,6 +149,24 @@ module.exports = function (grunt) {
         grunt.file.copy('themes/build', project + '/node_modules/layer-ui-web/themes/build');
       });
     }
+  });
+
+  /* There is some path of using expose and external that should allow us to do a require('layer-websdk')
+     without it being in this build, but I do not see it.  So, brute force:
+     1. Before browserify, we replace layer-websdk/index.js with `module.exports = global.layer`,
+     2. after browserify, we restore index.js
+  */
+  grunt.registerTask('before-browserify', 'Swap layer-websdk for global', function() {
+    var newcode = 'module.exports = global.layer;';
+    var contents = grunt.file.read('node_modules/layer-websdk/index.js');
+    if (contents != newcode) {
+      grunt.file.write('node_modules/layer-websdk/index-stashed.js', contents);
+    }
+    grunt.file.write('node_modules/layer-websdk/index.js', newcode);
+  });
+
+  grunt.registerTask('after-browserify', 'Swap layer-websdk back', function() {
+    grunt.file.copy('node_modules/layer-websdk/index-stashed.js', 'node_modules/layer-websdk/index.js');
   });
 
 
@@ -301,8 +316,8 @@ module.exports = function (grunt) {
 
   grunt.registerTask('theme', ['less', 'copy']),
   grunt.registerTask('docs', ['jsduck']);
-  grunt.registerTask('debug', ['webcomponents', 'browserify']);
-  grunt.registerTask('build', ['debug', 'uglify', 'theme', 'cssmin']);
+  grunt.registerTask('debug', ['webcomponents', 'browserify:debug']);
+  grunt.registerTask('build', ['webcomponents', 'before-browserify', 'browserify:build', 'after-browserify', 'uglify', 'theme', 'cssmin']);
   grunt.registerTask('default', ['build', 'docs']);
   grunt.registerTask('prepublish', ['build', 'theme', 'wait']);
 };
