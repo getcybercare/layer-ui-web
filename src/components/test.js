@@ -2,7 +2,7 @@ describe('Components', function() {
   var el, testRoot, client, query;
 
   beforeAll(function() {
-    layerUI.init({});
+    if (layerUI.components['layer-conversation-panel'] && !layerUI.components['layer-conversation-panel'].classDef) layerUI.init({});
   });
 
   beforeEach(function() {

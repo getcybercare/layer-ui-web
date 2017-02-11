@@ -13,7 +13,7 @@ if (window.Notification) {
       });
       client._clientAuthenticated();
 
-      layerUI.init({});
+      if (layerUI.components['layer-conversation-panel'] && !layerUI.components['layer-conversation-panel'].classDef) layerUI.init({});
       testRoot = document.createElement('div');
       document.body.appendChild(testRoot);
       el = document.createElement('layer-notifier');

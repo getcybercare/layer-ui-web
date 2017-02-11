@@ -32,10 +32,9 @@
  * @class layerUI.components.subcomponents.Presence
  * @extends layerUI.components.Component
  */
-import { registerComponent } from '../../../components/component';
-
-import MainComponent from '../../../mixins/main-component';
 import Layer from 'layer-websdk';
+import { registerComponent } from '../../../components/component';
+import MainComponent from '../../../mixins/main-component';
 
 registerComponent('layer-presence', {
   mixins: [MainComponent],

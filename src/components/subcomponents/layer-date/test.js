@@ -1,7 +1,7 @@
 describe('layer-date', function() {
   var el;
   beforeEach(function() {
-    layerUI.init({});
+    if (layerUI.components['layer-conversation-panel'] && !layerUI.components['layer-conversation-panel'].classDef) layerUI.init({});
     el = document.createElement('layer-date');
     layer.Util.defer.flush();
   });

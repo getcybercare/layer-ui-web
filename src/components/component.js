@@ -743,7 +743,19 @@ function setupProperty(classDef, prop, propertyDefHash) {
 
 let registerAllCalled = false;
 function registerComponent(tagName, classDef) {
-  layerUI.components[tagName] = classDef;
+  if (!layerUI.components[tagName]) layerUI.components[tagName] = {};
+  layerUI.components[tagName].def = classDef;
+
+  if (classDef.template) {
+    layerUI.components[tagName].template = classDef.template;
+    delete classDef.template;
+  }
+
+  if (classDef.style) {
+    layerUI.components[tagName].style = classDef.style;
+    delete classDef.style;
+  }
+
   if (registerAllCalled) _registerComponent(tagName);
 }
 
@@ -761,20 +773,16 @@ function registerAll() {
 }
 
 function _registerComponent(tagName) {
-  const classDef = layerUI.components[tagName];
+  const classDef = layerUI.components[tagName].def;
+  const { template } = layerUI.components[tagName];
 
-  if (classDef.template) {
-    if (typeof classDef.template === 'string') {
-      layerUI.buildAndRegisterTemplate(tagName, classDef.template);
-    } else if (classDef.template.getAttribute('layer-template-registered') !== 'true') {
-      layerUI.registerTemplate(tagName, classDef.template);
+  if (template) {
+    if (typeof template === 'string') {
+      layerUI.buildAndRegisterTemplate(tagName, template);
+    } else if (template.getAttribute('layer-template-registered') !== 'true') {
+      layerUI.registerTemplate(tagName, template);
     }
   }
-
-  const template = classDef.template;
-  delete classDef.template;
-  const style = classDef.style;
-  delete classDef.style;
 
   // Insure property exists
   if (!classDef.properties) classDef.properties = {};
@@ -803,15 +811,6 @@ function _registerComponent(tagName) {
 
   classDef.mixins.forEach(mixin => setupMixin(classDef, mixin));
   finalizeMixinMerge(classDef);
-
-  // Insure that lifecycle methods are present
-  const noOp = function() {};
-  const noopMethods = ['onRerender'];
-  noopMethods.forEach((methodName) => {
-    if (!classDef.methods[methodName]) {
-      classDef.methods[methodName] = noOp;
-    }
-  });
 
   // For each property in the methods hash, setup the setter/getter
   const propertyDefHash = {};
@@ -852,9 +851,9 @@ function _registerComponent(tagName) {
       // If a template has been assigned for this class, append it to this node, and parse for layer-ids
       // TODO: Rearchitect layer-message-item to be a place holder for a layer-message-sent-item or layer-message-received-item so that
       // we don't need this hokey stuff here
-      const template = this.getTemplate();
-      if (template) {
-        const clone = document.importNode(template.content, true);
+      const templateNode = this.getTemplate();
+      if (templateNode) {
+        const clone = document.importNode(templateNode.content, true);
         this.appendChild(clone);
         this.setupDomNodes();
       }
@@ -868,7 +867,8 @@ function _registerComponent(tagName) {
       Layer.Util.defer(() => {
         this.properties._internalState.disableSetters = false;
         this.properties._internalState.disableGetters = false;
-        this.properties._internalState.inPropInit = layerUI.components[tagName].properties.map(propDef => propDef.propertyName);
+        this.properties._internalState.inPropInit =
+          layerUI.components[tagName].properties.map(propDef => propDef.propertyName);
 
         props.forEach((prop) => {
           const value = this.properties[prop.propertyName];
@@ -994,8 +994,9 @@ function _registerComponent(tagName) {
   classDef._copyInAttribute = {
     value: function _copyInAttribute(prop) {
 
-      let finalValue = null,
-        value = this.getAttribute(prop.attributeName);
+      let finalValue = null;
+      let value = this.getAttribute(prop.attributeName);
+
       // Firefox seems to need this alternative to getAttribute().
       // TODO: Verify this and determine if it uses the getter here.
       if (value === null && this[prop.attributeName] !== undefined) {
@@ -1067,31 +1068,12 @@ function _registerComponent(tagName) {
   };
 
   // Register the component with our components hash as well as with the document.
-  layerUI.components[tagName] = document.registerElement(tagName, {
+  // WARNING: Calling this in some browsers may cause immediate registeration of the component prior
+  // to reaching the next line of code; putting code after this line may be problematic.
+  layerUI.components[tagName].classDef = document.registerElement(tagName, {
     prototype: Object.create(HTMLElement.prototype, classDef),
   });
 
-  /**
-   * A `<template />` dom node
-   *
-   * These templates are used during Component initializations.
-   *
-   * @type {HTMLTemplateElement}
-   * @private
-   * @static
-   */
-  layerUI.components[tagName].template = template;
-
-  /**
-   * Stylesheet string.
-   *
-   * A stylesheet string can be added to the document via `styleNode.innerHTML = value` assignment.
-   *
-   * @type {String}
-   * @private
-   * @static
-   */
-  layerUI.components[tagName].style = style;
 
   /**
    * Identifies the properties exposed by this component.
@@ -1112,6 +1094,41 @@ function _registerComponent(tagName) {
   layerUI.components[tagName].properties = props;
 };
 
+/**
+   * A `<template />` dom node
+   *
+   * These templates are used during Component initializations.
+   *
+   * @type {HTMLTemplateElement}
+   * @private
+   * @static
+   */
+
+  /**
+   * Stylesheet string.
+   *
+   * A stylesheet string can be added to the document via `styleNode.innerHTML = value` assignment.
+   *
+   * @type {String}
+   * @private
+   * @static
+   */
+
+/**
+ * Mixin modes determines how a new method being added to a class will be executed with respect to any other methods.
+ *
+ * * BEFORE: Run your method before other methods of the same name
+ * * AFTER: Run your method after other methods of the same name
+ * * OVERWRITE: Run only your method, no other methods of the same name
+ * * DEFAULT: Run your method in normal ordering.
+ *
+ * @static
+ * @property {Object} MODES
+ * @property {String} MODES.BEFORE
+ * @property {String} MODES.AFTER
+ * @property {String} MODES.OVERWRITE
+ * @property {String} MODES.DEFAULT
+ */
 registerComponent.MODES = {
   BEFORE: 'BEFORE',
   AFTER: 'AFTER',
@@ -1163,7 +1180,7 @@ const standardClassMethods = {
   getTemplate: function getTemplate() {
     const tagName = this.tagName.toLocaleLowerCase();
 
-    if (layerUI.components[tagName].style ) {
+    if (layerUI.components[tagName].style) {
       const styleNode = document.createElement('style');
       styleNode.id = 'style-' + this.tagName.toLowerCase();
       styleNode.innerHTML = layerUI.components[tagName].style;
@@ -1284,7 +1301,7 @@ const standardClassMethods = {
    *
    * @method onRerender
    */
-
+  onRerender: function onRender() {},
 
   /**
    * MIXIN HOOK: Each time a Component is inserted into a Document, its onAttach methods will be called.
@@ -1339,7 +1356,8 @@ const standardClassMethods = {
    * @private
    */
   onDestroy: function onDestroy() {
-    this.properties._internalState.layerEventSubscriptions.forEach(subscribedObject => subscribedObject.off(null, null, this));
+    this.properties._internalState.layerEventSubscriptions
+      .forEach(subscribedObject => subscribedObject.off(null, null, this));
     this.properties._internalState.layerEventSubscriptions = [];
     this.classList.add('layer-node-destroyed');
   },

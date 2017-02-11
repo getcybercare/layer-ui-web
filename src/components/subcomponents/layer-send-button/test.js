@@ -1,7 +1,7 @@
 describe('layer-send-button', function() {
   var el, testRoot;
   beforeEach(function() {
-    layerUI.init({});
+    if (layerUI.components['layer-conversation-panel'] && !layerUI.components['layer-conversation-panel'].classDef) layerUI.init({});
     testRoot = document.createElement('div');
     el = document.createElement('layer-send-button');
     testRoot.appendChild(el);

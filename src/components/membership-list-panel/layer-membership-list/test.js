@@ -15,7 +15,7 @@ describe('layer-membership-list', function() {
     });
     client._clientAuthenticated();
 
-    layerUI.init({layer: layer});
+    if (!layerUI.components['layer-conversation-panel']) layerUI.init({layer: layer});
     testRoot = document.createElement('div');
     document.body.appendChild(testRoot);
     el = document.createElement('layer-membership-list');

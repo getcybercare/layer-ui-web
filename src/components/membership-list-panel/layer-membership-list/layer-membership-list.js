@@ -12,7 +12,7 @@
  * Or via DOM Manipulation:
  *
  * ```javascript
- * var identitylist = document.createElement('layer-membership-list');
+ * var membersList = document.createElement('layer-membership-list');
  * ```
  *
  * @class layerUI.components.MembershipListPanel.List
@@ -33,15 +33,14 @@ registerComponent('layer-membership-list', {
 
 
   /**
-   * The user has clicked to select an Identity in the Identities List.
+   * The user has clicked to select an Member in the Membership List.
    *
    * ```javascript
-   *    identityList.onIdentitySelected = function(evt) {
-   *      var identityAdded = evt.detail.item;
-   *      var selectedIdentities = evt.target.selectedIdentities;
+   *    membersList.onMembershipSelected = function(evt) {
+   *      var memberSelected = evt.detail.item;
    *
-   *      // To prevent the UI from proceding to add the identity to the selectedIdentities:
-   *      // Note that identityAdded is not yet in selectedIdentities so that you may prevent it from being added.
+   *      // To prevent the UI from proceding to add the member to the selectedIdentities:
+   *      // Note that memberAdded is not yet in selectedIdentities so that you may prevent it from being added.
    *      evt.preventDefault();
    *    };
    * ```
@@ -49,12 +48,11 @@ registerComponent('layer-membership-list', {
    *  OR
    *
    * ```javascript
-   *    document.body.addEventListener('layer-identity-selected', function(evt) {
-   *      var identityAdded = evt.detail.item;
-   *      var selectedIdentities = evt.target.selectedIdentities;
+   *    document.body.addEventListener('layer-membership-selected', function(evt) {
+   *      var memberSelected = evt.detail.item;
    *
-   *      // To prevent the UI from proceding to add the identity to the selectedIdentities:
-   *      // Note that identityAdded is not yet in selectedIdentities so that you may prevent it from being added.
+   *      // To prevent the UI from proceding to add the member to the selectedIdentities:
+   *      // Note that memberAdded is not yet in selectedIdentities so that you may prevent it from being added.
    *      evt.preventDefault();
    *    });
    * ```
@@ -75,44 +73,8 @@ registerComponent('layer-membership-list', {
    * @param {layer.Membership} evt.detail.item
    */
 
-  events: ['layer-identity-selected'],
+  events: ['layer-membership-selected'],
   properties: {
-
-    /**
-     * Array of layer.Identity objects representing the identities who should be rendered as Selected.
-     *
-     * This property can be used both get and set the selected identities; however, if setting you should not be manipulating
-     * the existing array, but rather setting a new array:
-     *
-     * Do NOT do this:
-     *
-     * ```javascript
-     * list.selectedIdentities.push(identity1); // DO NOT DO THIS
-     * ```
-     *
-     * Instead, Please do this:
-     *
-     * ```javascript
-     * var newList = list.selectedIdentities.concat([]);
-     * newList.push(identity1);
-     * list.selectedIdentities = newList;
-     * ```
-     *
-     * @property {layer.Identity[]} [selectedIdentities=[]]
-     */
-    selectedIdentities: {
-      set(value) {
-        if (!value) value = [];
-        if (!Array.isArray(value)) return;
-        if (!value) value = [];
-        this.properties.selectedIdentities = value.map((identity) => {
-
-          if (!(identity instanceof Layer.Identity)) return this.properties.client.getIdentity(identity.id);
-          return identity;
-        });
-        this._renderSelection();
-      },
-    },
 
     /**
      * String, Regular Expression or Function for filtering Conversations.

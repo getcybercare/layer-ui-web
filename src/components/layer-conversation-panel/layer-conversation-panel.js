@@ -618,9 +618,15 @@ registerComponent('layer-conversation-panel', {
       this.nodes.composer.conversation = conversation;
       this.nodes.typingIndicators.conversation = conversation;
       if (this.hasGeneratedQuery) {
-        this.query.update({
-          predicate: `conversation.id = "${conversation.id}"`,
-        });
+        if (conversation instanceof Layer.Conversation) {
+          this.query.update({
+            predicate: `conversation.id = "${conversation.id}"`,
+          });
+        } else if (conversation instanceof Layer.Channel) {
+          this.query.update({
+            predicate: `channel.id = "${conversation.id}"`,
+          });
+        }
       }
       if (this.autoFocusConversation) this.focusText();
     },

@@ -1,9 +1,6 @@
 /**
  * The Layer Membership Item represents a single user within a Membership List.
  *
- * This widget could be used to represent a User elsewhere, in places where a `<layer-avatar />` is insufficient.
- *
- * This widget includes a checkbox for selection.
  *
  * @class layerUI.components.MembershipListPanel.Item
  * @mixin layerUI.mixins.ListItem
@@ -28,6 +25,7 @@ registerComponent('layer-membership-item', {
      * @private
      */
     onRender() {
+      this.nodes.avatar.users = [this.item.identity];
       this.onRerender();
     },
 
@@ -41,7 +39,6 @@ registerComponent('layer-membership-item', {
       this.nodes.title.innerHTML = this.item.identity.displayName;
     },
 
-
     /**
      * Run a filter on this item, and hide it if it doesn't match the filter.
      *
@@ -54,7 +51,10 @@ registerComponent('layer-membership-item', {
       if (!filter) {
         match = true;
       } else if (filter instanceof RegExp) {
-        match = filter.test(identity.displayName) || filter.test(identity.firstName) || filter.test(identity.lastName) || filter.test(identity.emailAddress);
+        match = filter.test(identity.displayName) ||
+          filter.test(identity.firstName) ||
+          filter.test(identity.lastName) ||
+          filter.test(identity.emailAddress);
       } else if (typeof filter === 'function') {
         match = filter(identity);
       } else {

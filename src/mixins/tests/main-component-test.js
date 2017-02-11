@@ -16,7 +16,7 @@ describe("Main Component Mixin", function() {
       });
       client._clientAuthenticated();
 
-      layerUI.init({layer: layer});
+    if (layerUI.components['layer-conversation-panel'] && !layerUI.components['layer-conversation-panel'].classDef) layerUI.init({layer: layer});
       testRoot = document.createElement('div');
       document.body.appendChild(testRoot);
       el = document.createElement('layer-identities-list');
