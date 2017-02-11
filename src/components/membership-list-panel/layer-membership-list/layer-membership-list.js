@@ -20,7 +20,6 @@
  * @mixin layerUI.mixins.List
  * @mixin layerUI.mixins.MainComponent
  */
-<<<<<<< HEAD
 import Layer from 'layer-websdk';
 import { registerComponent } from '../../component';
 import List from '../../../mixins/list';
